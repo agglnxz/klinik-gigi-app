@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->text('alamat')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['Admin', 'Marketing', 'Direktur'])->default('Admin');
+            $table->boolean('is_aktif')->default(true);
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
