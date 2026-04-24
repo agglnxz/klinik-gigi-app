@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreign('id_asisten')->references('id')->on('asisten')->onDelete('cascade');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

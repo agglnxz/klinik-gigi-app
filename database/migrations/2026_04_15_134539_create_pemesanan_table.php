@@ -31,6 +31,7 @@ return new class extends Migration
             $table->foreign('id_jenis_gigi')->references('id')->on('jenis_gigi')->onDelete('cascade');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
