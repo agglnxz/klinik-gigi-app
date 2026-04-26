@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('kontak', 20);
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
             $table->text('alamat')->nullable();
+            $table->boolean('is_aktif')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });
