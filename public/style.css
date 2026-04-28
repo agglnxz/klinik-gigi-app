@@ -1,0 +1,5 @@
+/* public/css/style.css */
+
+.bg-gradient-custom {
+    background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
+}

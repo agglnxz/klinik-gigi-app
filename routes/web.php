@@ -6,7 +6,26 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-// Rute Pancingan (Nanti kita ganti dengan Controller beneran)
 Route::get('/login', function () {
-    return "Halaman Form Login Web akan segera dibuat di sini!";
-})->name('login'); // -> name('login') ini yang dicari-cari oleh Laravel tadi!
+    return view('auth.login');
+})->name('login');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+Route::prefix('data-master')->group(function () {
+
+    // Route untuk Dokter
+    Route::get('/dokter', function () {
+        return view('data_master.dokter.index');
+    })->name('dokter.index');
+
+    // Route untuk Asisten
+    Route::get('/asisten', function () {
+        return view('data_master.asisten.index');
+    })->name('asisten.index');
+
+    // Nanti Anda bisa tambah di sini untuk Laboratorium, Jenis Gigi, dll
+    // Route::get('/laboratorium', ...);
+});
