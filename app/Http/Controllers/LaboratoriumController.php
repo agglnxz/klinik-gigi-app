@@ -61,7 +61,7 @@ class LaboratoriumController extends Controller
     /**
      * Update the specified resource in storage.
      */
-// 3. Fungsi UBAH DATA (Update)
+    // 3. Fungsi UBAH DATA (Update)
     public function update(Request $request, $id)
     {
         $lab = Laboratorium::find($id);
@@ -95,5 +95,61 @@ class LaboratoriumController extends Controller
         ]);
     }
 
+     /**
+     * DELETE: nonaktifkan + soft delete
+     */
+    public function destroy($id)
+    {
+        $laboratorium = Laboratorium::find($id);
+        if (!$laboratorium) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $laboratorium->update(['is_aktif' => false]);
+        $laboratorium->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data laboratorium dinonaktifkan!'
+        ]);
+    }
+
+    /**
+     * GET: semua data yang dihapus
+     */
+    public function semua()
+    {
+        $laboratorium = Laboratorium::onlyTrashed()->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $laboratorium
+        ]);
+    }
+
+    /**
+     * PUT: restore laboratorium
+     */
+    public function restore($id)
+    {
+        $laboratorium = Laboratorium::withTrashed()->find($id);
+        if (!$laboratorium) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $laboratorium->restore();
+        $laboratorium->update(['is_aktif' => true]);
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data laboratorium berhasil diaktifkan kembali!'
+        ]);
+    }
 
 }
