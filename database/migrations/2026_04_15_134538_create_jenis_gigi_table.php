@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('kode_gigi', 20)->unique();
             $table->string('nama_jenis', 100);
             $table->decimal('estimasi_biaya', 15, 2); // Harga Acuan
+            $table->boolean('is_aktif')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
