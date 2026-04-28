@@ -71,5 +71,62 @@ class DokterController extends Controller
 
         return response()->json(['status' => 'success', 'pesan' => 'Data Dokter berhasil diperbarui!', 'data' => $dokter]);
     }
+
+     /**
+     * DELETE: nonaktifkan + soft delete
+     */
+    public function destroy($id)
+    {
+        $dokter = Dokter::find($id);
+        if (!$dokter) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $dokter->update(['is_aktif' => false]);
+        $dokter->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data dokter dinonaktifkan!'
+        ]);
+    }
+
+    /**
+     * GET: semua data yang dihapus
+     */
+    public function semua()
+    {
+        $dokter = Dokter::onlyTrashed()->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $dokter
+        ]);
+    }
+
+    /**
+     * PUT: restore dokter
+     */
+    public function restore($id)
+    {
+        $dokter = Dokter::withTrashed()->find($id);
+        if (!$dokter) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $dokter->restore();
+        $dokter->update(['is_aktif' => true]);
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data dokter berhasil diaktifkan kembali!'
+        ]);
+    }
     
 }

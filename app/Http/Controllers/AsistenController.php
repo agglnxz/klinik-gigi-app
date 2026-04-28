@@ -71,11 +71,60 @@ public function update(Request $request, $id)
         return response()->json(['status' => 'success', 'pesan' => 'Data Asisten berhasil diperbarui!', 'data' => $asisten]);
     }
 
-    /**
-     * Remove the specified resource from storage.
+     /**
+     * DELETE: nonaktifkan + soft delete
      */
-    public function destroy(Asisten $asisten)
+    public function destroy($id)
     {
-        //
+        $asisten = Asisten::find($id);
+        if (!$asisten) { 
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $asisten->update(['is_aktif' => false]);
+        $asisten->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data asiste$asisten dinonaktifkan!'
+        ]);
+    }
+
+    /**
+     * GET: semua data yang dihapus
+     */
+    public function semua()
+    {
+        $asisten = Asisten::onlyTrashed()->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $asisten
+        ]);
+    }
+
+    /**
+     * PUT: restore asiste$asisten
+     */
+    public function restore($id)
+    {
+        $asisten = Asisten::withTrashed()->find($id);
+        if (!$asisten) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $asisten->restore();
+        $asisten->update(['is_aktif' => true]);
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data asiste$asisten berhasil diaktifkan kembali!'
+        ]);
     }
 }

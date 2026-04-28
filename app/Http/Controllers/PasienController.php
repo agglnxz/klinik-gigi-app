@@ -134,7 +134,7 @@ class PasienController extends Controller
     }
 
     /**
-     * GET: semua data (termasuk terhapus)
+     * GET: semua data yang dihapus
      */
     public function semua()
     {

@@ -90,7 +90,7 @@ class PasienWebController extends Controller
         return redirect()->route('pasien.index')->with('success', 'Data Pasien berhasil dihapus (Soft Delete)!');
     }
 
-        // 7. LIHAT SEMUA DATA
+        // GET: semua data yang dihapus
     public function semua()
     {
         $pasien = Pasien::onlyTrashed()->orderBy('id', 'desc')->get();
