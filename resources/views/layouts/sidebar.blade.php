@@ -24,13 +24,14 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
-                    <i class="fa-solid fa-square-plus mr-3"></i> Pemeriksaan
+                 <a href="{{ route('pemeriksaan.index') }}"
+       class="flex items-center p-3 rounded-lg transition {{ request()->is('pemeriksaan*') ? 'text-[#1b5e4b] bg-teal-50 font-medium' : 'text-gray-500 hover:bg-gray-50' }}">
+                    <i class="fa-solid fa-stethoscope mr-3"></i> Pemeriksaan
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
-                    <i class="fa-solid fa-cart-shopping mr-3"></i> Pemesanan
+                <a href="{{ route('pemesanan') }}" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
+                 <i class="fa-solid fa-cart-shopping mr-3"></i> Pemesanan
                 </a>
             </li>
             <li>
