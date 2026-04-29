@@ -6,8 +6,6 @@ use App\Http\Controllers\DokterController;
 use App\Http\Controllers\JenisGigiController;
 use App\Http\Controllers\LaboratoriumController;
 use App\Http\Controllers\PasienController;
-use App\Http\Controllers\Web\JenisGigiWebController;
-use App\Models\JenisGigi;
 use Illuminate\Support\Facades\Route;
 
 // RUTE PUBLIK (Tidak perlu tiket/token)
@@ -15,10 +13,12 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
+Route::post('/logout', [AuthController::class, 'logout']);
+
 // Rute untuk Master Laboratorium
-Route::get('/laboratorium', [LaboratoriumController::class, 'index']);       
-Route::post('/laboratorium', [LaboratoriumController::class, 'store']);      
-Route::put('/laboratorium/{id}', [LaboratoriumController::class, 'update']); 
+Route::get('/laboratorium', [LaboratoriumController::class, 'index']);
+Route::post('/laboratorium', [LaboratoriumController::class, 'store']);
+Route::put('/laboratorium/{id}', [LaboratoriumController::class, 'update']);
 Route::delete('/laboratorium/{id}', [LaboratoriumController::class, 'destroy']);
 Route::get('/laboratorium-semua', [LaboratoriumController::class, 'semua']);
 Route::put('/laboratorium-restore/{id}', [LaboratoriumController::class, 'restore']);
@@ -43,7 +43,7 @@ Route::put('/asisten-restore/{id}', [AsistenController::class, 'restore']);
 Route::get('/jenis-gigi', [JenisGigiController::class, 'index']);
 Route::post('/jenis-gigi', [JenisGigiController::class, 'store']);
 Route::put('/jenis-gigi/{id}', [JenisGigiController::class, 'update']);
-Route::delete('/jenis-gigi/{id}', [JenisGigiWebController::class, 'destroy']);
+Route::delete('/jenis-gigi/{id}', [JenisGigiController::class, 'destroy']);
 Route::get('/jenis-gigi-semua', [JenisGigiController::class, 'semua']);
 Route::put('/jenis-gigi-restore/{id}', [JenisGigiController::class, 'restore']);
 

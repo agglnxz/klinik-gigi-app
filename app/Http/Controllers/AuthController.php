@@ -20,7 +20,6 @@ class AuthController extends Controller
             'password' => $request->password,
             'is_aktif' => 1
         ];
-
         // 2. Cek apakah kredensial cocok dan akun aktif
         if (!Auth::attempt($credentials)) {
             return response()->json([
@@ -28,14 +27,12 @@ class AuthController extends Controller
                 'pesan'  => 'Login gagal! Email/password salah atau akun Anda telah dinonaktifkan.'
             ], 401);
         }
-
         // 3. Jika cocok, ambil data user tersebut
-        // (Catatan: User yang kena Soft Delete otomatis tidak akan ketemu oleh Laravel)
         $user = User::where('email', $request->email)->firstOrFail();
 
         // 4. Buatkan Token (Tiket Masuk)
         $token = $user->createToken('auth_token')->plainTextToken;
-
+        
         return response()->json([
             'status'       => 'success',
             'pesan'        => 'Login berhasil!',
