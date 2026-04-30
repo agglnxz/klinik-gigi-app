@@ -6,6 +6,7 @@ use App\Http\Controllers\DokterController;
 use App\Http\Controllers\JenisGigiController;
 use App\Http\Controllers\LaboratoriumController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\PemeriksaanController;  
 use App\Http\Controllers\PemesananController;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,14 @@ Route::delete('/pasien/{id}', [PasienController::class, 'destroy']);
 Route::get('/pasien-semua', [PasienController::class, 'semua']);
 Route::put('/pasien-restore/{id}', [PasienController::class, 'restore']);
 
+
+// Routes Pemeriksaan
+Route::get('/pemeriksaan', [PemeriksaanController::class, 'index']);
+Route::post('/pemeriksaan', [PemeriksaanController::class, 'store']);
+Route::put('/pemeriksaan/{id}', [PemeriksaanController::class, 'update']);
+Route::delete('/pemeriksaan/{id}', [PemeriksaanController::class, 'destroy']);
+Route::get('/pemeriksaan-semua', [PemeriksaanController::class, 'semua']);
+Route::put('/pemeriksaan-restore/{id}', [PemeriksaanController::class, 'restore']);
 
 // Routes Pemesanan
 Route::get('/pemesanan', [PemesananController::class, 'index']);
