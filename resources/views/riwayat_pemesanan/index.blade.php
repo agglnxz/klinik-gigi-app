@@ -1,45 +1,43 @@
 @extends('layouts.main')
 
-@section('title', 'Pemeriksaan')
+@section('title', 'Riwayat Pemesanan')
 
+@section('content')
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-<style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-    </style>
 
     <div class="space-y-6">
 
         <div class="flex justify-between items-end">
             <div>
-                <h3 class="text-2xl font-bold text-black-1000">Daftar Pemeriksaan</h3>
-                <p class="text-sm text-gray-500 font-linght">Mengelola data rekam medis dan riwayat pemeriksaan pasien</p>
+                <h3 class="text-2xl font-bold text-black-1000">Riwayat Pemesanan</h3>
+                <p class="text-sm text-gray-500 font-linght">Mengelola data pemesanan dan pengiriman ke laboratorium gigi</p>
             </div>
             <button
                 class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
-                <i class="fa-solid fa-plus text-xs"></i> Tambah Pemeriksaan
+                <i class="fa-solid fa-plus text-xs"></i> Tambah Pemesanan
             </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {{-- DIUBAH: Total Pasien → Total Pesanan, icon fa-users → fa-clipboard-list --}}
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
                 <div class="bg-[#e7f5f1] text-[#41917a] w-14 h-14 rounded-2xl flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-users"></i>
+                    <i class="fa-solid fa-clipboard-list"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Total Pasien</p>
+                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Total Pesanan</p>
                     <h3 class="text-2xl font-black text-gray-800">1,284</h3>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-6">
+            {{-- DIUBAH: Pasien Baru (Bulan Ini) → Telah Tiba, icon fa-user-plus → fa-box-open --}}
+            <div class="bg-white p-6 rounded-2xl     shadow-sm border border-gray-100 flex items-center gap-6">
                 <div class="bg-[#e7f5f1] text-[#176851] w-14 h-14 rounded-2xl flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-user-plus"></i>
+                    <i class="fa-solid fa-box-open"></i>
                 </div>
                 <div>
-                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Pasien Baru (Bulan Ini)</p>
+                    <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Telah Tiba</p>
                     <h3 class="text-2xl font-black text-gray-800">42</h3>
                 </div>
             </div>
@@ -55,7 +53,7 @@
             </div>
         </div>
 
-       <div
+        <div
             class="bg-[#F3F4F3] px-4 py-3 rounded-2xl flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 border border-gray-100">
             <div class="relative w-full max-w-[380px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
@@ -124,48 +122,29 @@
 
         <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[1900px] text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#F3F4F3] border-b border-gray-100">
-                            <th class="w-[250px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">
-                                Nama Pasien</th>
-                            <th class="w-[200px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">ID
-                                Pemeriksaan</th>
-                            <th class="w-[200px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">
-                                Tanggal Periksa</th>
-                            <th class="w-[200px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">
-                                Dokter Gigi</th>
-                            <th class="w-[200px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">
-                                Asisten Dokter</th>
-                            <th class="w-[350px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest">
-                                Catatan</th>
-                            <th
-                                class="w-[150px] px-6 py-5 text-[11px] font-bold text-bold-900 uppercase tracking-widest text-center">
-                                Aksi</th>
+                {{-- DIUBAH: Kolom tabel disederhanakan sesuai gambar --}}
+                <table class="w-full text-left border-collapse">
+                   <thead>
+                        <tr class="bg-gray-100 border-b border-gray-100">
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">ID Pesanan</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Pasien</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Laboratorium</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Estimasi</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Status</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
+
                         <tr class="hover:bg-gray-50/30 transition">
-                            <td class="px-6 py-6">
-                                <p class="font-bold text-gray-800 text-[13px]">Yossy Fira Rosdiana</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
-                                    RM-2026-0410</p>
+                            <td class="px-5 py-4 text-[12px] font-bold text-[#176851]">
+                                ORD-2024-001
                             </td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">
-                                PSN-001-2026-WINARDI</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal uppercase">
-                                10 APRIL 2026</td>
-                            <td class="px-6 py-6 text-[13px] font-bold text-gray-700">drg. Winardi Adikusuma</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">Citra
-                                Lestari, A.Md.Kes</td>
-                            <td class="px-6 py-6">
-                                <p class="text-[12px] text-gray-800 font-normal leading-relaxed">Dilakukan pemasangan
-                                    prothesa gigi tiruan sebagian pada rahang atas dan pengecekan oklusi berkala.</p>
-                            </td>
-                            <td class="px-6 py-6">
+                            <td class="px-5 py-4 text-[13px] font-bold text-gray-800">Andi Wijaya</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Dental Lab</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
+                            <td class="px-5 py-4">
                                 <div class="flex justify-center gap-2">
                                     <button
                                         class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
@@ -180,33 +159,21 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <td class="px-6 py-6">
-                                <p class="font-bold text-gray-800 text-[13px]">Inandiar Sharfina Fauzi</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
-                                    RM-2026-0230</p>
+                            <td class="px-5 py-4 text-[12px] font-bold text-[#176851]">
+                                ORD-2024-002
                             </td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">
-                                PSN-002-2026-ALUNA</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal uppercase">
-                                30 FEBRUARI 2026</td>
-                            <td class="px-6 py-6 text-[13px] font-bold text-gray-700">drg. Aluna Safira Putri</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">Shafira
-                                Zahra Ramadhani</td>
-                            <td class="px-6 py-6">
-                                <p class="text-[12px] text-gray-800 font-normal leading-relaxed">Pemasangan veneer porselen
-                                    pada gigi anterior untuk perbaikan estetika sesuai permintaan pasien.</p>
-                            </td>
-                            <td class="px-6 py-6">
+                            <td class="px-5 py-4 text-[13px] font-bold text-gray-800">Siiti Rahma</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Indo Tech Lab</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
+                            <td class="px-5 py-4">
                                 <div class="flex justify-center gap-2">
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
                                     </button>
                                     <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
                                     </button>
                                 </div>
@@ -214,33 +181,21 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <td class="px-6 py-6">
-                                <p class="font-bold text-gray-800 text-[13px]">Moch Firman Triswanda</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
-                                    RM-2026-0112</p>
+                            <td class="px-5 py-4 text-[12px] font-bold text-[#176851]">
+                                ORD-2024-003
                             </td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">
-                                PSN-003-2026-KEVIN</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal uppercase">
-                                12 JANUARI 2026</td>
-                            <td class="px-6 py-6 text-[13px] font-bold text-gray-700">drg. Kevin Aditya Pratama</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">Dinda
-                                Maharini Putri</td>
-                            <td class="px-6 py-6">
-                                <p class="text-[12px] text-gray-800 font-normal leading-relaxed">Pemasangan retainer pasca
-                                    pelepasan alat ortodonti (behel) untuk menjaga posisi gigi.</p>
-                            </td>
-                            <td class="px-6 py-6">
+                            <td class="px-5 py-4 text-[13px] font-bold text-gray-800">Budi Santoso</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Elite JKT Lab</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
+                            <td class="px-5 py-4">
                                 <div class="flex justify-center gap-2">
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
                                     </button>
                                     <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
                                     </button>
                                 </div>
@@ -248,38 +203,27 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <td class="px-6 py-6">
-                                <p class="font-bold text-gray-800 text-[13px]">Galang Bagus Erkamta</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
-                                    RM-2026-0108</p>
+                            <td class="px-5 py-4 text-[12px] font-bold text-[#176851]">
+                                ORD-2024-004
                             </td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">
-                                PSN-004-2026-ALVIRA</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal uppercase">
-                                8 JANUARI 2026</td>
-                            <td class="px-6 py-6 text-[13px] font-bold text-gray-700">drg. Alvira Celine Widya</td>
-                            <td class="px-6 py-6 text-[13px] text-gray-800
-                         font-normal">Naura
-                                Zahira Salsabila</td>
-                            <td class="px-6 py-6">
-                                <p class="text-[12px] text-gray-800 font-normal leading-relaxed">Pemasangan aligner tahap
-                                    pertama dan pemberian instruksi penggunaan serta pembersihan alat.</p>
-                            </td>
-                            <td class="px-6 py-6">
+                            <td class="px-5 py-4 text-[13px] font-bold text-gray-800">Galang Bagus Erkamta</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Wijaya Lab</td>
+                            <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">14 Apr 2026</td>
+                            <td class="px-5 py-4"><span class="status-circle status-diproses">Di Proses</span></td>
+                            <td class="px-5 py-4">
                                 <div class="flex justify-center gap-2">
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
                                     </button>
                                     <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
+                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
                                         <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
                         </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -291,4 +235,3 @@
         </div>
     </div>
 @endsection
-

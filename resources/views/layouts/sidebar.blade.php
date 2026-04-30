@@ -25,21 +25,34 @@
                 </a>
             </li>
             <li>
-                 <a href="{{ route('pemeriksaan.index') }}"
-       class="flex items-center p-3 rounded-lg transition {{ request()->is('pemeriksaan*') ? 'text-[#1b5e4b] bg-teal-50 font-medium' : 'text-gray-500 hover:bg-gray-50' }}">
-                    <i class="fa-solid fa-stethoscope mr-3"></i> Pemeriksaan
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('pemesanan') }}" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
-                 <i class="fa-solid fa-cart-shopping mr-3"></i> Pemesanan
-                </a>
-            </li>
-            <li>
-                <a href="#" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
-                    <i class="fa-solid fa-clock-rotate-left mr-3"></i> Riwayat Pesanan
-                </a>
-            </li>
+    <a href="{{ route('pemeriksaan.index') }}"
+        class="flex items-center p-3 rounded-lg transition
+        {{ request()->is('pemeriksaan*')
+            ? 'text-[#1b5e4b] bg-white font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]'
+            : 'text-gray-500 hover:bg-gray-50' }}">
+
+        <i class="fa-solid fa-stethoscope mr-3"></i> Pemeriksaan
+    </a>
+</li>
+              <li>
+    <a href="{{ route('pemesanan.index') }}"
+        class="flex items-center p-3 rounded-lg transition
+        {{ request()->is('pemesanan*')
+            ? 'text-[#1b5e4b] bg-white font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]'
+            : 'text-gray-500 hover:bg-gray-50' }}">
+
+        <i class="fa-solid fa-cart-shopping mr-3"></i> Pemesanan
+    </a>
+</li>
+    <a href="{{ route('pemesanan-riwayat') }}"
+    class="flex items-center p-3 rounded-lg transition
+    {{ request()->is('riwayat-pemesanan*')
+        ? 'text-[#1b5e4b] bg-white font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]'
+        : 'text-gray-500 hover:bg-gray-50' }}">
+
+    <i class="fa-solid fa-clock-rotate-left mr-3"></i>
+    <span class="text-sm">Riwayat Pemesanan</span>
+</a>
         </ul>
     </nav>
 </aside>
