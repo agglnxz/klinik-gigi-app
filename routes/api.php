@@ -6,6 +6,7 @@ use App\Http\Controllers\DokterController;
 use App\Http\Controllers\JenisGigiController;
 use App\Http\Controllers\LaboratoriumController;
 use App\Http\Controllers\PasienController;
+use App\Http\Controllers\PemesananController;
 use Illuminate\Support\Facades\Route;
 
 // RUTE PUBLIK (Tidak perlu tiket/token)
@@ -54,4 +55,13 @@ Route::put('/pasien/{id}', [PasienController::class, 'update']);
 Route::delete('/pasien/{id}', [PasienController::class, 'destroy']);
 Route::get('/pasien-semua', [PasienController::class, 'semua']);
 Route::put('/pasien-restore/{id}', [PasienController::class, 'restore']);
+
+
+// Routes Pemesanan
+Route::get('/pemesanan', [PemesananController::class, 'index']);
+Route::post('/pemesanan', [PemesananController::class, 'store']);
+Route::put('/pemesanan/{id}', [PemesananController::class, 'update']);
+Route::delete('/pemesanan/{id}', [PemesananController::class, 'destroy']);
+Route::get('/pemesanan-semua', [PemesananController::class, 'semua']);
+Route::put('/pemesanan-restore/{id}', [PemesananController::class, 'restore']);
 });
