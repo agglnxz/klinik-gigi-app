@@ -3,9 +3,6 @@
 @section('title', 'Riwayat Pemesanan')
 
 @section('content')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-
     <div class="space-y-6">
 
         <div class="flex justify-between items-end">
@@ -131,7 +128,6 @@
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Laboratorium</th>
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Estimasi</th>
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Status</th>
-                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
@@ -144,18 +140,6 @@
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Dental Lab</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
                             <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-2">
-                                    <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
@@ -166,18 +150,6 @@
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Indo Tech Lab</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
                             <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-2">
-                                    <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
@@ -188,18 +160,6 @@
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Elite JKT Lab</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">25 Okt 2023</td>
                             <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-2">
-                                    <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
@@ -210,18 +170,6 @@
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Wijaya Lab</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">14 Apr 2026</td>
                             <td class="px-5 py-4"><span class="status-circle status-diproses">Di Proses</span></td>
-                            <td class="px-5 py-4">
-                                <div class="flex justify-center gap-2">
-                                    <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
 
                     </tbody>

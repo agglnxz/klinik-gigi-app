@@ -4,6 +4,10 @@
     background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
 }
 
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
 /* Mengatur tampilan scrollbar agar lebih tipis dan bersih */
     .custom-scrollbar::-webkit-scrollbar {
         height: 6px; /* Tinggi scrollbar horizontal */
@@ -19,3 +23,50 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
+
+     .badge-lunas {
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+        }
+
+        .badge-belum {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+        }
+
+        .status-circle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-circle::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            flex-shrink: 0;
+        }
+
+        .status-diproses  { color: #2563eb; }
+        .status-selesai   { color: #16a34a; }
+        .status-terlambat { color: #dc2626; }

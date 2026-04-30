@@ -1,15 +1,7 @@
 @extends('layouts.main')
 
 @section('title', 'Pemeriksaan')
-
-
-<style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-    </style>
-
+@section('content')
     <div class="space-y-6">
 
         <div class="flex justify-between items-end">
