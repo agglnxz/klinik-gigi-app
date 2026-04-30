@@ -3,8 +3,6 @@
 @section('title', 'Pemesanan')
 
 @section('content')
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
 
     <div class="space-y-6">
 
@@ -121,30 +119,42 @@
         <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full min-w-[1900px] text-left border-collapse">
-                   <thead>
+                    <thead>
                         <tr class="bg-gray-100 border-b border-gray-100">
-                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">ID Pemesanan</th>
-                            <th class="w-[220px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Nama Pasien</th>
-                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Tanggal Kirim</th>
-                            <th class="w-[180px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Estimasi Selesai</th>
-                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Laboratorium</th>
-                            <th class="w-[190px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Biaya Laboratorium</th>
-                            <th class="w-[240px] px-5 py-4 text-[10px] font-bold text-gray-900 uppercase tracking-wide">Status Pembayaran Laboratorium</th>
-                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Biaya Ekspedisi</th>
-                            <th class="w-[140px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Status</th>
-                            <th class="w-[150px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">Aksi</th>
+                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">ID
+                                Pemesanan</th>
+                            <th class="w-[220px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Nama
+                                Pasien</th>
+                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Tanggal Kirim</th>
+                            <th class="w-[180px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Estimasi Selesai</th>
+                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Laboratorium</th>
+                            <th class="w-[190px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Biaya Laboratorium</th>
+                            <th class="w-[240px] px-5 py-4 text-[10px] font-bold text-gray-900 uppercase tracking-wide">
+                                Status Pembayaran Laboratorium</th>
+                            <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Biaya Ekspedisi</th>
+                            <th class="w-[140px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">
+                                Status</th>
+                            <th
+                                class="w-[150px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <tr class="hover:bg-gray-50/30 transition">
+                        <tr class="hover:bg-gray-50/30 transition">
                             <td class="px-5 py-4 text-[12px] font-medium text-gray-700">
                                 PSN-001-20260410
                             </td>
                             <td class="px-6 py-6">
                                 <p class="font-bold text-gray-800 text-[13px]">Yossy Fira Rosdiana</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">RM-2026-0410</p>
+                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
+                                    RM-2026-0410</p>
                             </td>
                             <td class="px-6 py-6 text-[13px] text-gray-900 font-normal uppercase">01 Januari 2026</td>
                             <td class="px-6 py-6 text-[13px] text-gray-900 font-normal uppercase">10 Januari 2026</td>
@@ -168,13 +178,14 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <tr class="hover:bg-gray-50/30 transition">
+                        <tr class="hover:bg-gray-50/30 transition">
                             <td class="px-5 py-4 text-[12px] font-medium text-gray-700">
                                 PSN-001-20260410
                             </td>
                             <td class="px-6 py-6">
                                 <p class="font-bold text-gray-800 text-[13px]">Inandiar Sharfina Fauzi</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">RM-2026-0230</p>
+                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
+                                    RM-2026-0230</p>
                             </td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">02 Februari 2026</td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">12 Februari 2026</td>
@@ -198,13 +209,14 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <tr class="hover:bg-gray-50/30 transition">
+                        <tr class="hover:bg-gray-50/30 transition">
                             <td class="px-5 py-4 text-[12px] font-medium text-gray-700">
                                 PSN-001-20260410
                             </td>
                             <td class="px-6 py-6">
                                 <p class="font-bold text-gray-800 text-[13px]">Moch Firman Triswanda</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">RM-2026-0112</p>
+                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
+                                    RM-2026-0112</p>
                             </td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">03 Maret 2026</td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">13 Maret 2026</td>
@@ -228,13 +240,14 @@
                         </tr>
 
                         <tr class="hover:bg-gray-50/30 transition">
-                            <tr class="hover:bg-gray-50/30 transition">
+                        <tr class="hover:bg-gray-50/30 transition">
                             <td class="px-5 py-4 text-[12px] font-medium text-gray-700">
                                 PSN-001-20260410
                             </td>
                             <td class="px-6 py-6">
                                 <p class="font-bold text-gray-800 text-[13px]">Galang Bagus Erkamta</p>
-                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">RM-2026-0108</p>
+                                <p class="text-[10px] text-gray-400 font-normal uppercase mt-0.5 tracking-tighter">
+                                    RM-2026-0108</p>
                             </td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">04 April 2026</td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal uppercase">14 April 2026</td>
