@@ -73,4 +73,61 @@ public function update(Request $request, $id)
 
         return response()->json(['status' => 'success', 'pesan' => 'Jenis Gigi berhasil diperbarui!', 'data' => $jenis_gigi]);
     }
+
+     /**
+     * DELETE: nonaktifkan + soft delete
+     */
+    public function destroy($id)
+    {
+        $jenis_gigi = JenisGigi::find($id);
+        if (!$jenis_gigi) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $jenis_gigi->update(['is_aktif' => false]);
+        $jenis_gigi->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data jenis_gigi dinonaktifkan!'
+        ]);
+    }
+
+    /**
+     * GET: semua data yang dihapus
+     */
+    public function semua()
+    {
+        $jenis_gigi = JenisGigi::onlyTrashed()->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $jenis_gigi
+        ]);
+    }
+
+    /**
+     * PUT: restore jenis_gigi
+     */
+    public function restore($id)
+    {
+        $jenis_gigi = JenisGigi::withTrashed()->find($id);
+        if (!$jenis_gigi) {
+            return response()->json([
+                'status' => 'error',
+                'pesan' => 'Data tidak ditemukan!'
+            ], 404);
+        }
+
+        $jenis_gigi->restore();
+        $jenis_gigi->update(['is_aktif' => true]);
+
+        return response()->json([
+            'status' => 'success',
+            'pesan' => 'Data jenis_gigi berhasil diaktifkan kembali!'
+        ]);
+    }
 }
