@@ -11,8 +11,8 @@
 <div class="flex space-x-2 bg-gray-100/50 p-1 rounded-xl w-fit mb-8">
     <a href="{{ route('dokter.index') }}" class="px-6 py-2 bg-white text-teal-700 shadow-sm rounded-lg font-medium text-sm">Dokter</a>
     <a href="{{ route('asisten.index') }}" class="px-6 py-2 text-gray-500 hover:text-teal-700 font-medium text-sm transition">Asisten</a>
-    <a href="#" class="px-6 py-2 text-gray-500 hover:text-teal-700 font-medium text-sm transition">Laboratorium</a>
-    <a href="#" class="px-6 py-2 text-gray-500 hover:text-teal-700 font-medium text-sm transition">Jenis Gigi</a>
+    <a href="{{ route('laboratorium.index') }}" class="px-6 py-2 text-gray-500 hover:text-teal-700 font-medium text-sm transition">Laboratorium</a>
+    <a href="{{ route('jenis-gigi.index') }}" class="px-6 py-2 text-gray-500 hover:text-teal-700 font-medium text-sm transition">Jenis Gigi</a>
 </div>
 
 <div class="flex justify-between items-end mb-6">
@@ -45,7 +45,7 @@
                 <td class="px-8 py-6">
                     <div class="flex justify-center space-x-2">
                         <button class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition">
-                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> Edit
+                            <i class="fa-solid fa-pen mr-1.5"></i> Edit
                         </button>
                         <button class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition">
                             <i class="fa-solid fa-trash mr-1.5"></i> Hapus
@@ -63,7 +63,7 @@
                 <td class="px-8 py-6">
                     <div class="flex justify-center space-x-2">
                         <button class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> Edit
+                            <i class="fa-solid fa-pen mr-1.5"></i> Edit
                         </button>
                         <button class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
                             <i class="fa-solid fa-trash mr-1.5"></i> Hapus
@@ -81,7 +81,7 @@
                 <td class="px-8 py-6">
                     <div class="flex justify-center space-x-2">
                         <button class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> Edit
+                            <i class="fa-solid fa-pen mr-1.5"></i> Edit
                         </button>
                         <button class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
                             <i class="fa-solid fa-trash mr-1.5"></i> Hapus

@@ -11,7 +11,7 @@
 
     @include('layouts.sidebar')
 
-    <div class="flex-1 flex flex-col min-h-screen">
+    <div class="flex-1 overflow-hidden flex flex-col">
         @include('layouts.navbar')
 
         <main class="p-8 bg-teal-50">

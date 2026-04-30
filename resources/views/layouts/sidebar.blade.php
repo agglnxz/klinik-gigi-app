@@ -8,18 +8,19 @@
         <ul class="space-y-2">
             <li>
                 <a href="{{ route('dashboard') }}"
-                   class="flex items-center p-3 rounded-lg transition {{ request()->routeIs('dashboard') ? 'text-[#1b5e4b] bg-white-50 font-medium shadow-sm border border-gray-200' : 'text-gray-500 hover:bg-gray-50' }}">
+                   class="flex items-center p-3 rounded-lg transition {{ request()->routeIs('dashboard') ? 'text-[#1b5e4b] bg-white font-medium shadow-sm border border-gray-200' : 'text-gray-500 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-table-columns mr-3"></i> Dashboard
                 </a>
             </li>
             <li>
                 <a href="{{ route('dokter.index') }}"
-       class="flex items-center p-3 rounded-lg transition {{ request()->is('data-master*') ? 'text-[#1b5e4b] bg-teal-50 font-medium' : 'text-gray-500 hover:bg-gray-50' }}">
+       class="flex items-center p-3 rounded-lg transition {{ request()->is('data-master*') ? 'text-[#1b5e4b] bg-white font-medium shadow-sm border border-gray-200' : 'text-gray-500 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-database mr-3"></i> Data Master
                 </a>
             </li>
             <li>
-                <a href="#" class="flex items-center p-3 text-gray-500 hover:bg-gray-50 rounded-lg transition">
+                <a href="{{ route('pasien.index') }}"
+       class="flex items-center p-3 rounded-lg transition {{ request()->is('pasien*') ? 'text-[#1b5e4b] bg-white font-medium shadow-sm border border-gray-200' : 'text-gray-500 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-users mr-3"></i> Pasien
                 </a>
             </li>
