@@ -44,4 +44,8 @@ Route::get('/pemeriksaan', function () {
 
 Route::get('/pemesanan', function () {
     return view('pemesanan.index');
-})->name('pemesanan');
+})->name('pemesanan.index');
+
+Route::get('/riwayat-pemesanan', function () {
+    return view('riwayat_pemesanan.index');
+})->name('pemesanan-riwayat');

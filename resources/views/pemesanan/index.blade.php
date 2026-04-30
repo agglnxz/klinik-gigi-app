@@ -5,75 +5,6 @@
 @section('content')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #cbd5e1;
-        }
-
-        .badge-lunas {
-            background: #dcfce7;
-            color: #16a34a;
-            padding: 2px 10px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-block;
-        }
-
-        .badge-belum {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 2px 10px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-block;
-        }
-
-        .status-circle {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .status-circle::before {
-            content: '';
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid currentColor;
-            flex-shrink: 0;
-        }
-
-        .status-diproses  { color: #2563eb; }
-        .status-selesai   { color: #16a34a; }
-        .status-terlambat { color: #dc2626; }
-    </style>
 
     <div class="space-y-6">
 
@@ -89,7 +20,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex items-center gap-5">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
                 <div class="bg-[#e7f5f1] text-[#41917a] w-14 h-14 rounded-2xl flex items-center justify-center text-xl">
                     <i class="fa-solid fa-users"></i>
                 </div>
@@ -99,7 +30,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex items-center gap-6">
+            <div class="bg-white p-6 rounded-2xl     shadow-sm border border-gray-100 flex items-center gap-6">
                 <div class="bg-[#e7f5f1] text-[#176851] w-14 h-14 rounded-2xl flex items-center justify-center text-xl">
                     <i class="fa-solid fa-user-plus"></i>
                 </div>
@@ -109,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex items-center gap-5">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-5">
                 <div class="bg-[#fef2f2] text-[#ef4444] w-14 h-14 rounded-2xl flex items-center justify-center text-xl">
                     <i class="fa-solid fa-calendar-day"></i>
                 </div>
@@ -182,7 +113,7 @@
 
                 <button
                     class="px-2 py-3 text-[9px] font-black text-gray-500 bg-white ring-1 ring-gray-100 rounded-xl flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm uppercase tracking-widest whitespace-nowrap">
-                    <i class="fa-solid fa-file-export text-gray-400 text-xs"></i> Ekspor Data
+                    <i class="fa-solid fa-download text-gray-400 text-xs"></i> Ekspor Data
                 </button>
             </div>
         </div>
