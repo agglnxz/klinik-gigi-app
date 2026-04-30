@@ -3,3 +3,19 @@
 .bg-gradient-custom {
     background: linear-gradient(135deg, #e0f2f1 0%, #ffffff 100%);
 }
+
+/* Mengatur tampilan scrollbar agar lebih tipis dan bersih */
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 6px; /* Tinggi scrollbar horizontal */
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1; /* Warna abu-abu soft */
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }

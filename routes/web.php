@@ -22,6 +22,21 @@ Route::prefix('data-master')->group(function () {
         return view('data_master.asisten.index');
     })->name('asisten.index');
 
+    // Route untuk Laboratorium
+    Route::get('/laboratorium', function () {
+        return view('data_master.laboratorium.index');
+    })->name('laboratorium.index');
+
+    // Route untuk Jenis Gigi
+    Route::get('/jenis-gigi', function () {
+        return view('data_master.jenis_gigi.index');
+    })->name('jenis-gigi.index');
+    
+});
+
+Route::get('/pasien', function () {
+    return view('pasien.index');
+})->name('pasien.index');
 });
 
 Route::get('/pemeriksaan', function () {
