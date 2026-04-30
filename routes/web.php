@@ -31,13 +31,12 @@ Route::prefix('data-master')->group(function () {
     Route::get('/jenis-gigi', function () {
         return view('data_master.jenis_gigi.index');
     })->name('jenis-gigi.index');
-    
+
 });
 
 Route::get('/pasien', function () {
     return view('pasien.index');
 })->name('pasien.index');
-});
 
 Route::get('/pemeriksaan', function () {
     return view('pemeriksaan.index');
