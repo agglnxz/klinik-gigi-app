@@ -6,8 +6,8 @@
 
     {{-- KUMPULAN VARIABEL STYLE AGAR RAPI & REUSABLE --}}
     @php
-        $baseClass     = "flex items-center p-3 rounded-lg transition ";
-        $activeClass   = "text-[#1b5e4b] bg-white font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]";
+        $baseClass     = "flex items-center p-3 rounded-md transition ";
+        $activeClass   = "text-[#1b5e4b] bg-white font-medium shadow-md";
         $inactiveClass = "text-gray-500 hover:bg-gray-50";
     @endphp
 

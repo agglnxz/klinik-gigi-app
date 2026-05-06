@@ -12,7 +12,7 @@
             <span class="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center border-2 border-white">3</span>
         </div>
         <div class="flex items-center space-x-2">
-            <img src="https://ui-avatars.com/api/?name=User" class="w-8 h-8 rounded-md object-cover" alt="Profile">
+            <img src="{{ asset('images/user-profile-avatar.jpg') }}" class="w-8 h-8 rounded-xl object-cover" alt="Profile">
         </div>
     </div>
 </nav>
