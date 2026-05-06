@@ -10,10 +10,6 @@
                 <h3 class="text-2xl font-bold text-black-1000">Riwayat Pemesanan</h3>
                 <p class="text-sm text-gray-500 font-linght">Mengelola data pemesanan dan pengiriman ke laboratorium gigi</p>
             </div>
-            <button
-                class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
-                <i class="fa-solid fa-plus text-xs"></i> Tambah Pemesanan
-            </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -121,11 +117,13 @@
             <div class="overflow-x-auto custom-scrollbar">
                 {{-- DIUBAH: Kolom tabel disederhanakan sesuai gambar --}}
                 <table class="w-full text-left border-collapse">
-                   <thead>
+                    <thead>
                         <tr class="bg-gray-100 border-b border-gray-100">
-                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">ID Pesanan</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">ID Pesanan
+                            </th>
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Pasien</th>
-                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Laboratorium</th>
+                            <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Laboratorium
+                            </th>
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Estimasi</th>
                             <th class="px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Status</th>
                         </tr>
@@ -169,7 +167,7 @@
                             <td class="px-5 py-4 text-[13px] font-bold text-gray-800">Galang Bagus Erkamta</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">Wijaya Lab</td>
                             <td class="px-5 py-4 text-[13px] text-gray-800 font-normal">14 Apr 2026</td>
-                            <td class="px-5 py-4"><span class="status-circle status-diproses">Di Proses</span></td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
                         </tr>
 
                     </tbody>

@@ -9,10 +9,11 @@
                 <h3 class="text-2xl font-bold text-black-1000">Daftar Pemeriksaan</h3>
                 <p class="text-sm text-gray-500 font-linght">Mengelola data rekam medis dan riwayat pemeriksaan pasien</p>
             </div>
-            <button
-                class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
+             <a href="{{ route('pemeriksaan.create') }}">
+            <button class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
                 <i class="fa-solid fa-plus text-xs"></i> Tambah Pemeriksaan
             </button>
+        </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
