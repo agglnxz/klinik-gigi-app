@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\web\PemesananWebController;
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -71,10 +72,25 @@ Route::get('/pasien/{id}/edit', function ($id) {
 Route::get('/pemeriksaan', function () {
     return view('pemeriksaan.index');
 })->name('pemeriksaan.index');
+Route::get('/pemeriksaan/tambah', function () {
+    return view('pemeriksaan.create');
+})->name('pemeriksaan.create');
 
 Route::get('/pemesanan', function () {
     return view('pemesanan.index');
 })->name('pemesanan.index');
+Route::get('/pemesanan/tambah', function () {
+    return view('pemesanan.create');
+})->name('pemesanan.create');
+
+Route::get('/pemesanan/tambah-item', function () {
+    return view('pemesanan.tambahitem');
+})->name('pemesanan.tambahitem');
+
+    Route::get('/pemesanan/{id}/edit', function ($id) {
+        return view('pemesanan.update');
+    })->name('pemesanan.edit');
+// Route::get('/pemesanan/{id}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
 
 Route::get('/riwayat-pemesanan', function () {
     return view('riwayat_pemesanan.index');
