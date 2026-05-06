@@ -17,26 +17,56 @@ Route::prefix('data-master')->group(function () {
     Route::get('/dokter', function () {
         return view('data_master.dokter.index');
     })->name('dokter.index');
+    Route::get('/data-master/dokter/tambah', function () {
+        return view('data_master.dokter.create');
+    })->name('dokter.create');
+    Route::get('/data-master/dokter/{id}/edit', function ($id) {
+        return view('data_master.dokter.update');
+    })->name('dokter.edit');
 
     Route::get('/asisten', function () {
         return view('data_master.asisten.index');
     })->name('asisten.index');
+    Route::get('/data-master/asisten/tambah', function () {
+        return view('data_master.asisten.create');
+    })->name('asisten.create');
+    Route::get('/data-master/asisten/{id}/edit', function ($id) {
+        return view('data_master.asisten.update');
+    })->name('asisten.edit');
 
     // Route untuk Laboratorium
     Route::get('/laboratorium', function () {
         return view('data_master.laboratorium.index');
     })->name('laboratorium.index');
+    Route::get('/data-master/laboratorium/tambah', function () {
+        return view('data_master.laboratorium.create');
+    })->name('laboratorium.create');
+    Route::get('/data-master/laboratorium/{id}/edit', function ($id) {
+        return view('data_master.laboratorium.update');
+    })->name('laboratorium.edit');
 
     // Route untuk Jenis Gigi
     Route::get('/jenis-gigi', function () {
         return view('data_master.jenis_gigi.index');
     })->name('jenis-gigi.index');
+     Route::get('/data-master/jenis-gigi/tambah', function () {
+        return view('data_master.jenis_gigi.create');
+    })->name('jenis-gigi.create');
+    Route::get('/data-master/jenis-gigi/{id}/edit', function ($id) {
+        return view('data_master.jenis_gigi.update');
+    })->name('jenis-gigi.edit');
 
 });
 
 Route::get('/pasien', function () {
     return view('pasien.index');
 })->name('pasien.index');
+Route::get('/pasien/tambah', function () {
+    return view('pasien.create');
+})->name('pasien.create');
+Route::get('/pasien/{id}/edit', function ($id) {
+    return view('pasien.update');
+})->name('pasien.edit');
 
 Route::get('/pemeriksaan', function () {
     return view('pemeriksaan.index');

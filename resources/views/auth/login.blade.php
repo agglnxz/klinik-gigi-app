@@ -14,7 +14,7 @@
     <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full mx-4">
 
         <div class="md:w-1/2 bg-gradient-custom p-12 flex flex-col items-center justify-center text-center relative">
-            <div class="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+            <div class="absolute top-0 left-0 w-full h-full pointer-events-none">
                 <img src="{{ asset('images/background-winardi.png') }}"
                     alt="Background"
                     class="w-full h-full object-cover">
@@ -51,10 +51,14 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-solid fa-lock"></i>
                         </span>
-                        <input type="password" name="password" placeholder="Password"
+                        <!-- Tambahkan id="password" -->
+                        <input type="password" id="password" name="password" placeholder="Password"
                             class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
-                        <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
-                            <i class="fa-regular fa-eye"></i>
+
+                        <!-- Tambahkan id="togglePassword" -->
+                        <span id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer hover:text-teal-500 transition">
+                            <!-- Tambahkan id="eyeIcon" -->
+                            <i class="fa-regular fa-eye" id="eyeIcon"></i>
                         </span>
                     </div>
                 </div>
@@ -71,11 +75,30 @@
                 </button>
             </form>
 
-            <div class="mt-12 text-center">
+            <hr class="my-6 mx-auto rounded-md" style="border: 2px solid #F3F3F3; width: 100%;"></hr>
+
+            <div class="mt-1 text-center">
                 <p class="text-[10px] text-gray-400 uppercase tracking-widest">© KLINIK GIGI WINARDI</p>
             </div>
         </div>
     </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const eyeIcon = document.querySelector('#eyeIcon');
+
+        togglePassword.addEventListener('click', function () {
+            // Toggle tipe input antara 'password' dan 'text'
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            // Toggle ikon mata (eye vs eye-slash)
+            this.classList.toggle('text-teal-600'); // Tambah warna saat aktif
+            eyeIcon.classList.toggle('fa-eye');
+            eyeIcon.classList.toggle('fa-eye-slash');
+        });
+    </script>
 
 </body>
 </html>
