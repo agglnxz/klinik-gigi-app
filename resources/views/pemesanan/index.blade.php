@@ -164,16 +164,20 @@
                             <td class="px-6 py-6 text-[13px] text-gray-900 font-normal">Rp. 1.100.000</td>
                             <td class="px-6 py-6"><span class="badge-lunas">Lunas</span></td>
                             <td class="px-6 py-6 text-[13px] text-gray-900 font-normal">Rp. 100.000</td>
-                            <td class="px-6 py-6"><span class="status-circle status-diproses">Di Proses</span></td>
+                            <td class="px-5 py-4">
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                    Diproses
+                                </span>
+                            </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
-                                    <a href="{{ route('pemesanan.edit', ['id' => 1]) }}"
-                                        class="px-3 py-1.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-xs font-semibold flex items-center transition">
-                                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                    <a href="{{ route('pemesanan.edit', 1) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                     </a>
                                     <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -195,16 +199,16 @@
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 1.200.000</td>
                             <td class="px-6 py-6"><span class="badge-belum">Belum Lunas</span></td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 200.000</td>
-                            <td class="px-6 py-6"><span class="status-circle status-selesai">Selesai</span></td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
-                                    <a href="{{ route('pemesanan.edit', ['id' => 2]) }}"
-                                        class="px-3 py-1.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-xs font-semibold flex items-center transition">
-                                        <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                    <a href="{{ route('pemesanan.edit', 2) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                     </a>
                                     <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -226,16 +230,20 @@
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 1.300.000</td>
                             <td class="px-6 py-6"><span class="badge-lunas">Lunas</span></td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 300.000</td>
-                            <td class="px-6 py-6"><span class="status-circle status-terlambat">Terlambat</span></td>
+                            <td class="px-5 py-4">
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                    Diproses
+                                </span>
+                            </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemesanan.edit', 3) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -257,16 +265,16 @@
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 1.400.000</td>
                             <td class="px-6 py-6"><span class="badge-belum">Belum Lunas</span></td>
                             <td class="px-6 py-6 text-[13px] text-gray-800 font-normal">Rp. 400.000</td>
-                            <td class="px-6 py-6"><span class="status-circle status-diproses">Di Proses</span></td>
+                            <td class="px-5 py-4"><span class="badge-lunas">Selesai</span></td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemesanan.edit', 4) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>

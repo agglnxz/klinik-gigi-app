@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\web\PemesananWebController;
+use App\Http\Controllers\Web\PemesananWebController;
+use App\Http\Controllers\Web\PemeriksaanWebController;
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -69,29 +70,79 @@ Route::get('/pasien/{id}/edit', function ($id) {
     return view('pasien.update');
 })->name('pasien.edit');
 
-Route::get('/pemeriksaan', function () {
-    return view('pemeriksaan.index');
-})->name('pemeriksaan.index');
-Route::get('/pemeriksaan/tambah', function () {
-    return view('pemeriksaan.create');
-})->name('pemeriksaan.create');
+Route::get('/pemeriksaan', [PemeriksaanWebController::class, 'index'])
+    ->name('pemeriksaan.index');
 
-Route::get('/pemesanan', function () {
-    return view('pemesanan.index');
-})->name('pemesanan.index');
-Route::get('/pemesanan/tambah', function () {
-    return view('pemesanan.create');
-})->name('pemesanan.create');
+Route::get('/pemeriksaan/tambah', [PemeriksaanWebController::class, 'create'])
+    ->name('pemeriksaan.create');
 
-Route::get('/pemesanan/tambah-item', function () {
-    return view('pemesanan.tambahitem');
-})->name('pemesanan.tambahitem');
+Route::post('/pemeriksaan', [PemeriksaanWebController::class, 'store'])
+    ->name('pemeriksaan.store');
 
-    Route::get('/pemesanan/{id}/edit', function ($id) {
-        return view('pemesanan.update');
-    })->name('pemesanan.edit');
-// Route::get('/pemesanan/{id}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
+Route::get('/pemeriksaan/{id}/edit', [PemeriksaanWebController::class, 'edit'])
+    ->name('pemeriksaan.edit');
 
-Route::get('/riwayat-pemesanan', function () {
-    return view('riwayat_pemesanan.index');
-})->name('pemesanan-riwayat');
+Route::put('/pemeriksaan/{id}', [PemeriksaanWebController::class, 'update'])
+    ->name('pemeriksaan.update');
+// Route::get('/pemeriksaan', [PemeriksaanWebController::class, 'index'])
+//     ->name('pemeriksaan.index');
+
+// Route::get('/pemeriksaan/tambah', [PemeriksaanWebController::class, 'create'])
+//     ->name('pemeriksaan.create');
+
+// Route::get('/pemeriksaan/{id}/edit', [PemeriksaanWebController::class, 'edit'])
+//     ->name('pemeriksaan.edit');
+//     Route::put('/pemeriksaan/{id}', [PemeriksaanWebController::class, 'update'])
+//     ->name('pemeriksaan.update');
+// Route::get('/pemeriksaan', function () {
+//     return view('pemeriksaan.index');
+// })->name('pemeriksaan.index');
+// Route::get('/pemeriksaan/tambah', function () {
+//     return view('Pemeriksaan.create');
+// })->name('pemeriksaan.create');
+// Route::get('/pemeriksaan/{id}/edit', function ($id) {
+//     return view('pemeriksaan.create');
+// })->name('pemeriksaan.edit');
+
+// Route::get('/pemesanan', function () {
+//     return view('pemesanan.index');
+// })->name('pemesanan.index');
+// Route::get('/pemesanan/tambah', function () {
+//     return view('pemesanan.create');
+// })->name('pemesanan.create');
+
+// Route::get('/pemesanan/tambah-item', function () {
+//     return view('pemesanan.tambahitem');
+// })->name('pemesanan.tambahitem');
+
+//     Route::get('/pemesanan/{id}/edit', function ($id) {
+//         return view('pemesanan.update');
+//     })->name('pemesanan.edit');
+// // Route::get('/pemesanan/{id}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
+
+// Route::get('/riwayat-pemesanan', function () {
+//     return view('riwayat_pemesanan.index');
+// })->name('pemesanan-riwayat');
+
+Route::get('/pemesanan', [PemesananWebController::class, 'index'])
+    ->name('pemesanan.index');
+
+Route::get('/pemesanan/tambah', [PemesananWebController::class, 'create'])
+    ->name('pemesanan.create');
+
+Route::post('/pemesanan', [PemesananWebController::class, 'store'])
+    ->name('pemesanan.store');
+
+Route::get('/pemesanan/tambah-item', [PemesananWebController::class, 'tambahitem'])
+    ->name('pemesanan.tambahitem');
+
+Route::get('/pemesanan/{id}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
+
+Route::put('/pemesanan/{id}', [PemesananWebController::class, 'update'])
+    ->name('pemesanan.update');
+
+Route::delete('/pemesanan/{id}', [PemesananWebController::class, 'destroy'])
+    ->name('pemesanan.destroy');
+
+Route::get('/riwayat-pemesanan', [PemesananWebController::class, 'riwayat'])
+    ->name('pemesanan-riwayat');
