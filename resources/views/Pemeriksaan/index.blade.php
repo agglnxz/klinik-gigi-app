@@ -9,11 +9,12 @@
                 <h3 class="text-2xl font-bold text-black-1000">Daftar Pemeriksaan</h3>
                 <p class="text-sm text-gray-500 font-linght">Mengelola data rekam medis dan riwayat pemeriksaan pasien</p>
             </div>
-             <a href="{{ route('pemeriksaan.create') }}">
-            <button class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
-                <i class="fa-solid fa-plus text-xs"></i> Tambah Pemeriksaan
-            </button>
-        </a>
+            <a href="{{ route('pemeriksaan.create') }}">
+                <button
+                    class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
+                    <i class="fa-solid fa-plus text-xs"></i> Tambah Pemeriksaan
+                </button>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -48,7 +49,7 @@
             </div>
         </div>
 
-       <div
+        <div
             class="bg-[#F3F4F3] px-4 py-3 rounded-2xl flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 border border-gray-100">
             <div class="relative w-full max-w-[380px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
@@ -160,13 +161,13 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemeriksaan.edit', 1) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] hover:bg-[#4a8a75] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] hover:bg-[#b84f4f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -194,13 +195,13 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemeriksaan.edit', 2) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -228,13 +229,13 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemeriksaan.edit', 3) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -262,13 +263,13 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('pemeriksaan.edit', 4) }}"
+                                        class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                        <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                    </a>
                                     <button
-                                        class="flex items-center px-2 py-1 bg-[#59a38a] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-pen text-[9px] mr-1"></i> Edit
-                                    </button>
-                                    <button
-                                        class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-[10px] font-bold rounded-lg uppercase transition">
-                                        <i class="fa-solid fa-trash text-[9px] mr-1.5"></i> Hapus
+                                        class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                     </button>
                                 </div>
                             </td>
@@ -284,4 +285,3 @@
         </div>
     </div>
 @endsection
-
