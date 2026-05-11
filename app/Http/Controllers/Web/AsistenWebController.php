@@ -5,20 +5,24 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Asisten;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AsistenWebController extends Controller
 {
+    // 1. TAMPILKAN DAFTAR ASISTEN
     public function index()
     {
         $asisten = Asisten::orderBy('id', 'desc')->get();
-        return view('asisten.index', compact('asisten'));
+        return view('data_master.asisten.index', compact('asisten'));
     }
 
+    // 2. FORM TAMBAH
     public function create()
     {
-        return view('asisten.create');
+        return view('data_master.asisten.create');
     }
 
+    // 3. SIMPAN DATABaru
     public function store(Request $request)
     {
         $request->validate([
@@ -32,16 +36,19 @@ class AsistenWebController extends Controller
             'is_aktif' => true,
         ]);
 
-        return redirect()->route('asisten.index')->with('success', 'Data Asisten berhasil ditambahkan!');
+        return redirect()->route('asisten.index')
+            ->with('success', 'Data Asisten berhasil ditambahkan!');
     }
 
-    public function edit($id)
+    // 4. FORM EDIT (Perbaikan: Gunakan Strict Type 'int')
+    public function edit(int $id)
     {
         $asisten = Asisten::findOrFail($id);
-        return view('asisten.edit', compact('asisten'));
+        return view('data_master.asisten.update', compact('asisten'));
     }
 
-    public function update(Request $request, $id)
+    // 5. PROSES UPDATE (Perbaikan: Gunakan Strict Type 'int')
+    public function update(Request $request, int $id)
     {
         $asisten = Asisten::findOrFail($id);
 
@@ -57,31 +64,49 @@ class AsistenWebController extends Controller
             'is_aktif' => $request->is_aktif,
         ]);
 
-        return redirect()->route('asisten.index')->with('success', 'Data Asisten berhasil diperbarui!');
+        return redirect()->route('asisten.index')
+            ->with('success', 'Data Asisten berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    // 6. SOFT DELETE - KHUSUS DIREKTUR
+    public function destroy(int $id)
     {
+        // Proteksi RBAC: Tolak jika bukan direktur
+        if (Auth::user()->role !== 'direktur') {
+            return redirect()->route('asisten.index')
+                ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
+        }
+
         $asisten = Asisten::findOrFail($id);
         $asisten->delete(); // Soft Delete
-        return redirect()->route('asisten.index')->with('success', 'Data Asisten berhasil dihapus!');
+
+        return redirect()->route('asisten.index')
+            ->with('success', 'Data Asisten berhasil dihapus (Soft Delete) oleh Direktur!');
     }
 
-    // GET: semua data yang dihapus
-    public function semua()
-    {
-        $pasien = Asisten::onlyTrashed()->orderBy('id', 'desc')->get();
-        return view('pasien.semua', compact('pasien'));
-    }
+    // -------------------------------------------------------------------------
+    // FITUR TAMBAHAN (OPSIONAL UNTUK LAPORAN / DIREKTUR)
+    // -------------------------------------------------------------------------
 
-    // 8. RESTORE DATA PASIEN
-    public function restore($id)
-    {
-        $pasien = Asisten::withTrashed()->findOrFail($id);
+    // 7. TAMPILKAN DATA YANG SUDAH TER-SOFT DELETE
+    // public function trash()
+    // {
+    //     $asisten = Asisten::onlyTrashed()->orderBy('id', 'desc')->get();
+    //     return view('data_master.asisten.trash', compact('asisten'));
+    // }
 
-        $pasien->restore();
-        $pasien->update(['is_aktif' => true]);
+    // 8. KEMBALIKAN DATA (RESTORE) - KHUSUS DIREKTUR
+    // public function restore(int $id)
+    // {
+    //     if (Auth::user()->role !== 'direktur') {
+    //         abort(403, 'Akses Ditolak! Hanya Direktur yang berhak merestore data.');
+    //     }
 
-        return redirect()->route('pasien.semua')->with('success', 'Data Pasien berhasil direstore!');
-    }
+    //     $asisten = Asisten::withTrashed()->findOrFail($id);
+    //     $asisten->restore();
+    //     $asisten->update(['is_aktif' => true]);
+
+    //     return redirect()->route('asisten.index')
+    //         ->with('success', 'Data Asisten berhasil dikembalikan!');
+    // }
 }

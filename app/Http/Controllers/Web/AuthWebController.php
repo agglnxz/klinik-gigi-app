@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-namespace App\Http\Controllers\Web;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +37,7 @@ class AuthWebController extends Controller
         // 3. Eksekusi Login berbasis Session
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
             // Arahkan ke halaman utama (misalnya ke master data pasien)
             return redirect()->intended('pasien')->with('success', 'Selamat datang di Sistem Klinik Gigi!');
         }
@@ -56,7 +54,7 @@ class AuthWebController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        
+
         // Keamanan ekstra: Hancurkan dan buat ulang token session
         $request->session()->invalidate();
         $request->session()->regenerateToken();

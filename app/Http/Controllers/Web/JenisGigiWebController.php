@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\JenisGigi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JenisGigiWebController extends Controller
 {
     public function index()
     {
         $jenis_gigi = JenisGigi::orderBy('id', 'desc')->get();
-        return view('jenis_gigi.index', compact('jenis_gigi'));
+        return view('data_master.jenis_gigi.index', compact('jenis_gigi'));
     }
 
     public function create()
     {
-        return view('jenis_gigi.create');
+        return view('data_master.jenis_gigi.create');
     }
 
     public function store(Request $request)
@@ -37,13 +38,13 @@ class JenisGigiWebController extends Controller
         return redirect()->route('jenis-gigi.index')->with('success', 'Jenis Gigi berhasil ditambahkan!');
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $jenisGigi = JenisGigi::findOrFail($id);
-        return view('jenis_gigi.edit', compact('jenisGigi'));
+        return view('data_master.jenis_gigi.update', compact('jenisGigi'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $jenisGigi = JenisGigi::findOrFail($id);
 
@@ -64,28 +65,16 @@ class JenisGigiWebController extends Controller
         return redirect()->route('jenis-gigi.index')->with('success', 'Jenis Gigi berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
+        if (Auth::user()->role !== 'direktur') {
+            return redirect()->route('jenis-gigi.index')
+                ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
+        }
+
         $jenisGigi = JenisGigi::findOrFail($id);
         $jenisGigi->delete(); // Soft Delete
+
         return redirect()->route('jenis-gigi.index')->with('success', 'Jenis Gigi berhasil dihapus!');
-    }
-
-    // GET: semua data yang dihapus
-    public function semua()
-    {
-        $pasien = JenisGigi::onlyTrashed()->orderBy('id', 'desc')->get();
-        return view('pasien.semua', compact('pasien'));
-    }
-
-    // 8. RESTORE DATA PASIEN
-    public function restore($id)
-    {
-        $pasien = JenisGigi::withTrashed()->findOrFail($id);
-
-        $pasien->restore();
-        $pasien->update(['is_aktif' => true]);
-
-        return redirect()->route('pasien.semua')->with('success', 'Data Pasien berhasil direstore!');
     }
 }

@@ -32,7 +32,7 @@ class AuthController extends Controller
 
         // 4. Buatkan Token (Tiket Masuk)
         $token = $user->createToken('auth_token')->plainTextToken;
-        
+
         return response()->json([
             'status'       => 'success',
             'pesan'        => 'Login berhasil!',
@@ -46,7 +46,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         // Hapus (bakar) token yang sedang digunakan oleh user ini
-        $request->user()->currentAccessToken()->delete();
+        $token = $request->user()->currentAccessToken();
+        if ($token) {
+            $request->user()->tokens()->where('id', $token->id)->delete();
+        }
 
         return response()->json([
             'status' => 'success',
