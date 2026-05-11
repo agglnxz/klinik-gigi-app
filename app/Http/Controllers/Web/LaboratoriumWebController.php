@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Laboratorium;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LaboratoriumWebController extends Controller
 {
     public function index()
     {
         $laboratorium = Laboratorium::orderBy('id', 'desc')->get();
-        return view('laboratorium.index', compact('laboratorium'));
+        return view('data_master.laboratorium.index', compact('laboratorium'));
     }
 
     public function create()
     {
-        return view('laboratorium.create');
+        return view('data_master.laboratorium.create');
     }
 
     public function store(Request $request)
@@ -37,13 +38,13 @@ class LaboratoriumWebController extends Controller
         return redirect()->route('laboratorium.index')->with('success', 'Data Laboratorium berhasil ditambahkan!');
     }
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $laboratorium = Laboratorium::findOrFail($id);
-        return view('laboratorium.edit', compact('laboratorium'));
+        return view('data_master.laboratorium.update', compact('laboratorium'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $laboratorium = Laboratorium::findOrFail($id);
 
@@ -64,28 +65,16 @@ class LaboratoriumWebController extends Controller
         return redirect()->route('laboratorium.index')->with('success', 'Data Laboratorium berhasil diperbarui!');
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
+        if (Auth::user()->role !== 'direktur') {
+            return redirect()->route('laboratorium.index')
+                ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
+        }
+
         $laboratorium = Laboratorium::findOrFail($id);
         $laboratorium->delete(); // Soft Delete
+
         return redirect()->route('laboratorium.index')->with('success', 'Data Laboratorium berhasil dihapus!');
-    }
-
-        // GET: semua data yang dihapus
-    public function semua()
-    {
-        $pasien = Laboratorium::onlyTrashed()->orderBy('id', 'desc')->get();
-        return view('pasien.semua', compact('pasien'));
-    }
-
-    // 8. RESTORE DATA PASIEN
-    public function restore($id)
-    {
-        $pasien = Laboratorium::withTrashed()->findOrFail($id);
-
-        $pasien->restore();
-        $pasien->update(['is_aktif' => true]);
-
-        return redirect()->route('pasien.semua')->with('success', 'Data Pasien berhasil direstore!');
     }
 }

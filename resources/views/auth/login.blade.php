@@ -41,7 +41,7 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                             <i class="fa-regular fa-user"></i>
                         </span>
-                        <input type="text" name="email" placeholder="Username / Email"
+                        <input type="email" name="email" placeholder="Email"
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500">
                     </div>
                 </div>
