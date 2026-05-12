@@ -24,7 +24,7 @@
             </div>
             <div>
                 <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Total Pasien</p>
-                <h3 class="text-2xl font-black text-gray-800">1,284</h3>
+                <h3 class="text-2xl font-black text-gray-800">{{ $pasien->count() }}</h3>
             </div>
         </div>
 
@@ -115,6 +115,13 @@
         </div>
     </div>
 
+    @if(session('success'))
+        <div class="p-4 bg-teal-50 border border-teal-200 text-teal-700 rounded-xl text-sm mb-4 flex items-center shadow-sm">
+            <i class="fa-solid fa-circle-check mr-2 text-base"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
         <div class="overflow-x-auto max-w-full custom-scrollbar">
             <table class="w-full text-left border-collapse min-w-[1400px]">
@@ -130,101 +137,58 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-sm">
+                    @forelse($pasien as $item)
                     <tr class="hover:bg-gray-50/30 transition">
                         <td class="px-8 py-6">
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs uppercase">YF</div>
                                 <div>
-                                    <p class="font-bold text-gray-800">Yossy Fira Rosdiana</p>
-                                    <p class="text-[10px] text-gray-400">Terakhir periksa: 10 April 2026</p>
+                                    <p class="font-bold text-gray-800">{{ $item->nama }}</p>
+                                    {{-- <p class="text-[10px] text-gray-400">Terakhir periksa: 10 April 2026</p> --}}
                                 </div>
                             </div>
                         </td>
-                        <td class="px-8 py-6 text-gray-500 font-medium">RM-2026-0410</td>
-                        <td class="px-8 py-6 text-gray-600">Perempuan</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">081234567892</td>
-                        <td class="px-8 py-6 text-gray-600">Jl. Merdeka No. 123, Kota Bandung</td>
+                        <td class="px-8 py-6 text-gray-500 font-medium">{{ $item->no_rm }}</td>
+                        <td class="px-8 py-6 text-gray-600">{{ $item->jenis_kelamin }}</td>
+                        <td class="px-8 py-6 text-gray-600 font-medium">{{ $item->kontak }}</td>
+                        <td class="px-8 py-6 text-gray-600">{{ $item->alamat }}</td>
                         <td class="px-8 py-6">
                             <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
                         </td>
                         <td class="px-8 py-6">
                             <div class="flex space-x-2">
-                                <a href="{{ route('pasien.edit', ['id' => 1]) }}">
-                                    <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                <a href="{{ route('pasien.edit', $item->id) }}">
+                                    <button class="flex items-center px-4 py-2 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d] transition shadow-md hover:shadow">
                                         <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                     </button>
                                 </a>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
+                                <form action="{{ route('pasien.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pasien ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="flex items-center px-4 py-2 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] transition shadow-md hover:shadow">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
-
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-xs uppercase">IS</div>
-                                <div>
-                                    <p class="font-bold text-gray-800">Inandiar Sharfina Fauzi</p>
-                                    <p class="text-[10px] text-gray-400">Terakhir periksa: 30 Februari 2026</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6 text-gray-500 font-medium">RM-2026-0230</td>
-                        <td class="px-8 py-6 text-gray-600">Perempuan</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">081234567892</td>
-                        <td class="px-8 py-6 text-gray-600">Jl. Melati No. 142, Kota Solo</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-8 py-20 text-center">
+                            <div class="flex flex-col items-center opacity-40">
+                                <i class="fa-solid fa-user-doctor text-5xl mb-4"></i>
+                                <p class="text-sm font-medium">Belum ada data pasien yang terdaftar</p>
                             </div>
                         </td>
                     </tr>
-
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 rounded-lg bg-gray-200 text-gray-700 flex items-center justify-center font-bold text-xs uppercase">MF</div>
-                                <div>
-                                    <p class="font-bold text-gray-800">Moch Firman Triswanda</p>
-                                    <p class="text-[10px] text-gray-400">Terakhir periksa: 12 Januari 2026</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6 text-gray-500 font-medium">RM-2026-0112</td>
-                        <td class="px-8 py-6 text-gray-600">Laki-laki</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">081234567892</td>
-                        <td class="px-8 py-6 text-gray-600">Jl. Cempaka No. 248, Kota Yogyakarta</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase">Nonaktif</span>
-                        </td>
-                        <td class="px-8 py-6 text-center">
-                            <div class="flex space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center   ">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
 
         <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-            <p class="text-[11px] text-gray-400 font-medium">Menampilkan 1-5 dari 1,284 pasien</p>
+            <p class="text-[11px] text-gray-400 font-medium">Menampilkan {{ $pasien->count() }} Pasien Saat Ini</p>
         </div>
     </div>
 

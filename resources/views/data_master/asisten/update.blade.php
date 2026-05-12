@@ -13,52 +13,21 @@
 
     <!-- Form Container dengan Shadow Tegas -->
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 max-w-5xl">
-        <form action="#" method="POST">
+        <form action="{{ route('asisten.update', $asisten->id) }}" method="POST">
             @csrf
+            @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-12">
                 <!-- Nama Asisten -->
                 <div>
-                    <label for="nama_asisten" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Asisten</label>
-                    <input type="text" name="nama_asisten" id="nama_asisten" value="Citra Lestari" placeholder="Nama Asisten"
+                    <label for="nama" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Asisten</label>
+                    <input type="text" name="nama" id="nama" value="{{ $asisten->nama }}" placeholder="Nama Asisten"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
-                </div>
-
-                <!-- Shift Kerja -->
-                <div>
-                    <label for="shift_kerja" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">SHIFT KERJA</label>
-                    <div class="relative">
-                        <select name="shift_kerja" id="shift_kerja"
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                           <option value="shift1" selected>Pagi</option>
-                            <option value="shift2">Siang</option>
-                            <option value="shift3">Malam</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dokter Pendamping -->
-                <div>
-                    <label for="dokter_pendamping" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Dokter Pendamping</label>
-                    <div class="relative">
-                        <select name="dokter_pendamping" id="dokter_pendamping"
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="dokter1" selected>drg. Winardi</option>
-                            <option value="dokter2">drg. Aluna Safira</option>
-                            <option value="dokter3">drg. Kevin Aditya</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Nomor Handphone -->
                 <div>
-                    <label for="no_hp" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
-                    <input type="text" name="no_hp" id="no_hp" value="+62846353758" placeholder="Masukkan Nomor Handphone Asisten"
+                    <label for="kontak" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
+                    <input type="text" name="kontak" id="kontak" value="{{ $asisten->kontak }}" placeholder="Masukkan Nomor Handphone Asisten"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
@@ -66,10 +35,10 @@
                 <div>
                     <label for="status" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
                     <div class="relative">
-                        <select name="status" id="status"
+                        <select name="is_aktif" id="is_aktif"
                             class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
+                            <option value="1" {{ $asisten->is_aktif ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !$asisten->is_aktif ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-chevron-down text-xs"></i>

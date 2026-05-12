@@ -21,7 +21,7 @@
     <div class="flex justify-between items-end mb-6">
         <div>
             <h3 class="text-lg font-bold text-black-1000">Daftar Jenis Gigi</h3>
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total 6 Jenis Gigi</p>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total {{ $jenis_gigi->count() }} Jenis Gigi</p>
         </div>
         <a href="{{ route('jenis-gigi.create') }}">
             <button class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
@@ -29,6 +29,13 @@
             </button>
         </a>
     </div>
+
+    @if(session('success'))
+        <div class="p-4 bg-teal-50 border border-teal-200 text-teal-700 rounded-xl text-sm mb-4 flex items-center shadow-sm">
+            <i class="fa-solid fa-circle-check mr-2 text-base"></i>
+            {{ session('success') }}
+        </div>
+    @endif
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
 
@@ -44,70 +51,53 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-sm">
+                    @forelse($jenis_gigi as $item)
                     <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6 font-bold text-gray-800">Gigi Seri</td>
-                        <td class="px-8 py-6 text-gray-600">48</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">Rp. 900.000</td>
+                        <td class="px-8 py-6 font-bold text-gray-800">{{ $item->nama_jenis }}</td>
+                        <td class="px-8 py-6 text-gray-600">{{ $item->kode_gigi }}</td>
+                        <td class="px-8 py-6 text-gray-600 font-medium">Rp. {{ number_format($item->estimasi_biaya, 0, ',', '.') }}</td>
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
+                            @if($item->is_aktif)
+                                <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase shadow-sm">Aktif</span>
+                            @else
+                                <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase shadow-sm">Nonaktif</span>
+                            @endif
                         </td>
                         <td class="px-8 py-6">
                             <div class="flex justify-center space-x-2">
-                                <a href="{{ route('jenis-gigi.edit', ['id' => 1]) }}">
-                                    <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
+                                <a href="{{ route('jenis-gigi.edit', $item->id) }}">
+                                    <button class="flex items-center px-4 py-2 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d] transition shadow-md hover:shadow">
                                         <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                     </button>
                                 </a>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md hover:bg-[#b54d4d] transition flex items-center">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
+
+                                <form action="{{ route('jenis-gigi.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menonaktifkan jenis gigi ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="flex items-center px-4 py-2 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] transition shadow-md hover:shadow">
+                                        <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
 
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6 font-bold text-gray-800">Gigi Taring</td>
-                        <td class="px-8 py-6 text-gray-600">12</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">Rp. 1.700.000</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex justify-center space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-8 py-20 text-center">
+                            <div class="flex flex-col items-center opacity-40">
+                                <i class="fa-solid fa-user-doctor text-5xl mb-4"></i>
+                                <p class="text-sm font-medium">Belum ada data jenis gigi yang terdaftar</p>
                             </div>
                         </td>
                     </tr>
-
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6 font-bold text-gray-800">Gigi Geraham Depan</td>
-                        <td class="px-8 py-6 text-gray-600">15</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">Rp. 2000.000</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase">Nonaktif</span>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex justify-center space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-            <p class="text-[11px] text-gray-400 font-medium">Menampilkan 3 dari 6 Jenis Gigi</p>
+            <p class="text-[11px] text-gray-400 font-medium">Menampilkan {{ $jenis_gigi->count() }} Jenis Gigi Saat Ini</p>
         </div>
     </div>
 

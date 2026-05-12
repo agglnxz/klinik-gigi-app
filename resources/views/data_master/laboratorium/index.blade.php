@@ -21,7 +21,7 @@
     <div class="flex justify-between items-end mb-6">
         <div>
             <h3 class="text-lg font-bold text-black-1000">Daftar Laboratorium</h3>
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total 12 Laboratorium</p>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total {{ $laboratorium->count() }} Laboratorium Saat Ini</p>
         </div>
         <a href="{{ route('laboratorium.create') }}">
             <button class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
@@ -29,6 +29,13 @@
             </button>
         </a>
     </div>
+
+    @if(session('success'))
+        <div class="p-4 bg-teal-50 border border-teal-200 text-teal-700 rounded-xl text-sm mb-4 flex items-center shadow-sm">
+            <i class="fa-solid fa-circle-check mr-2 text-base"></i>
+            {{ session('success') }}
+        </div>
+    @endif
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
 
@@ -44,19 +51,23 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-sm">
+                    @forelse($laboratorium as $item)
                     <tr class="hover:bg-gray-50/30 transition">
                         <td class="px-8 py-6">
-                            <p class="font-bold text-gray-800">Estetika Gigi Lab</p>
-                            <p class="text-[11px] text-gray-400">estetika.gigi@lab.id</p>
+                            <p class="font-bold text-gray-800">Lab. {{ $item->nama_lab }}</p>
+                            <p class="text-[11px] text-gray-400">{{ $item->email }}</p>
                         </td>
-                        <td class="px-8 py-6 text-gray-600">Banyuwangi</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">+628334667854</td>
+                        <td class="px-8 py-6 text-gray-600">{{ $item->alamat }}</td>
+                        <td class="px-8 py-6 text-gray-600 font-medium">{{ $item->kontak }}</td>
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                        </td>
+                            @if($item->is_aktif)
+                                <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase shadow-sm">Aktif</span>
+                            @else
+                                <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase shadow-sm">Nonaktif</span>
+                            @endif                        </td>
                         <td class="px-8 py-6">
                             <div class="flex justify-center space-x-2">
-                                <a href="{{ route('laboratorium.edit', ['id' => 1]) }}">
+                                <a href="{{ route('laboratorium.edit', $item->id) }}">
                                     <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
                                         <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                     </button>
@@ -67,56 +78,19 @@
                             </div>
                         </td>
                     </tr>
-
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6">
-                            <p class="font-bold text-gray-800">Lab. Dental Prima</p>
-                            <p class="text-[11px] text-gray-400">dental.prima@lab.id</p>
-                        </td>
-                        <td class="px-8 py-6 text-gray-600">Bali</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">+628886445321</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex justify-center space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
-                            </div>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-8 py-6 text-center text-gray-500">
+                            Tidak ada data laboratorium tersedia.
                         </td>
                     </tr>
-
-                    <tr class="hover:bg-gray-50/30 transition">
-                        <td class="px-8 py-6">
-                            <p class="font-bold text-gray-800">Bio-Dent Lab</p>
-                            <p class="text-[11px] text-gray-400">bio.den@lab.id</p>
-                        </td>
-                        <td class="px-8 py-6 text-gray-600">Jakarta</td>
-                        <td class="px-8 py-6 text-gray-600 font-medium">+628566328783</td>
-                        <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase">Nonaktif</span>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex justify-center space-x-2">
-                                <button class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                </button>
-                                <button class="px-3 py-1.5 bg-[#d65f5f] text-white text-xs rounded-md">
-                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-            <p class="text-[11px] text-gray-400 font-medium">Menampilkan 3 dari 12 Laboratorium</p>
+            <p class="text-[11px] text-gray-400 font-medium">Menampilkan {{ $laboratorium->count() }} Laboratorium Saat Ini</p>
         </div>
     </div>
 
