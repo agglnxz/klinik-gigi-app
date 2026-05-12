@@ -13,31 +13,31 @@
 
     <!-- Form Container -->
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 max-w-5xl">
-        <form action="#" method="POST">
+        <form action="{{ route('dokter.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-12">
                 <!-- Nama Dokter -->
                 <div>
-                    <label for="nama_dokter" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Dokter</label>
-                    <input type="text" name="nama_dokter" id="nama_dokter" placeholder="Nama Dokter"
+                    <label for="nama" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Dokter</label>
+                    <input type="text" name="nama" id="nama" placeholder="Nama Dokter"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
                 <!-- Nomor Handphone -->
                 <div>
-                    <label for="nomor_hp" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
-                    <input type="text" name="nomor_hp" id="nomor_hp" placeholder="Masukkan Nomor Handphone Dokter"
+                    <label for="kontak" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
+                    <input type="text" name="kontak" id="kontak" placeholder="Masukkan Nomor Handphone Dokter"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label for="status" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
+                    <label for="is_aktif" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
                     <div class="relative">
-                        <select name="status" id="status"
+                        <select name="is_aktif" id="is_aktif"
                             class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
+                            <option value="1">Aktif</option>
+                            <option value="0">Nonaktif</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-chevron-down text-xs"></i>

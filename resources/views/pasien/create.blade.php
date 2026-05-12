@@ -13,13 +13,13 @@
 
     <!-- Form Container dengan Shadow Tegas -->
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 max-w-5xl">
-        <form action="#" method="POST">
+        <form action="{{ route('pasien.store') }}" method="POST">
             @csrf
             <div class="space-y-6 mb-12">
                 <!-- Nama Pasien -->
                 <div>
-                    <label for="nama_pasien" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Pasien</label>
-                    <input type="text" name="nama_pasien" id="nama_pasien" placeholder="Masukkan Nama Sesuai KTP"
+                    <label for="nama" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nama Pasien</label>
+                    <input type="text" name="nama" id="nama" placeholder="Masukkan Nama Sesuai KTP"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
@@ -41,52 +41,44 @@
                                 <span class="ml-3 text-sm font-medium text-gray-600">Laki-laki</span>
                             </label>
                             <label class="flex-1 flex items-center justify-start px-4 py-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
-                                <input type="radio" name="jenis_kelamin" value="Coconut" class="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300">
-                                <span class="ml-3 text-sm font-medium text-gray-600">Coconut</span>
-                            </label>
-                            <label class="flex-1 flex items-center justify-start px-4 py-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition">
                                 <input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300">
                                 <span class="ml-3 text-sm font-medium text-gray-600">Perempuan</span>
                             </label>
                         </div>
                     </div>
 
-                    <!-- Tanggal Lahir -->
-                    <div>
-                        <label for="tanggal_lahir" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" id="tanggal_lahir" placeholder="DD/MM/YYYY"
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
-                    </div>
-
                     <!-- Nomor Handphone -->
                     <div>
-                        <label for="nomor_handphone" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
-                        <input type="text" name="nomor_handphone" id="nomor_handphone" placeholder="Masukkan Nomor Handphone Pasien"
+                        <label for="kontak" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Handphone</label>
+                        <input type="text" name="kontak" id="kontak" placeholder="Masukkan Nomor Handphone Pasien"
                             class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                     </div>
-                </div>
 
-                <!-- Alamat Lengkap -->
-                <div>
-                    <label for="alamat" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Alamat Lengkap</label>
-                    <textarea name="alamat" id="alamat" rows="4" placeholder="Masukkan Alamat Lengkap Domisili saat ini..."
-                        class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition resize-none"></textarea>
-                </div>
+                    <!-- Alamat Lengkap -->
+                    <div>
+                        <label for="alamat" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Alamat Lengkap</label>
+                        <textarea name="alamat" id="alamat" rows="4" placeholder="Masukkan Alamat Lengkap Domisili saat ini..."
+                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition resize-none"></textarea>
+                    </div>
 
-                <!-- Status -->
-                <div>
-                    <label for="status" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
-                    <div class="relative">
-                        <select name="status" id="status"
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="aktif">Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                    <!-- Status -->
+                    <div>
+                        <label for="is_aktif" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
+                        <div class="relative">
+                            <select name="is_aktif" id="is_aktif"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm text-gray-600 appearance-none cursor-pointer transition">
+                                <option value="1">Aktif</option>
+                                <option value="0">Nonaktif</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </div>
                         </div>
                     </div>
+
                 </div>
+
+
             </div>
 
             <!-- Action Buttons -->

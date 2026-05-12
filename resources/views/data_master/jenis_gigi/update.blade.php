@@ -13,38 +13,39 @@
 
     <!-- Form Container dengan Shadow Tegas -->
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 max-w-5xl">
-        <form action="#" method="POST">
+        <form action="{{ route('jenis-gigi.update', $jenisGigi->id) }}" method="POST">
             @csrf
+            @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-12">
                 <!-- Jenis Gigi -->
                 <div>
-                    <label for="nama_jenis_gigi" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Jenis Gigi</label>
-                    <input type="text" name="nama_jenis_gigi" id="nama_jenis_gigi" value="Gigi Seri" placeholder="Nama Jenis Gigi"
+                    <label for="nama_jenis" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Jenis Gigi</label>
+                    <input type="text" name="nama_jenis" id="nama_jenis" value="{{ $jenisGigi->nama_jenis }}" placeholder="Nama Jenis Gigi"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
                 <!-- Kode Gigi -->
                 <div>
                     <label for="kode_gigi" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Kode Gigi</label>
-                    <input type="text" name="kode_gigi" id="kode_gigi" value="48" placeholder="Masukkan Kode Gigi"
+                    <input type="text" name="kode_gigi" id="kode_gigi" value="{{ $jenisGigi->kode_gigi }}" placeholder="Masukkan Kode Gigi"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
                 <!-- Harga -->
                 <div>
-                    <label for="harga" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Harga</label>
-                    <input type="number" name="harga" id="harga" value="900000" placeholder="Masukkan Harga"
+                    <label for="estimasi_biaya" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Harga</label>
+                    <input type="number" name="estimasi_biaya" id="estimasi_biaya" value="{{ $jenisGigi->estimasi_biaya }}" placeholder="Masukkan Harga"
                         class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition">
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label for="status" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
+                    <label for="is_aktif" class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status</label>
                     <div class="relative">
-                        <select name="status" id="status"
+                        <select name="is_aktif" id="is_aktif"
                             class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="aktif" selected>Aktif</option>
-                            <option value="nonaktif">Nonaktif</option>
+                            <option value="1" {{ $jenisGigi->is_aktif == 1 ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ $jenisGigi->is_aktif == 0 ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
