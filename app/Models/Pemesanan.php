@@ -39,4 +39,9 @@ class Pemesanan extends Model
     {
         return $this->belongsTo(JenisGigi::class, 'id_jenis_gigi');
     }
+    
+    public function items()
+    {
+        return $this->hasMany(PemesananItem::class, 'id_pemesanan');
+    }
 }
