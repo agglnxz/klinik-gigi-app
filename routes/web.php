@@ -36,28 +36,19 @@ Route::middleware('auth')->group(function () {
 
         // Menggunakan Route::resource untuk memborong 6 rute CRUD sekaligus
         // Nama rute otomatis selaras dengan Blade (contoh: dokter.index, dokter.create)
-        Route::resource('dokter', DokterWebController::class);
-        Route::resource('asisten', AsistenWebController::class);
-        Route::resource('laboratorium', LaboratoriumWebController::class);
-
-        // Penyesuaian parameter khusus untuk entitas dengan nama berpenghubung
-        Route::resource('jenis-gigi', JenisGigiWebController::class)->parameters([
-            'jenis-gigi' => 'id'
-        ]);
+        Route::resource('dokter', DokterWebController::class)->except('show');
+        Route::resource('asisten', AsistenWebController::class)->except('show');
+        Route::resource('laboratorium', LaboratoriumWebController::class)->except('show');
+        Route::resource('jenis-gigi', JenisGigiWebController::class)->except('show');
     });
 
     // 👥 PASIEN
-    Route::resource('pasien', PasienWebController::class);
+    Route::resource('pasien', PasienWebController::class)->except('show');
 
     // 🏥 PEMERIKSAAN
-    Route::resource('pemeriksaan', PemeriksaanWebController::class);
+    Route::resource('pemeriksaan', PemeriksaanWebController::class)->except('show');
 
-    // 📦 PEMESANAN
-    // PENTING: Rute spesifik/custom diletakkan SEBELUM Route::resource
-    // agar tidak salah dibaca oleh Laravel sebagai parameter variabel {id}
-    Route::get('/riwayat-pemesanan', [PemesananWebController::class, 'riwayat'])->name('pemesanan-riwayat');
-    Route::get('/pemesanan/tambah-item', [PemesananWebController::class, 'tambahitem'])->name('pemesanan.tambahitem');
-
-    Route::resource('pemesanan', PemesananWebController::class);
+    // 📅 PEMESANAN
+    Route::resource('pemesanan', PemesananWebController::class)->except('show');
 
 });
