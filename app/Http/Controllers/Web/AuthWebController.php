@@ -38,8 +38,8 @@ class AuthWebController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Arahkan ke halaman utama (misalnya ke master data pasien)
-            return redirect()->intended('pasien')->with('success', 'Selamat datang di Sistem Klinik Gigi!');
+            // Arahkan ke halaman utama
+            return redirect()->intended('dashboard')->with('success', 'Selamat datang di Sistem Klinik Gigi!');
         }
 
         // 4. Jika Gagal (Salah password ATAU akun nonaktif)
