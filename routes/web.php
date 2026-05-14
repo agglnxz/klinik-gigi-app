@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\DashboardWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\DokterWebController;
 use App\Http\Controllers\Web\AsistenWebController;
@@ -28,8 +29,8 @@ Route::middleware('auth')->group(function () {
     // Jalur Keluar (Wajib POST demi keamanan CSRF)
     Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
 
-    // Dashboard (Menggunakan Route::view sebagai pengganti Closure yang efisien)
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    // 📊 DASHBOARD
+    Route::get('/dashboard', [DashboardWebController::class, 'dashboard'])->name('dashboard');
 
     // 📂 DATA MASTER (Otomatis ditambahkan awalan URL: /data-master/...)
     Route::prefix('data-master')->group(function () {
@@ -50,5 +51,8 @@ Route::middleware('auth')->group(function () {
 
     // 📅 PEMESANAN
     Route::resource('pemesanan', PemesananWebController::class)->except('show');
+
+    // 📜 RIWAYAT PEMESANAN
+    Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
 
 });

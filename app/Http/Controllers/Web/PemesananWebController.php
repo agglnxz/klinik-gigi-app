@@ -135,4 +135,40 @@ class PemesananWebController extends Controller
         return redirect()->route('pemesanan.index')
             ->with('success', 'Berhasil menghapus pesanan!');
     }
+
+    public function pemesananRiwayat(request $request)
+    {
+// 1. Kueri dasar dengan Eager Loading
+        $query = Pemesanan::with(['pemeriksaan.pasien', 'lab'])
+            ->whereIn('status_pemesanan', ['tiba_di_klinik', 'selesai']);
+
+        // Papan pencarian sederhana (Opsional jika form pencarian disubmit)
+        if ($request->has('cari')) {
+            $cari = $request->cari;
+            $query->where(function($q) use ($cari) {
+                $q->where('no_pemesanan', 'like', "%{$cari}%")
+                  ->orWhereHas('pemeriksaan.pasien', function($qp) use ($cari) {
+                      $qp->where('nama', 'like', "%{$cari}%");
+                  })
+                  ->orWhereHas('lab', function($ql) use ($cari) {
+                      $ql->where('nama_lab', 'like', "%{$cari}%");
+                  });
+            });
+        }
+
+        // Ambil data dengan Pagination (misal 10 baris per halaman)
+        $riwayat = $query->latest('updated_at')->paginate(10);
+
+        // 2. Hitung statistik dinamis untuk Widget
+        $totalPesanan     = Pemesanan::count();
+        $telahTiba        = Pemesanan::where('status_pemesanan', 'tiba_di_klinik')->count();
+        $pesananSelesai   = Pemesanan::where('status_pemesanan', 'selesai')->count();
+
+        return view('riwayat_pemesanan.index', compact(
+            'riwayat',
+            'totalPesanan',
+            'telahTiba',
+            'pesananSelesai'
+        ));
+    }
 }
