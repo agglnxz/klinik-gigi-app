@@ -54,13 +54,13 @@
                 </a>
             </li>
 
-            {{-- <li>
+             <li>
                 <a href="{{ route('pemesanan-riwayat') }}"
                    class="{{ $baseClass }} {{ request()->is('riwayat-pemesanan*') ? $activeClass : $inactiveClass }}">
                     <i class="fa-solid fa-clock-rotate-left w-6 text-center mr-2"></i>
                     <span>Riwayat Pemesanan</span>
                 </a>
-            </li> --}}
+            </li>
         </ul>
     </nav>
 </aside>

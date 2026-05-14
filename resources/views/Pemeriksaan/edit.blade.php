@@ -20,10 +20,7 @@
         <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 max-w-5xl">
 
             {{-- FORM --}}
-            <form
-                action="{{ isset($pemeriksaan) ? route('pemeriksaan.update', $pemeriksaan->id) : route('pemeriksaan.store') }}"
-                method="POST">
-
+            <form action="{{ isset($pemeriksaan) ? route('pemeriksaan.update', $pemeriksaan->id) : route('pemeriksaan.store') }}" method="POST">
                 @csrf
 
                 {{-- METHOD UNTUK EDIT --}}
@@ -33,61 +30,57 @@
 
                 <div class="space-y-6 mb-12">
 
-                    {{-- Baris 1: Nomor Pemeriksaan (Wajib Ada) --}}
+                    {{-- Baris 1: Nomor Pemeriksaan (Readonly / Locked) --}}
                     <div>
                         <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                             Nomor Pemeriksaan
                         </label>
                         <input type="text" name="no_pemeriksaan"
-                            value="{{ old('no_pemeriksaan', $pemeriksaan->no_pemeriksaan ?? '') }}"
-                            placeholder="Contoh: PRX-20260511-001"
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('no_pemeriksaan') ring-2 ring-red-500 @enderror">
-                        @error('no_pemeriksaan')
-                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
-                        @enderror
+                            value="{{ isset($pemeriksaan) ? $pemeriksaan->no_pemeriksaan : ($no_pemeriksaan ?? '') }}"
+                            readonly
+                            class="w-full px-4 py-3 bg-gray-100 border-none rounded-lg text-sm text-gray-500 cursor-not-allowed transition">
                     </div>
 
                     {{-- Baris 2: Pasien & Tanggal --}}
                     <div class="grid grid-cols-2 gap-x-8">
 
-                        {{-- PASIEN --}}
+                        {{-- KOREKSI: Atribut name diubah menjadi id_pasien --}}
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Pasien
                             </label>
 
                             <div class="relative">
-                                <select name="pasien"
-                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('pasien') ring-2 ring-red-500 @enderror">
+                                <select name="id_pasien"
+                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_pasien') ring-2 ring-red-500 @enderror">
 
-                                    <option value="" disabled
-                                        {{ old('pasien', $pemeriksaan->id_pasien ?? '') ? '' : 'selected' }}>Pilih Pasien
+                                    <option value="" disabled {{ old('id_pasien', $pemeriksaan->id_pasien ?? '') ? '' : 'selected' }}>
+                                        Pilih Pasien
                                     </option>
 
                                     @foreach ($pasien as $item)
-                                        <option value="{{ $item->id }}"
-                                            {{ old('pasien', $pemeriksaan->id_pasien ?? '') == $item->id ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ old('id_pasien', $pemeriksaan->id_pasien ?? '') == $item->id ? 'selected' : '' }}>
                                             {{ $item->no_rm }} - {{ $item->nama }}
                                         </option>
                                     @endforeach
 
                                 </select>
                             </div>
-                            @error('pasien')
+                            @error('id_pasien')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- TANGGAL --}}
+                        {{-- KOREKSI: Atribut name diubah menjadi tanggal --}}
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Tanggal Pemeriksaan
                             </label>
 
-                            <input type="date" name="tanggal_pemeriksaan"
-                                value="{{ old('tanggal_pemeriksaan', $pemeriksaan->tanggal ?? date('Y-m-d')) }}"
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('tanggal_pemeriksaan') ring-2 ring-red-500 @enderror">
-                            @error('tanggal_pemeriksaan')
+                            <input type="date" name="tanggal"
+                                value="{{ old('tanggal', isset($pemeriksaan) ? \Carbon\Carbon::parse($pemeriksaan->tanggal)->format('Y-m-d') : date('Y-m-d')) }}"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('tanggal') ring-2 ring-red-500 @enderror">
+                            @error('tanggal')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -97,69 +90,67 @@
                     {{-- Baris 3: Dokter & Asisten --}}
                     <div class="grid grid-cols-2 gap-x-8">
 
-                        {{-- DOKTER --}}
+                        {{-- KOREKSI: Atribut name diubah menjadi id_dokter --}}
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Dokter Gigi
                             </label>
 
-                            <select name="dokter_gigi"
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('dokter_gigi') ring-2 ring-red-500 @enderror">
+                            <select name="id_dokter"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_dokter') ring-2 ring-red-500 @enderror">
 
-                                <option value="" disabled
-                                    {{ old('dokter_gigi', $pemeriksaan->id_dokter ?? '') ? '' : 'selected' }}>Pilih Dokter
+                                <option value="" disabled {{ old('id_dokter', $pemeriksaan->id_dokter ?? '') ? '' : 'selected' }}>
+                                    Pilih Dokter
                                 </option>
 
                                 @foreach ($dokter as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ old('dokter_gigi', $pemeriksaan->id_dokter ?? '') == $item->id ? 'selected' : '' }}>
+                                    <option value="{{ $item->id }}" {{ old('id_dokter', $pemeriksaan->id_dokter ?? '') == $item->id ? 'selected' : '' }}>
                                         {{ $item->nama }}
                                     </option>
                                 @endforeach
 
                             </select>
-                            @error('dokter_gigi')
+                            @error('id_dokter')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- ASISTEN --}}
+                        {{-- KOREKSI: Atribut name diubah menjadi id_asisten --}}
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Asisten Dokter <span class="normal-case font-normal text-gray-400">(opsional)</span>
                             </label>
 
-                            <select name="asisten_dokter"
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('asisten_dokter') ring-2 ring-red-500 @enderror">
+                            <select name="id_asisten"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_asisten') ring-2 ring-red-500 @enderror">
 
-                                <option value=""
-                                    {{ old('asisten_dokter', $pemeriksaan->id_asisten ?? '') ? '' : 'selected' }}>Tidak ada
-                                    asisten</option>
+                                <option value="" {{ old('id_asisten', $pemeriksaan->id_asisten ?? '') ? '' : 'selected' }}>
+                                    Tidak ada asisten
+                                </option>
 
                                 @foreach ($asisten as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ old('asisten_dokter', $pemeriksaan->id_asisten ?? '') == $item->id ? 'selected' : '' }}>
+                                    <option value="{{ $item->id }}" {{ old('id_asisten', $pemeriksaan->id_asisten ?? '') == $item->id ? 'selected' : '' }}>
                                         {{ $item->nama }}
                                     </option>
                                 @endforeach
 
                             </select>
-                            @error('asisten_dokter')
+                            @error('id_asisten')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                     </div>
 
-                    {{-- CATATAN --}}
+                    {{-- KOREKSI: Atribut name diubah menjadi catatan --}}
                     <div>
                         <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                             Catatan Klinis & Keluhan
                         </label>
 
-                        <textarea name="catatan_klinis" rows="5" placeholder="Tuliskan detail pemeriksaan..."
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm resize-none @error('catatan_klinis') ring-2 ring-red-500 @enderror">{{ old('catatan_klinis', $pemeriksaan->catatan ?? '') }}</textarea>
-                        @error('catatan_klinis')
+                        <textarea name="catatan" rows="5" placeholder="Tuliskan rincian keluhan, diagnosa awal, atau tindakan medis..."
+                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm resize-none @error('catatan') ring-2 ring-red-500 @enderror">{{ old('catatan', $pemeriksaan->catatan ?? '') }}</textarea>
+                        @error('catatan')
                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
@@ -174,8 +165,7 @@
                         Batal
                     </a>
 
-                    <button type="submit"
-                        class="px-12 py-2.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-sm font-semibold">
+                    <button type="submit" class="px-12 py-2.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-sm font-semibold transition shadow-sm">
                         <i class="fa-solid fa-save mr-2"></i>
                         {{ isset($pemeriksaan) ? 'Update Pemeriksaan' : 'Simpan Pemeriksaan' }}
                     </button>
