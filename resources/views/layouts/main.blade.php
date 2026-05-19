@@ -22,8 +22,12 @@
             </main>
         </div>
 
+        <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.3/cdn.min.js"
+        integrity="sha512-Yw9G2Y9ZAtb68p8FvK0Bdfa7wSgS6fXm99wbe6Yg00gGZfeG7S81U0d869bOOfm9p3e7gO0O5nS9R/pDOnYk9w=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">// Untuk Alpine.js (Pop-up notifikasi)</script>
         <script src="//unpkg.com/alpinejs" defer></script>
-        <script>
+        <script> // Untuk pop-up konfirmasi saat user ingin meninggalkan halaman form tanpa menyimpan
             // Ambil form dan semua input di dalamnya
             const form = document.querySelector('form');
             let formChanged = false;

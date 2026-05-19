@@ -71,8 +71,8 @@
                     <div class="relative">
                         <select name="is_aktif" id="is_aktif"
                             class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition">
-                            <option value="1" {{ $pasien->is_aktif === 1 ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ $pasien->is_aktif === 0 ? 'selected' : '' }}>Nonaktif</option>
+                            <option value="1" {{ $pasien->is_aktif ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !$pasien->is_aktif ? 'selected' : '' }}>Nonaktif</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
