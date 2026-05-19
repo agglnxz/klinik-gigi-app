@@ -153,8 +153,11 @@
                         <td class="px-8 py-6 text-gray-600 font-medium">{{ $item->kontak }}</td>
                         <td class="px-8 py-6 text-gray-600">{{ $item->alamat }}</td>
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase">Aktif</span>
-                        </td>
+                            @if($item->is_aktif)
+                                <span class="px-3 py-1 bg-teal-100 text-teal-600 text-[10px] font-bold rounded-full uppercase shadow-sm">Aktif</span>
+                            @else
+                                <span class="px-3 py-1 bg-red-100 text-red-500 text-[10px] font-bold rounded-full uppercase shadow-sm">Nonaktif</span>
+                            @endif                            </td>
                         <td class="px-8 py-6">
                             <div class="flex space-x-2">
                                 <a href="{{ route('pasien.edit', $item->id) }}">

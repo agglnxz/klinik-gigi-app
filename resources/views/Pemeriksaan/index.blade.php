@@ -168,7 +168,7 @@
                                     <div class="flex justify-center items-center gap-2">
 
                                         {{-- Tombol Edit --}}
-                                        <a href="{{ route('pemeriksaan.edit', $item->id) }}"
+                                        <a href="{{ route('pemeriksaan.update', $item->id) }}"
                                             class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
                                             <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                         </a>

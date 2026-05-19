@@ -54,11 +54,12 @@
                             <div class="relative">
                                 <select name="pasien" id="pasien"
                                     class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('pasien') ring-2 ring-red-500 @enderror">
-                                    <option value="" disabled {{ old('pasien') ? '' : 'selected' }}>Pilih Pasien
+                                    <option value="" {{ old('pasien') ? '' : 'selected' }}>Pilih Pasien
                                     </option>
                                     @foreach ($pasien as $p)
-                                        <option value="{{ $p->id }}" {{ old('pasien') == $p->id ? 'selected' : '' }}>
-                                            {{ $p->no_rm }} - {{ $p->nama }}
+                                        <option value="{{ $p->id }}"
+                                            {{ old('pasien') == $p-> ? 'selected' : '' }}>
+                                            {{ $p->nama }}
                                         </option>
                                     @endforeach
                                 </select>
