@@ -27,6 +27,7 @@
                             <input type="text" readonly  name="no_pemeriksaan" id="no_pemeriksaan"
                                 value="{{ $no_pemeriksaan }}"
                                 class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 transition @error('no_pemeriksaan') ring-2 ring-red-500 @enderror">
+                                <p class="text-[10px] text-gray-400 mt-1">*Dihasilkan secara otomatis oleh sistem</p>
                         </div>
 
                         <div>

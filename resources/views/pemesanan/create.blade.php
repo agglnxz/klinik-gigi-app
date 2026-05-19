@@ -79,8 +79,10 @@
 
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status Pemesanan</label>
+                            {{-- KOREKSI: Atribut value diselaraskan mutlak dengan ENUM database --}}
                             <select name="status_pemesanan" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
-                                <option value="diproses" {{ old('status_pemesanan') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                                <option value="dalam_proses" {{ old('status_pemesanan') == 'dalam_proses' ? 'selected' : '' }}>Dalam Proses</option>
+                                <option value="tiba_di_klinik" {{ old('status_pemesanan') == 'tiba_di_klinik' ? 'selected' : '' }}>Telah Tiba di Klinik</option>
                                 <option value="selesai" {{ old('status_pemesanan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                                 <option value="dibatalkan" {{ old('status_pemesanan') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                             </select>
@@ -104,7 +106,7 @@
                         </div>
                     </div>
 
-                    {{-- BARIS 4: RINCIAN BANYAK GIGI (Posisi Diubah Ke Atas) --}}
+                    {{-- BARIS 4: RINCIAN BANYAK GIGI --}}
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <div>
@@ -147,7 +149,7 @@
                         </div>
                     </div>
 
-                    {{-- BARIS 5: BIAYA LAB & HARGA PASIEN (Posisi Di Bawah, Menjadi Keputusan Akhir) --}}
+                    {{-- BARIS 5: BIAYA LAB & HARGA PASIEN --}}
                     <div class="grid grid-cols-2 gap-x-8 pt-4 border-t border-gray-50">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Biaya Tagihan Lab Akhir (Rp)</label>
@@ -167,9 +169,10 @@
                     {{-- Baris 6: Status Bayar Lab --}}
                     <div>
                         <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status Pembayaran Ke Lab</label>
+                        {{-- KOREKSI: Mengubah opsi 'lunas' menjadi 'sudah_lunas' --}}
                         <select name="status_bayar_lab" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm w-1/2">
                             <option value="belum_lunas" {{ old('status_bayar_lab') == 'belum_lunas' ? 'selected' : '' }}>Belum Lunas</option>
-                            <option value="lunas" {{ old('status_bayar_lab') == 'lunas' ? 'selected' : '' }}>Lunas</option>
+                            <option value="sudah_lunas" {{ old('status_bayar_lab') == 'sudah_lunas' ? 'selected' : '' }}>Sudah Lunas</option>
                         </select>
                     </div>
 
@@ -202,12 +205,10 @@
                 selects.forEach(select => {
                     const selectedOption = select.selectedOptions[0];
                     if (selectedOption) {
-                        // Mengambil nilai atribut data-price dan mengonversinya ke integer
                         total += parseInt(selectedOption.getAttribute('data-price')) || 0;
                     }
                 });
 
-                // Merender angka dengan pemisah ribuan standar Indonesia
                 subtotalDisplay.innerText = 'Rp ' + total.toLocaleString('id-ID');
             }
 
@@ -230,21 +231,18 @@
                 const emptyRow = document.getElementById('empty-row');
                 if (emptyRow) emptyRow.remove();
 
-                // Menggandakan elemen dari <template>
                 const clone = template.content.cloneNode(true);
                 const newRow = clone.querySelector('tr');
                 const selectElement = clone.querySelector('.item-select');
                 const priceDisplay = clone.querySelector('.item-price-display');
                 const deleteBtn = clone.querySelector('.delete-btn');
 
-                // 1. EVENT LISTENER: Berubah saat dropdown dipilih
                 selectElement.addEventListener('change', function () {
                     const price = parseInt(this.selectedOptions[0].getAttribute('data-price')) || 0;
                     priceDisplay.innerText = 'Rp ' + price.toLocaleString('id-ID');
                     hitungTotalGigi();
                 });
 
-                // 2. EVENT LISTENER: Hapus baris
                 deleteBtn.addEventListener('click', function () {
                     newRow.remove();
                     cekTabelKosong();
@@ -254,10 +252,7 @@
                 tbody.appendChild(clone);
             }
 
-            // Event klik tombol tambah
             tambahBtn.addEventListener('click', tambahBaris);
-
-            // Inisialisasi: Render otomatis 1 baris kosong di awal agar siap diisi
             tambahBaris();
         });
     </script>
