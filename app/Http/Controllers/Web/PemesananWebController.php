@@ -14,17 +14,42 @@ use Illuminate\Support\Facades\Auth;
 class PemesananWebController extends Controller
 {
     public function index()
-    {
-        // Load relasi induk dan detail item gigi
-        $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])->get();
+{
+    // Load relasi induk dan detail item gigi
+    $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])->get();
 
-        // Koreksi string query agar sesuai dengan ENUM di tabel database
-        $totalPesanan   = Pemesanan::count();
-        $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
-        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
+    // Koreksi string query agar sesuai dengan ENUM di tabel database
+    $totalPesanan   = Pemesanan::count();
+    $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
+    $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
 
-        return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
-    }
+    return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
+}
+
+public function show(int $id)
+{
+    $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])
+        ->findOrFail($id);
+
+    return view('pemesanan.show', compact('data'));
+}
+//     public function index()
+//     {
+//         // Load relasi induk dan detail item gigi
+//         //$data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])->get();
+// {
+//     $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])
+//         ->findOrFail($id);
+
+//     return view('pemesanan.show', compact('data'));
+// }
+//         // Koreksi string query agar sesuai dengan ENUM di tabel database
+//         $totalPesanan   = Pemesanan::count();
+//         $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
+//         $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
+
+//         return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
+//     }
 
     public function create()
     {
@@ -89,6 +114,7 @@ class PemesananWebController extends Controller
 
     public function update(Request $request, int $id)
     {
+         
         $pemesanan = Pemesanan::findOrFail($id);
 
         // Pengetatan validasi pembaruan data

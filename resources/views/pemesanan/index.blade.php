@@ -36,7 +36,7 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Sedang Diproses</p>
-                    <h3 class="text-2xl font-black text-gray-800">{{ $data->where('status_pemesanan', 'diproses')->count() }}</h3>
+                    <h3 class="text-2xl font-black text-gray-800">{{ $data->where('status_pemesanan', 'Dalam_proses')->count() }}</h3>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Selesai</p>
-                    <h3 class="text-2xl font-black text-gray-800">{{ $data->where('status_pemesanan', 'selesai')->count() }}</h3>
+                    <h3 class="text-2xl font-black text-gray-800">{{ $data->where('status_pemesanan', 'Selesai')->count() }}</h3>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                             <th class="w-[180px] px-5 py-4 text-[10px] font-bold text-gray-900 uppercase tracking-wide">Bayar Lab</th>
                             <th class="w-[160px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Harga Pasien</th>
                             <th class="w-[140px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide">Status</th>
-                            <th class="w-[150px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">Aksi</th>
+                            <th class="w-[200px] px-5 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-wide text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
@@ -98,19 +98,12 @@
                                     </p>
                                 </td>
 
-                                {{-- <td class="px-5 py-4 text-[13px] text-gray-800 font-medium">
-                                    {{ $item->jenisGigi->nama_jenis ?? '-' }}
-                                </td> --}}
-
                                 {{-- KOLOM JENIS GIGI MULTIPLE --}}
-                                <td class="px-5 py-4 text-[13px] text-gray-800 font-medium">
-                                    <ul class="list-disc list-inside space-y-1">
-                                        @forelse ($item->items as $detail)
-                                            <li>{{ $detail->jenisGigi->nama_jenis ?? 'Item Terhapus' }}</li>
-                                        @empty
-                                            <li class="text-gray-400 italic">-</li>
-                                        @endforelse
-                                    </ul>
+                                <td class="px-5 py-4">
+                                    <p class="text-[13px] font-bold text-gray-800">{{ $item->items->count() }} Jenis</p>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 max-w-[150px]" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                        {{ $item->items->pluck('jenisGigi.nama_jenis')->join(', ') ?: '-' }}
+                                    </p>
                                 </td>
 
                                 <td class="px-5 py-4 text-[13px] text-gray-800 font-normal uppercase">
@@ -130,7 +123,7 @@
                                 </td>
 
                                 <td class="px-5 py-4">
-                                    @if ($item->status_bayar_lab === 'lunas')
+                                    @if ($item->status_bayar_lab === 'sudah_lunas')
                                         <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[11px] font-bold">Lunas</span>
                                     @else
                                         <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[11px] font-bold">Belum Lunas</span>
@@ -140,30 +133,38 @@
                                 <td class="px-5 py-4 text-[13px] text-gray-800 font-bold">
                                     Rp {{ number_format($item->harga_pasien, 0, ',', '.') }}
                                 </td>
-
                                 <td class="px-5 py-4">
                                     @php
                                         $statusColors = [
-                                            'diproses'   => 'bg-blue-100 text-blue-700',
-                                            'selesai'    => 'bg-green-100 text-green-700',
-                                            'dibatalkan' => 'bg-gray-100 text-gray-700'
+                                            'dalam_proses'   => 'bg-blue-100 text-blue-700',
+                                            'tiba_di_klinik' => 'bg-yellow-100 text-yellow-700',
+                                            'selesai'        => 'bg-green-100 text-green-700',
+                                            'dibatalkan'     => 'bg-gray-100 text-gray-700'
                                         ];
-                                        $color = $statusColors[$item->status_pemesanan] ?? 'bg-gray-100 text-gray-700';
+                                        $color = $statusColors[$item->status_pemesanan] ?? 'bg-red-50 text-red-500 border border-red-200';
+                                        $labelStatus = str_replace('_', ' ', $item->status_pemesanan);
                                     @endphp
-                                    <span class="{{ $color }} px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider">
-                                        {{ $item->status_pemesanan }}
+                                    <span class="{{ $color }} px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider whitespace-nowrap">
+                                        {{ $labelStatus }}
                                     </span>
                                 </td>
 
                                 <td class="px-5 py-4">
                                     <div class="flex justify-center items-center gap-2">
+
+                                        {{-- Tombol Detail (BARU) --}}
+                                        <a href="{{ route('pemesanan.show', $item->id) }}"
+                                            class="px-3 py-1.5 bg-[#e7f5f1] text-[#176851] text-xs rounded-md hover:bg-[#176851] hover:text-white transition flex items-center font-bold">
+                                            <i class="fa-solid fa-eye mr-1.5"></i> Detail
+                                        </a>
+
                                         <a href="{{ route('pemesanan.edit', $item->id) }}"
                                             class="px-3 py-1.5 bg-[#59a38a] text-white text-xs rounded-md hover:bg-[#46826d] transition flex items-center">
                                             <i class="fa-solid fa-pen mr-1.5"></i> Edit
                                         </a>
 
                                         {{-- KUNCI RBAC DIREKTUR --}}
-                                        @if (Auth::check() && Auth::user()->role === 'direktur')
+                                        @if (Auth::check() && Auth::user()->role === 'Direktur')
                                             <form action="{{ route('pemesanan.destroy', $item->id) }}" method="POST" class="m-0">
                                                 @csrf
                                                 @method('DELETE')

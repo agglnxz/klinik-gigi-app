@@ -85,10 +85,10 @@
                         </div>
                     </div>
                 </div>
-
-                <a href="#" class="block py-3 text-center text-[10px] font-bold text-teal-700 bg-gray-50 hover:bg-teal-50 transition uppercase tracking-widest border-t border-gray-100">
-                    Lihat Semua Notifikasi
-                </a>
+                <a href="{{ route('notifikasi.index') }}"
+                    class="block text-center text-[#176851] font-bold text-xs py-3 hover:bg-gray-50 transition">
+                        LIHAT SEMUA NOTIFIKASI
+                    </a>
             </div>
         </div>
 

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\Web\DashboardWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\DokterWebController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Web\JenisGigiWebController;
 use App\Http\Controllers\Web\PasienWebController;
 use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
+
 
 // -----------------------------------------------------------------------------
 // RUTE PUBLIK (Aman Diakses Tanpa Login)
@@ -50,9 +52,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('pemeriksaan', PemeriksaanWebController::class)->except('show');
 
     // 📅 PEMESANAN
-    Route::resource('pemesanan', PemesananWebController::class)->except('show');
+    Route::resource('pemesanan', PemesananWebController::class);
 
     // 📜 RIWAYAT PEMESANAN
     Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
 
+    //Notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
 });
