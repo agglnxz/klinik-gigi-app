@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\Web\NotifikasiWebController;
 use App\Http\Controllers\Web\DashboardWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\DokterWebController;
@@ -58,5 +58,5 @@ Route::middleware('auth')->group(function () {
     Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
 
     //Notifikasi
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::get('/notifikasi', [NotifikasiWebController::class, 'index'])->name('notifikasi.index');
 });
