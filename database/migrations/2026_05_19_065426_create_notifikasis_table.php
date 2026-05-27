@@ -16,6 +16,7 @@ return new class extends Migration
     $table->foreignId('pemesanan_id')->constrained('pemesanan')->onDelete('cascade');
     $table->text('pesan');
     $table->enum('status', ['segera_tiba', 'terlambat', 'info'])->default('info');
+    $table->boolean('is_read')->default(false);
     $table->timestamps();
 });
     }

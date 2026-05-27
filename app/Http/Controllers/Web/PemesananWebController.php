@@ -114,7 +114,7 @@ public function show(int $id)
 
     public function update(Request $request, int $id)
     {
-         
+
         $pemesanan = Pemesanan::findOrFail($id);
 
         // Pengetatan validasi pembaruan data
@@ -134,6 +134,11 @@ public function show(int $id)
 
         // Update data induk
         $pemesanan->update($request->except('items'));
+        // ===== TAMBAHKAN LOGIKA INI =====
+        // Jika status diubah menjadi selain 'dalam_proses', hapus semua notifikasi pesanan ini
+        if (in_array($request->status_pemesanan, ['tiba_di_klinik', 'selesai', 'dibatalkan'])) {
+            \App\Models\Notifikasi::where('pemesanan_id', $id)->delete();
+        }
 
         // Reset dan perbarui daftar gigi di tabel pivot
         PemesananItem::where('id_pemesanan', $id)->delete();
