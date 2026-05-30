@@ -1,4 +1,10 @@
-<nav class="bg-white p-4 flex justify-end items-center w-full">
+<nav class="bg-white p-4 flex justify-between items-center w-full border-b border-gray-100 shadow-sm">
+
+    <div class="flex items-center">
+        <button @click="sidebarOpen = !sidebarOpen" class="p-2 text-gray-500 hover:text-teal-600 hover:bg-gray-50 rounded-lg transition focus:outline-none">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </div>
 
     <div class="flex items-center space-x-4">
         {{-- ALPINE.JS WRAPPER UNTUK DROPDOWN --}}
@@ -14,7 +20,7 @@
                 @endif
             </button>
 
-            {{-- KOTAK DROPDOWN MELAYANG (Ini yang sebelumnya terhapus) --}}
+            {{-- KOTAK DROPDOWN MELAYANG --}}
             <div x-show="open"
                 @click.away="open = false"
                 x-transition:enter="transition ease-out duration-200"
@@ -72,9 +78,43 @@
         </div>
 
         {{-- PROFIL USER --}}
-        <div class="flex items-center space-x-2">
-            <img src="{{ asset('images/user-profile-avatar.jpg') }}" class="w-8 h-8 rounded-xl object-cover border border-gray-100 shadow-sm" alt="Profile">
-        </div>
+        <div class="relative" x-data="{ openProfile: false }">
+            <button @click="openProfile = !openProfile" class="flex items-center space-x-1.5 focus:outline-none group">
+                <img src="{{ asset('images/user-profile-avatar.jpg') }}"
+                     class="w-8 h-8 rounded-xl object-cover border border-gray-100 shadow-sm group-hover:border-teal-500 transition"
+                     alt="Profile">
+            </button>
 
+            <div x-show="openProfile"
+                @click.away="openProfile = false"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                class="absolute right-0 mt-4 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-[999] overflow-hidden py-1.5"
+                style="display: none;">
+
+                <a href="#" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    <i class="fa-regular fa-user w-5 text-gray-400 text-base mr-2.5"></i>
+                    <span>Lihat Profil</span>
+                </a>
+
+                <hr class="border-gray-100 my-1">
+
+                <div class="px-4 py-2 hover:bg-red-50/40 transition group">
+                    <form action="{{ route('logout') }}" method="POST" id="logoutForm">
+                        @csrf
+                        <button type="submit" class="w-full flex items-start text-left focus:outline-none">
+                            <i class="fa-solid fa-arrow-right-from-bracket w-5 text-red-500 text-base mr-2.5 mt-0.5"></i>
+                            <div>
+                                <span class="block text-sm font-semibold text-red-600">Log Out</span>
+                                <span class="block text-[11px] text-gray-400 mt-0.5">
+                                    {{ Auth::user()->name ?? 'Dr. Adhi Winardi' }}
+                                </span>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </nav>
