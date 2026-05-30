@@ -10,17 +10,24 @@
         <link rel="stylesheet" href="{{ asset('style.css') }}">
     </head>
 
-    <body class="bg-gray-50 flex">
+    <body class="bg-gray-50 flex h-screen overflow-hidden" x-data="{ sidebarOpen: $persist(true).as('sidebar_status') }">
 
         @include('layouts.sidebar')
 
-        <div class="flex-1 overflow-hidden flex flex-col">
+        <div class="flex-1 flex flex-col h-screen overflow-hidden">
             @include('layouts.navbar')
 
-            <main class="p-8 bg-teal-50">
+            <main class="p-8 bg-teal-50 flex-1 overflow-y-auto">
                 @yield('content')
             </main>
         </div>
+
+        <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js">
+            //buat menyimpan status sidebar (buka/tutup) di localStorage sehingga tetap konsisten saat user refresh halaman atau kembali ke halaman lain
+        </script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js">
+            // Untuk Alpine.js (Toggle sidebar & pop-up notifikasi)
+        </script>
 
         <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.3/cdn.min.js"
         integrity="sha512-Yw9G2Y9ZAtb68p8FvK0Bdfa7wSgS6fXm99wbe6Yg00gGZfeG7S81U0d869bOOfm9p3e7gO0O5nS9R/pDOnYk9w=="
