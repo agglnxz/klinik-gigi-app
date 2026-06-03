@@ -1,30 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Pemesanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PemesananController extends Controller
 {
-    // GET: list + search
     public function index(Request $request)
     {
-        $query = Pemesanan::with(['pemeriksaan', 'lab', 'jenisGigi'])
-                    ->orderBy('id', 'desc');
+        $query = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'jenisGigi'])->orderBy('id', 'desc');
 
         if ($request->search) {
             $query->where('no_pemesanan', 'like', '%' . $request->search . '%');
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $query->get()
-        ]);
+        return response()->json(['status' => 'success', 'data' => $query->get()]);
     }
 
-    // POST: tambah
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -41,32 +36,17 @@ class PemesananController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => $validator->errors()
-            ], 422);
+            return response()->json(['status' => 'error', 'pesan' => $validator->errors()], 422);
         }
 
         $data = Pemesanan::create($request->all());
-
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data pemesanan berhasil ditambahkan!',
-            'data' => $data
-        ], 201);
+        return response()->json(['status' => 'success', 'pesan' => 'Data pemesanan berhasil ditambahkan!', 'data' => $data], 201);
     }
 
-    // PUT: update
     public function update(Request $request, $id)
     {
         $data = Pemesanan::find($id);
-
-        if (!$data) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan'
-            ], 404);
-        }
+        if (!$data) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan'], 404);
 
         $validator = Validator::make($request->all(), [
             'no_pemesanan'      => 'required|unique:pemesanan,no_pemesanan,' . $id,
@@ -82,67 +62,33 @@ class PemesananController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => $validator->errors()
-            ], 422);
+            return response()->json(['status' => 'error', 'pesan' => $validator->errors()], 422);
         }
 
         $data->update($request->all());
-
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data berhasil diupdate',
-            'data' => $data
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data berhasil diupdate', 'data' => $data]);
     }
 
-    // DELETE (soft delete)
     public function destroy($id)
     {
         $data = Pemesanan::find($id);
-
-        if (!$data) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan'
-            ], 404);
-        }
+        if (!$data) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan'], 404);
 
         $data->delete();
-
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data berhasil dihapus'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data berhasil dihapus']);
     }
 
-    // GET: semua (trash)
     public function semua()
     {
-        return response()->json([
-            'status' => 'success',
-            'data' => Pemesanan::onlyTrashed()->get()
-        ]);
+        return response()->json(['status' => 'success', 'data' => Pemesanan::onlyTrashed()->get()]);
     }
 
-    // RESTORE
     public function restore($id)
     {
         $data = Pemesanan::withTrashed()->find($id);
-
-        if (!$data) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan'
-            ], 404);
-        }
+        if (!$data) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan'], 404);
 
         $data->restore();
-
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data berhasil direstore'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data berhasil direstore']);
     }
 }
