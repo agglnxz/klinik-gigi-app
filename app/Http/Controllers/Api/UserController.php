@@ -1,29 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Menampilkan semua user
-     */
     public function index()
     {
         $users = User::latest()->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $users
-        ]);
+        return response()->json(['success' => true, 'data' => $users]);
     }
 
-    /**
-     * Menyimpan user baru
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -42,29 +33,15 @@ class UserController extends Controller
             'is_aktif'  => $request->is_aktif ?? true,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil ditambahkan',
-            'data' => $user
-        ], 201);
+        return response()->json(['success' => true, 'message' => 'User berhasil ditambahkan', 'data' => $user], 201);
     }
 
-    /**
-     * Menampilkan detail user
-     */
     public function show($id)
     {
         $user = User::findOrFail($id);
-
-        return response()->json([
-            'success' => true,
-            'data' => $user
-        ]);
+        return response()->json(['success' => true, 'data' => $user]);
     }
 
-    /**
-     * Update user
-     */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -88,26 +65,14 @@ class UserController extends Controller
         }
 
         $user->update($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil diupdate',
-            'data' => $user
-        ]);
+        return response()->json(['success' => true, 'message' => 'User berhasil diupdate', 'data' => $user]);
     }
 
-    /**
-     * Soft delete user
-     */
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-
         $user->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil dihapus'
-        ]);
+        return response()->json(['success' => true, 'message' => 'User berhasil dihapus']);
     }
 }

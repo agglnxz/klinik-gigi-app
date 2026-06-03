@@ -1,25 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Asisten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class AsistenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $asisten = Asisten::orderBy('id', 'desc')->get();
         return response()->json(['status' => 'success', 'data' => $asisten]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -37,19 +32,7 @@ class AsistenController extends Controller
         return response()->json(['status' => 'success', 'pesan' => 'Data Asisten berhasil ditambahkan!', 'data' => $asisten], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Asisten $asisten)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-public function update(Request $request, $id)
-
+    public function update(Request $request, $id)
     {
         $asisten = Asisten::find($id);
         if (!$asisten) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
@@ -71,60 +54,30 @@ public function update(Request $request, $id)
         return response()->json(['status' => 'success', 'pesan' => 'Data Asisten berhasil diperbarui!', 'data' => $asisten]);
     }
 
-     /**
-     * DELETE: nonaktifkan + soft delete
-     */
     public function destroy($id)
     {
         $asisten = Asisten::find($id);
-        if (!$asisten) { 
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan!'
-            ], 404);
-        }
+        if (!$asisten) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
 
         $asisten->update(['is_aktif' => false]);
         $asisten->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data asiste$asisten dinonaktifkan!'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data asisten dinonaktifkan!']);
     }
 
-    /**
-     * GET: semua data yang dihapus
-     */
     public function semua()
     {
-        $asisten = Asisten::onlyTrashed()->orderBy('id', 'desc')->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $asisten
-        ]);
+        return response()->json(['status' => 'success', 'data' => Asisten::onlyTrashed()->orderBy('id', 'desc')->get()]);
     }
 
-    /**
-     * PUT: restore asiste$asisten
-     */
     public function restore($id)
     {
         $asisten = Asisten::withTrashed()->find($id);
-        if (!$asisten) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan!'
-            ], 404);
-        }
+        if (!$asisten) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
 
         $asisten->restore();
         $asisten->update(['is_aktif' => true]);
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data asiste$asisten berhasil diaktifkan kembali!'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data asisten berhasil diaktifkan kembali!']);
     }
 }

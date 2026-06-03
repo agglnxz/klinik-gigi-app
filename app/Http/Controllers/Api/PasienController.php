@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PasienController extends Controller
 {
-    /**
-     * GET: list pasien aktif + search
-     */
     public function index(Request $request)
     {
         $query = Pasien::where('is_aktif', true)->orderBy('id', 'desc');
@@ -22,17 +20,12 @@ class PasienController extends Controller
             });
         }
 
-        $pasien = $query->get();
-
         return response()->json([
             'status' => 'success',
-            'data' => $pasien
+            'data' => $query->get()
         ]);
     }
 
-    /**
-     * POST: tambah pasien
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -44,10 +37,7 @@ class PasienController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => $validator->errors()
-            ], 422);
+            return response()->json(['status' => 'error', 'pesan' => $validator->errors()], 422);
         }
 
         $pasien = Pasien::create([
@@ -59,25 +49,13 @@ class PasienController extends Controller
             'is_aktif'      => true
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data pasien berhasil ditambahkan!',
-            'data' => $pasien
-        ], 201);
+        return response()->json(['status' => 'success', 'pesan' => 'Data pasien berhasil ditambahkan!', 'data' => $pasien], 201);
     }
 
-    /**
-     * PUT: update pasien
-     */
     public function update(Request $request, $id)
     {
         $pasien = Pasien::find($id);
-        if (!$pasien) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan!'
-            ], 404);
-        }
+        if (!$pasien) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
 
         $validator = Validator::make($request->all(), [
             'no_rm'          => 'required|string|max:20|unique:pasien,no_rm,' . $id,
@@ -89,10 +67,7 @@ class PasienController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => $validator->errors()
-            ], 422);
+            return response()->json(['status' => 'error', 'pesan' => $validator->errors()], 422);
         }
 
         $pasien->update([
@@ -104,67 +79,33 @@ class PasienController extends Controller
             'is_aktif'      => $request->is_aktif
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data pasien berhasil diperbarui!',
-            'data' => $pasien
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data pasien berhasil diperbarui!', 'data' => $pasien]);
     }
 
-    /**
-     * DELETE: nonaktifkan + soft delete
-     */
     public function destroy($id)
     {
         $pasien = Pasien::find($id);
-        if (!$pasien) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan!'
-            ], 404);
-        }
+        if (!$pasien) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
 
         $pasien->update(['is_aktif' => false]);
         $pasien->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data pasien dinonaktifkan!'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data pasien dinonaktifkan!']);
     }
 
-    /**
-     * GET: semua data yang dihapus
-     */
     public function semua()
     {
-        $pasien = Pasien::onlyTrashed()->orderBy('id', 'desc')->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $pasien
-        ]);
+        return response()->json(['status' => 'success', 'data' => Pasien::onlyTrashed()->orderBy('id', 'desc')->get()]);
     }
 
-    /**
-     * PUT: restore pasien
-     */
     public function restore($id)
     {
         $pasien = Pasien::withTrashed()->find($id);
-        if (!$pasien) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan!'
-            ], 404);
-        }
+        if (!$pasien) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan!'], 404);
 
         $pasien->restore();
         $pasien->update(['is_aktif' => true]);
 
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data pasien berhasil diaktifkan kembali!'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data pasien berhasil diaktifkan kembali!']);
     }
 }

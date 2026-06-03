@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pemeriksaan;
@@ -26,7 +26,6 @@ class PemeriksaanController extends Controller
         ]);
 
         $pemeriksaan = Pemeriksaan::create($request->all());
-        // Load relasi agar response JSON langsung menampilkan data terkait
         $pemeriksaan->load(['pasien', 'dokter', 'asisten']);
 
         return response()->json(['status' => 'success', 'data' => $pemeriksaan], 201);
@@ -67,29 +66,15 @@ class PemeriksaanController extends Controller
 
     public function semua()
     {
-        return response()->json([
-            'status' => 'success',
-            'data' => Pemeriksaan::onlyTrashed()->get()
-        ]);
+        return response()->json(['status' => 'success', 'data' => Pemeriksaan::onlyTrashed()->get()]);
     }
 
-    // RESTORE
     public function restore($id)
     {
         $data = Pemeriksaan::withTrashed()->find($id);
-
-        if (!$data) {
-            return response()->json([
-                'status' => 'error',
-                'pesan' => 'Data tidak ditemukan'
-            ], 404);
-        }
+        if (!$data) return response()->json(['status' => 'error', 'pesan' => 'Data tidak ditemukan'], 404);
 
         $data->restore();
-
-        return response()->json([
-            'status' => 'success',
-            'pesan' => 'Data berhasil direstore'
-        ]);
+        return response()->json(['status' => 'success', 'pesan' => 'Data berhasil direstore']);
     }
 }

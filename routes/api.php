@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\AsistenController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DokterController;
-use App\Http\Controllers\JenisGigiController;
-use App\Http\Controllers\LaboratoriumController;
-use App\Http\Controllers\PasienController;
-use App\Http\Controllers\PemeriksaanController;  
-use App\Http\Controllers\PemesananController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\AsistenController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DokterController;
+use App\Http\Controllers\Api\JenisGigiController;
+use App\Http\Controllers\Api\LaboratoriumController;
+use App\Http\Controllers\Api\PasienController;
+use App\Http\Controllers\Api\PemeriksaanController;
+use App\Http\Controllers\Api\PemesananController;
+use App\Http\Controllers\Api\UserController;
 
 // RUTE PUBLIK (Tidak perlu tiket/token)
 Route::post('/login', [AuthController::class, 'login']);
