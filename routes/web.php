@@ -11,6 +11,8 @@ use App\Http\Controllers\Web\JenisGigiWebController;
 use App\Http\Controllers\Web\PasienWebController;
 use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
+use App\Http\Controllers\Web\PengajuanHapusWebController;
+use App\Http\Controllers\Web\UserWebController;
 
 
 // -----------------------------------------------------------------------------
@@ -59,4 +61,12 @@ Route::middleware('auth')->group(function () {
 
     //Notifikasi
     Route::get('/notifikasi', [NotifikasiWebController::class, 'index'])->name('notifikasi.index');
+
+    // 📝 APPROVAL
+    Route::get('/pengajuan-hapus', [PengajuanHapusWebController::class, 'index'])->name('pengajuan-hapus.index');
+
+    // 👤 USER MANAGEMENT (Hanya untuk Admin, bisa ditambahkan middleware khusus jika diperlukan)
+    // Route::resource('users', UserWebController::class);
+    Route::get('/users', [UserWebController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserWebController::class, 'create'])->name('users.create');
 });
