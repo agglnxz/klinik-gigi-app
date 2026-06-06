@@ -18,55 +18,64 @@ use App\Http\Controllers\Web\UserWebController;
 // -----------------------------------------------------------------------------
 // RUTE PUBLIK (Aman Diakses Tanpa Login)
 // -----------------------------------------------------------------------------
-
-// Mengarahkan root dan /login langsung ke Controller agar mendukung Route Caching
 Route::get('/', [AuthWebController::class, 'showLoginForm'])->name('auth.login');
 Route::get('/login', [AuthWebController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthWebController::class, 'login']);
 
 
 // -----------------------------------------------------------------------------
-// RUTE TERLINDUNGI (Wajib Login / Akses ditolak jika tidak ada sesi aktif)
+// RUTE TERLINDUNGI (Wajib Login)
 // -----------------------------------------------------------------------------
 Route::middleware('auth')->group(function () {
 
-    // Jalur Keluar (Wajib POST demi keamanan CSRF)
+    // 🟢 AKSES UMUM (Semua Akun yang Sudah Login Bisa Akses)
     Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
-
-    // 📊 DASHBOARD
     Route::get('/dashboard', [DashboardWebController::class, 'dashboard'])->name('dashboard');
-
-    // 📂 DATA MASTER (Otomatis ditambahkan awalan URL: /data-master/...)
-    Route::prefix('data-master')->group(function () {
-
-        // Menggunakan Route::resource untuk memborong 6 rute CRUD sekaligus
-        // Nama rute otomatis selaras dengan Blade (contoh: dokter.index, dokter.create)
-        Route::resource('dokter', DokterWebController::class)->except('show');
-        Route::resource('asisten', AsistenWebController::class)->except('show');
-        Route::resource('laboratorium', LaboratoriumWebController::class)->except('show');
-        Route::resource('jenis-gigi', JenisGigiWebController::class)->except('show');
-    });
-
-    // 👥 PASIEN
-    Route::resource('pasien', PasienWebController::class)->except('show');
-
-    // 🏥 PEMERIKSAAN
-    Route::resource('pemeriksaan', PemeriksaanWebController::class)->except('show');
-
-    // 📅 PEMESANAN
-    Route::resource('pemesanan', PemesananWebController::class);
-
-    // 📜 RIWAYAT PEMESANAN
-    Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
-
-    //Notifikasi
     Route::get('/notifikasi', [NotifikasiWebController::class, 'index'])->name('notifikasi.index');
 
-    // 📝 APPROVAL
-    Route::get('/pengajuan-hapus', [PengajuanHapusWebController::class, 'index'])->name('pengajuan-hapus.index');
 
-    // 👤 USER MANAGEMENT (Hanya untuk Admin, bisa ditambahkan middleware khusus jika diperlukan)
-    // Route::resource('users', UserWebController::class);
-    Route::get('/users', [UserWebController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [UserWebController::class, 'create'])->name('users.create');
+    // 🟡 KELOMPOK HAK AKSES: KHUSUS ADMIN STAFF
+    Route::middleware('role:Admin')->group(function () {
+
+        // Data Master
+        Route::prefix('data-master')->group(function () {
+            Route::resource('dokter', DokterWebController::class)->except('show');
+            Route::resource('asisten', AsistenWebController::class)->except('show');
+            Route::resource('laboratorium', LaboratoriumWebController::class)->except('show');
+            Route::resource('jenis-gigi', JenisGigiWebController::class)->except('show');
+        });
+
+        // Pasien & Pemeriksaan Medis (Marketing Dilarang Masuk demi Privasi Rekam Medis)
+        Route::resource('pasien', PasienWebController::class)->except('show');
+        Route::resource('pemeriksaan', PemeriksaanWebController::class)->except('show');
+    });
+
+        // 🔵 KELOMPOK HAK AKSES: ADMIN, MARKETING, & DIREKTUR
+    Route::middleware('role:Admin,Marketing,Direktur')->group(function () {
+        Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
+        Route::get('pemesanan/{pemesanan}', [PemesananWebController::class, 'show'])->name('pemesanan.show');
+        Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
+    });
+
+    // 🟡 PEMESANAN - WRITE: Hanya Admin yang Bisa Tambah & Edit Data
+    Route::middleware('role:Admin')->group(function () {
+        Route::get('pemesanan/create', [PemesananWebController::class, 'create'])->name('pemesanan.create');
+        Route::post('pemesanan', [PemesananWebController::class, 'store'])->name('pemesanan.store');
+        Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
+        Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])->name('pemesanan.update');
+        Route::post('/pengajuan-hapus', [PengajuanHapusWebController::class, 'store'])->name('pengajuan-hapus.store');
+    });
+
+
+    // 🔴 KELOMPOK HAK AKSES: MUTLAK DIREKTUR UTAMA SAJA
+    Route::middleware('role:Direktur')->group(function () {
+        // Approval Pengajuan Hapus Data
+        Route::get('/pengajuan-hapus', [PengajuanHapusWebController::class, 'index'])->name('pengajuan-hapus.index');
+        Route::post('/pengajuan-hapus/{id}/approve', [PengajuanHapusWebController::class, 'approve'])->name('pengajuan-hapus.approve');
+        Route::post('/pengajuan-hapus/{id}/reject', [PengajuanHapusWebController::class, 'reject'])->name('pengajuan-hapus.reject');
+        // Manajemen Akun Karyawan/Staf Klinik
+        Route::get('/users', [UserWebController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserWebController::class, 'create'])->name('users.create');
+    });
+
 });

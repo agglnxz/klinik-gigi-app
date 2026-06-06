@@ -31,15 +31,15 @@
                         </div>
 
                         <div>
-                            <label for="tanggal_pemeriksaan"
+                            <label for="tanggal"
                                 class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Tanggal Pemeriksaan
                             </label>
                             {{-- Menggunakan nilai default tanggal hari ini --}}
-                            <input type="date" name="tanggal_pemeriksaan" id="tanggal_pemeriksaan"
-                                value="{{ old('tanggal_pemeriksaan', date('Y-m-d')) }}"
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 transition @error('tanggal_pemeriksaan') ring-2 ring-red-500 @enderror">
-                            @error('tanggal_pemeriksaan')
+                            <input type="date" name="tanggal" id="tanggal"
+                                value="{{ old('tanggal', date('Y-m-d')) }}"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 transition @error('tanggal') ring-2 ring-red-500 @enderror">
+                            @error('tanggal')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -48,17 +48,17 @@
                     {{-- Row 2: Pasien | Dokter Gigi --}}
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
-                            <label for="pasien"
+                            <label for="id_pasien"
                                 class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Pasien
                             </label>
                             <div class="relative">
-                                <select name="pasien" id="pasien"
-                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('pasien') ring-2 ring-red-500 @enderror">
-                                    <option value="" disabled {{ old('pasien') ? '' : 'selected' }}>Pilih Pasien
+                                <select name="id_pasien" id="id_pasien"
+                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('id_pasien') ring-2 ring-red-500 @enderror">
+                                    <option value="" disabled {{ old('id_pasien') ? '' : 'selected' }}>Pilih Pasien
                                     </option>
                                     @foreach ($pasien as $p)
-                                        <option value="{{ $p->id }}" {{ old('pasien') == $p->id ? 'selected' : '' }}>
+                                        <option value="{{ $p->id }}" {{ old('id_pasien') == $p->id ? 'selected' : '' }}>
                                             {{ $p->no_rm }} - {{ $p->nama }}
                                         </option>
                                     @endforeach
@@ -68,24 +68,24 @@
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
-                            @error('pasien')
+                            @error('id_pasien')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div>
-                            <label for="dokter_gigi"
+                            <label for="id_dokter"
                                 class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Dokter Gigi
                             </label>
                             <div class="relative">
-                                <select name="dokter_gigi" id="dokter_gigi"
-                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('dokter_gigi') ring-2 ring-red-500 @enderror">
-                                    <option value="" disabled {{ old('dokter_gigi') ? '' : 'selected' }}>Pilih Dokter
+                                <select name="id_dokter" id="id_dokter"
+                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('id_dokter') ring-2 ring-red-500 @enderror">
+                                    <option value="" disabled {{ old('id_dokter') ? '' : 'selected' }}>Pilih Dokter
                                     </option>
                                     @foreach ($dokter as $d)
                                         <option value="{{ $d->id }}"
-                                            {{ old('dokter_gigi') == $d->id ? 'selected' : '' }}>
+                                            {{ old('id_dokter') == $d->id ? 'selected' : '' }}>
                                             {{ $d->nama }}
                                         </option>
                                     @endforeach
@@ -95,7 +95,7 @@
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
-                            @error('dokter_gigi')
+                            @error('id_dokter')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -104,18 +104,18 @@
                     {{-- Row 3: Asisten Dokter (setengah grid) --}}
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
-                            <label for="asisten_dokter"
+                            <label for="id_asisten"
                                 class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                                 Asisten Dokter <span class="normal-case font-normal text-gray-400"></span>
                             </label>
                             <div class="relative">
-                                <select name="asisten_dokter" id="asisten_dokter"
-                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('asisten_dokter') ring-2 ring-red-500 @enderror">
-                                    <option value="" {{ old('asisten_dokter') ? '' : 'selected' }}>Tidak ada asisten
+                                <select name="id_asisten" id="id_asisten"
+                                    class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 appearance-none cursor-pointer transition @error('id_asisten') ring-2 ring-red-500 @enderror">
+                                    <option value="" {{ old('id_asisten') ? '' : 'selected' }}>Tidak ada asisten
                                     </option>
                                     @foreach ($asisten as $a)
                                         <option value="{{ $a->id }}"
-                                            {{ old('asisten_dokter') == $a->id ? 'selected' : '' }}>
+                                            {{ old('id_asisten') == $a->id ? 'selected' : '' }}>
                                             {{ $a->nama }}
                                         </option>
                                     @endforeach
@@ -125,7 +125,7 @@
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
-                            @error('asisten_dokter')
+                            @error('id_asisten')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -133,14 +133,14 @@
 
                     {{-- Catatan Klinis & Keluhan (full width) --}}
                     <div>
-                        <label for="catatan_klinis"
+                        <label for="catatan"
                             class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">
                             Catatan Klinis & Keluhan
                         </label>
-                        <textarea name="catatan_klinis" id="catatan_klinis" rows="5"
+                        <textarea name="catatan" id="catatan" rows="5"
                             placeholder="Tuliskan detail pemeriksaan, keluhan pasien, atau diagnosa awal di sini..."
-                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition resize-none @error('catatan_klinis') ring-2 ring-red-500 @enderror">{{ old('catatan_klinis') }}</textarea>
-                        @error('catatan_klinis')
+                            class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 focus:shadow-md text-sm text-gray-600 placeholder-gray-400 transition resize-none @error('catatan') ring-2 ring-red-500 @enderror">{{ old('catatan') }}</textarea>
+                        @error('catatan')
                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>

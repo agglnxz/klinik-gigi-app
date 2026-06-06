@@ -29,6 +29,18 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'), // Password yang dienkripsi
             'role' => 'Direktur'
         ]);
+        User::create([
+            'name' => 'Admin Staff',
+            'email' => 'admin@klinik.com',
+            'password' => Hash::make('password123'), // Password yang dienkripsi
+            'role' => 'Admin'
+        ]);
+        User::create([
+            'name' => 'Marketing Staff',
+            'email' => 'marketing@klinik.com',
+            'password' => Hash::make('password123'), // Password yang dienkripsi
+            'role' => 'Marketing'
+        ]);
         // Eksekusi pembuatan data dummy secara masal
         Dokter::factory(10)->create();       // Buat 10 Dokter
         Asisten::factory(10)->create();      // Buat 10 Asisten
