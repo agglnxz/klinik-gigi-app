@@ -21,6 +21,7 @@
 
         <nav class="mt-4 px-3">
             <ul class="space-y-1.5">
+                {{-- MENU AKSES: SEMUA ROLE --}}
                 <li>
                     <a href="{{ route('dashboard') }}"
                        class="{{ $baseClass }} {{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }}"
@@ -31,36 +32,40 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="{{ route('dokter.index') }}"
-                       class="{{ $baseClass }} {{ request()->routeIs('dokter.*') || request()->is('data-master*') ? $activeClass : $inactiveClass }}"
-                       :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
-                       title="Data Master">
-                        <i class="fa-solid fa-database w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
-                        <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Data Master</span>
-                    </a>
-                </li>
+                {{-- MENU AKSES: KHUSUS ADMIN STAFF --}}
+                @if (auth()->user()->role === 'Admin')
+                    <li>
+                        <a href="{{ route('dokter.index') }}"
+                           class="{{ $baseClass }} {{ request()->routeIs('dokter.*') || request()->is('data-master*') ? $activeClass : $inactiveClass }}"
+                           :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
+                           title="Data Master">
+                            <i class="fa-solid fa-database w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Data Master</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="{{ route('pasien.index') }}"
-                       class="{{ $baseClass }} {{ request()->routeIs('pasien.*') ? $activeClass : $inactiveClass }}"
-                       :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
-                       title="Pasien">
-                        <i class="fa-solid fa-users w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
-                        <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Pasien</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="{{ route('pasien.index') }}"
+                           class="{{ $baseClass }} {{ request()->routeIs('pasien.*') ? $activeClass : $inactiveClass }}"
+                           :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
+                           title="Pasien">
+                            <i class="fa-solid fa-users w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Pasien</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="{{ route('pemeriksaan.index') }}"
-                       class="{{ $baseClass }} {{ request()->routeIs('pemeriksaan.*') ? $activeClass : $inactiveClass }}"
-                       :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
-                       title="Pemeriksaan">
-                        <i class="fa-solid fa-stethoscope w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
-                        <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Pemeriksaan</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="{{ route('pemeriksaan.index') }}"
+                           class="{{ $baseClass }} {{ request()->routeIs('pemeriksaan.*') ? $activeClass : $inactiveClass }}"
+                           :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
+                           title="Pemeriksaan">
+                            <i class="fa-solid fa-stethoscope w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Pemeriksaan</span>
+                        </a>
+                    </li>
+                @endif
 
+                {{-- MENU AKSES: SEMUA ROLE (Admin, Marketing, Direktur) --}}
                 <li>
                     <a href="{{ route('pemesanan.index') }}"
                        class="{{ $baseClass }} {{ request()->routeIs('pemesanan.index') || request()->routeIs('pemesanan.create') || request()->routeIs('pemesanan.edit') ? $activeClass : $inactiveClass }}"
@@ -81,25 +86,28 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="{{ route('pengajuan-hapus.index') }}"
-                       class="{{ $baseClass }} {{ request()->routeIs('pengajuan-hapus.*') ? $activeClass : $inactiveClass }}"
-                       :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
-                       title="Approve">
-                        <i class="fa-solid fa-table-cells-large w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
-                        <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Approve</span>
-                    </a>
-                </li>
+                {{-- MENU AKSES: KHUSUS DIREKTUR --}}
+                @if (auth()->user()->role === 'Direktur')
+                    <li>
+                        <a href="{{ route('pengajuan-hapus.index') }}"
+                           class="{{ $baseClass }} {{ request()->routeIs('pengajuan-hapus.*') ? $activeClass : $inactiveClass }}"
+                           :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
+                           title="Approve">
+                            <i class="fa-solid fa-table-cells-large w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Approve</span>
+                        </a>
+                    </li>
 
-                <li>
-                    <a href="{{ route('users.index') }}"
-                       class="{{ $baseClass }} {{ request()->routeIs('users.*') ? $activeClass : $inactiveClass }}"
-                       :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
-                       title="Data Manajemen User">
-                        <i class="fa-solid fa-user-gear w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
-                        <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Manajemen User</span>
-                    </a>
-                </li>
+                    <li>
+                        <a href="{{ route('users.index') }}"
+                           class="{{ $baseClass }} {{ request()->routeIs('users.*') ? $activeClass : $inactiveClass }}"
+                           :class="sidebarOpen ? 'justify-start px-4' : 'justify-center'"
+                           title="Data Manajemen User">
+                            <i class="fa-solid fa-user-gear w-6 text-center text-lg" :class="sidebarOpen ? 'mr-3' : ''"></i>
+                            <span x-show="sidebarOpen" class="whitespace-nowrap text-sm" style="display: none;">Manajemen User</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </nav>
     </div>

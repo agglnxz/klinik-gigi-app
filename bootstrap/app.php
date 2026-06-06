@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
+
         $middleware->redirectGuestsTo(function (Request $request) {
         // 1. Jika yang meminta adalah Flutter/Postman (Header Accept: application/json)
             if ($request->expectsJson()) {

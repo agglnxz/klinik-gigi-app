@@ -10,46 +10,70 @@ use App\Models\Laboratorium;
 use App\Models\JenisGigi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class PemesananWebController extends Controller
 {
-    public function index()
-{
-    // Load relasi induk dan detail item gigi
-    $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])->get();
+    public function index(Request $request)
+    {
+        // 1. Kueri Dasar dengan Eager Loading
+        $query = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi']);
 
-    // Koreksi string query agar sesuai dengan ENUM di tabel database
-    $totalPesanan   = Pemesanan::count();
-    $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
-    $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
+        // 2. Logika Filter Pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('no_pemesanan', 'like', "%{$search}%")
+                    ->orWhereHas('pemeriksaan.pasien', function ($qp) use ($search) {
+                        $qp->where('nama', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('lab', function ($ql) use ($search) {
+                        $ql->where('nama_lab', 'like', "%{$search}%");
+                    });
+            });
+        }
 
-    return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
-}
+        // 3. Logika Filter Periode Waktu
+        if ($request->filled('periode')) {
+            switch ($request->periode) {
+                case 'hari_ini':
+                    $query->whereDate('tanggal_dikirim', Carbon::today());
+                    break;
+                case 'minggu_ini':
+                    $query->whereBetween('tanggal_dikirim', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                    break;
+                case 'bulan_ini':
+                    $query->whereMonth('tanggal_dikirim', Carbon::now()->month)
+                        ->whereYear('tanggal_dikirim', Carbon::now()->year);
+                    break;
+                case 'tahun_ini':
+                    $query->whereYear('tanggal_dikirim', Carbon::now()->year);
+                    break;
+            }
+        }
 
-public function show(int $id)
-{
-    $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])
-        ->findOrFail($id);
+        // 4. Logika Pengurutan Data (Sorting)
+        $sortOrder = $request->get('urutkan', 'terbaru') === 'terlama' ? 'asc' : 'desc';
+        $query->orderBy('tanggal_dikirim', $sortOrder);
 
-    return view('pemesanan.show', compact('data'));
-}
-//     public function index()
-//     {
-//         // Load relasi induk dan detail item gigi
-//         //$data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])->get();
-// {
-//     $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])
-//         ->findOrFail($id);
+        // Ambil data akhir setelah disaring
+        $data = $query->get();
 
-//     return view('pemesanan.show', compact('data'));
-// }
-//         // Koreksi string query agar sesuai dengan ENUM di tabel database
-//         $totalPesanan   = Pemesanan::count();
-//         $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
-//         $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
+        // 5. Hitung Statistik Widget (Diambil dari data riil DB agar selalu akurat)
+        $totalPesanan   = Pemesanan::count();
+        $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
+        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
 
-//         return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
-//     }
+        return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
+    }
+
+    public function show(int $id)
+    {
+        $data = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])
+            ->findOrFail($id);
+
+        return view('pemesanan.show', compact('data'));
+    }
 
     public function create()
     {
@@ -169,21 +193,21 @@ public function show(int $id)
 
     public function pemesananRiwayat(request $request)
     {
-// 1. Kueri dasar dengan Eager Loading
+        // 1. Kueri dasar dengan Eager Loading
         $query = Pemesanan::with(['pemeriksaan.pasien', 'lab'])
             ->whereIn('status_pemesanan', ['tiba_di_klinik', 'selesai']);
 
         // Papan pencarian sederhana (Opsional jika form pencarian disubmit)
         if ($request->has('cari')) {
             $cari = $request->cari;
-            $query->where(function($q) use ($cari) {
+            $query->where(function ($q) use ($cari) {
                 $q->where('no_pemesanan', 'like', "%{$cari}%")
-                  ->orWhereHas('pemeriksaan.pasien', function($qp) use ($cari) {
-                      $qp->where('nama', 'like', "%{$cari}%");
-                  })
-                  ->orWhereHas('lab', function($ql) use ($cari) {
-                      $ql->where('nama_lab', 'like', "%{$cari}%");
-                  });
+                    ->orWhereHas('pemeriksaan.pasien', function ($qp) use ($cari) {
+                        $qp->where('nama', 'like', "%{$cari}%");
+                    })
+                    ->orWhereHas('lab', function ($ql) use ($cari) {
+                        $ql->where('nama_lab', 'like', "%{$cari}%");
+                    });
             });
         }
 

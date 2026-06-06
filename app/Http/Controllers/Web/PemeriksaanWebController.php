@@ -59,26 +59,28 @@ class PemeriksaanWebController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi dengan nama parameter yang baru & seragam
         $request->validate([
-            'no_pemeriksaan'      => 'required|string|unique:pemeriksaan,no_pemeriksaan',
-            'tanggal_pemeriksaan' => 'required|date',
-            'catatan_klinis'      => 'required|string',
-            'pasien'              => 'required|exists:pasien,id',
-            'dokter_gigi'         => 'required|exists:dokter,id',
-            'asisten_dokter'      => 'nullable|exists:asisten,id',
+            'no_pemeriksaan' => 'required|string|unique:pemeriksaan,no_pemeriksaan',
+            'tanggal'        => 'required|date',
+            'catatan'        => 'required|string',
+            'id_pasien'      => 'required|exists:pasien,id',
+            'id_dokter'      => 'required|exists:dokter,id',
+            'id_asisten'     => 'nullable|exists:asisten,id',
         ]);
 
+        // 2. Eksekusi simpan ke database
         Pemeriksaan::create([
             'no_pemeriksaan' => $request->no_pemeriksaan,
-            'tanggal'        => $request->tanggal_pemeriksaan,
-            'catatan'        => $request->catatan_klinis,
-            'id_pasien'      => $request->pasien,
-            'id_dokter'      => $request->dokter_gigi,
-            'id_asisten'     => $request->asisten_dokter,
+            'tanggal'        => $request->tanggal,
+            'catatan'        => $request->catatan,
+            'id_pasien'      => $request->id_pasien,
+            'id_dokter'      => $request->id_dokter,
+            'id_asisten'     => $request->id_asisten,
         ]);
 
         return redirect()->route('pemeriksaan.index')
-            ->with('success', 'Data Pemeriksaan berhasil disimpan!');
+            ->with('success', 'Data Pemeriksaan berhasil ditambahkan!');
     }
 
     public function edit(int $id)
@@ -89,7 +91,7 @@ class PemeriksaanWebController extends Controller
         $dokter = Dokter::where('is_aktif', true)->get();
         $asisten = Asisten::where('is_aktif', true)->get();
 
-        return view('pemeriksaan.edit', compact(
+        return view('pemeriksaan.update', compact(
             'pemeriksaan',
             'pasien',
             'dokter',
@@ -101,22 +103,24 @@ class PemeriksaanWebController extends Controller
     {
         $pemeriksaan = Pemeriksaan::findOrFail($id);
 
+        // 1. Validasi disesuaikan dengan 'name' terbaru di update.blade.php
         $request->validate([
-            'no_pemeriksaan'      => 'required|string|unique:pemeriksaan,no_pemeriksaan,' . $id,
-            'tanggal_pemeriksaan' => 'required|date',
-            'catatan_klinis'      => 'required|string',
-            'pasien'              => 'required|exists:pasien,id',
-            'dokter_gigi'         => 'required|exists:dokter,id',
-            'asisten_dokter'      => 'nullable|exists:asisten,id',
+            'no_pemeriksaan' => 'required|string|unique:pemeriksaan,no_pemeriksaan,' . $id,
+            'tanggal'        => 'required|date',
+            'catatan'        => 'required|string',
+            'id_pasien'      => 'required|exists:pasien,id',
+            'id_dokter'      => 'required|exists:dokter,id',
+            'id_asisten'     => 'nullable|exists:asisten,id',
         ]);
 
+        // 2. Eksekusi update menggunakan input yang benar
         $pemeriksaan->update([
             'no_pemeriksaan' => $request->no_pemeriksaan,
-            'tanggal'        => $request->tanggal_pemeriksaan,
-            'catatan'        => $request->catatan_klinis,
-            'id_pasien'      => $request->pasien,
-            'id_dokter'      => $request->dokter_gigi,
-            'id_asisten'     => $request->asisten_dokter,
+            'tanggal'        => $request->tanggal,
+            'catatan'        => $request->catatan,
+            'id_pasien'      => $request->id_pasien,
+            'id_dokter'      => $request->id_dokter,
+            'id_asisten'     => $request->id_asisten,
         ]);
 
         return redirect()->route('pemeriksaan.index')
