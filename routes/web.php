@@ -13,6 +13,7 @@ use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
 use App\Http\Controllers\Web\PengajuanHapusWebController;
 use App\Http\Controllers\Web\UserWebController;
+use App\Http\Controllers\Web\ProfileController;
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardWebController::class, 'dashboard'])->name('dashboard');
     Route::get('/notifikasi', [NotifikasiWebController::class, 'index'])->name('notifikasi.index');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile/foto', [ProfileController::class, 'updateFoto'])->name('profile.foto');
 
 
     // 🟡 KELOMPOK HAK AKSES: KHUSUS ADMIN STAFF
@@ -79,3 +82,4 @@ Route::middleware('auth')->group(function () {
     });
 
 });
+
