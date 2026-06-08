@@ -13,44 +13,39 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-white min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#f0f2f0] min-h-screen flex items-center justify-center p-6">
 
     <div class="max-w-sm w-full text-center space-y-5">
 
-        {{-- BADGE --}}
+        {{-- IKON --}}
         <div class="flex justify-center">
-            <span class="inline-flex items-center gap-1.5 border border-gray-300 text-gray-600 text-xs font-medium px-4 py-1.5 rounded-full">
-                <i class="fa-regular fa-circle-question text-xs"></i>
-                Klinik Gigi Winardi
-            </span>
+            <div class="w-20 h-20 bg-[#fde8e8] rounded-2xl flex items-center justify-center animate-bounce">
+                <i class="fa-solid fa-map-location-dot text-[#e05252] text-3xl"></i>
+            </div>
         </div>
 
-        {{-- ANGKA 404 --}}
-        <h1 class="text-[108px] font-black text-[#1D9E75] leading-none tracking-tighter">404</h1>
-
-        {{-- GARIS BAWAH --}}
-        <div class="w-10 h-[3px] bg-[#1D9E75] rounded-full mx-auto"></div>
-
-        {{-- PESAN --}}
-        <div class="space-y-2 pt-1">
-            <h2 class="text-xl font-bold text-gray-800">Halaman tidak ditemukan</h2>
-            <p class="text-sm text-gray-500 leading-relaxed">
-                Halaman yang Anda cari mungkin telah dipindahkan, dihapus,<br>
-                atau tidak tersedia. Silakan kembali ke dashboard.
-            </p>
+        {{-- ANGKA & JUDUL --}}
+        <div class="space-y-1">
+            <h1 class="text-6xl font-black text-gray-800 leading-none">404</h1>
+            <h2 class="text-base font-bold text-gray-800">Halaman Tidak Ditemukan!</h2>
         </div>
+
+        {{-- DESKRIPSI --}}
+        <p class="text-xs text-gray-500 leading-relaxed">
+            Maaf, halaman yang Anda cari tidak tersedia atau telah dipindahkan. Silakan kembali ke area aman Anda.
+        </p>
 
         {{-- TOMBOL --}}
-        <div class="flex flex-col items-center gap-3 pt-2">
-            <a href="{{ route('dashboard') }}"
-               class="w-64 inline-flex items-center justify-center gap-2 bg-[#529e85] hover:bg-[#43846f] text-white py-2.5 rounded-lg text-sm font-semibold transition shadow-md shadow-teal-900/20">
-                <i class="fa-solid fa-house text-xs"></i>
-                Kembali ke Dashboard
-            </a>
+        <div class="flex items-center justify-center gap-3 pt-1">
             <a href="javascript:history.back()"
-               class="w-64 inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-500 hover:bg-gray-50 py-2.5 rounded-lg text-sm font-semibold transition">
-                <i class="fa-solid fa-arrow-left text-xs"></i>
-                Halaman Sebelumnya
+               class="flex-1 inline-flex flex-col items-center justify-center border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wide transition">
+                <i class="fa-solid fa-arrow-left mb-1"></i>
+                HALAMAN<br>SEBELUMNYA
+            </a>
+            <a href="{{ route('dashboard') }}"
+               class="flex-1 inline-flex flex-col items-center justify-center bg-[#1a6b52] hover:bg-[#155a44] text-white py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-wide transition shadow-md">
+                <i class="fa-solid fa-house mb-1"></i>
+                KE<br>DASHBOARD
             </a>
         </div>
 
