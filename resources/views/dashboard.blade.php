@@ -18,7 +18,9 @@
                     <span class="text-[10px] font-bold bg-teal-50 text-teal-600 px-2 py-1 rounded">AKTIF</span>
                 </div>
                 <p class="text-gray-400 text-xs font-semibold uppercase">Total Pasien</p>
-                <h3 class="text-3xl font-bold text-gray-800">1,284</h3>
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $totalPasien }}
+                </h3>
             </div>
         </a>
         <a href="#">
@@ -30,7 +32,9 @@
                     <span class="text-[10px] font-bold bg-teal-50 text-teal-600 px-2 py-1 rounded">PROSES</span>
                 </div>
                 <p class="text-gray-400 text-xs font-semibold uppercase">Pesanan Proses</p>
-                <h3 class="text-3xl font-bold text-gray-800">42</h3>
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $pesananProses }}
+                </h3>
             </div>
         </a>
         <a href="#">
@@ -42,7 +46,9 @@
                     <span class="text-[10px] font-bold bg-teal-50 text-teal-600 px-2 py-1 rounded">SELESAI</span>
                 </div>
                 <p class="text-gray-400 text-xs font-semibold uppercase">Pesanan Selesai</p>
-                <h3 class="text-3xl font-bold text-gray-800">856</h3>
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $pesananSelesai }}
+                </h3>
             </div>
         </a>
     </div>

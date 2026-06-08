@@ -13,11 +13,26 @@ class PengajuanHapusWebController extends Controller
     public function index()
     {
         if (Auth::check() && strtolower(Auth::user()->role) !== 'direktur') {
-            return redirect()->route('dashboard')->with('error', 'Akses Ditolak! Khusus Direktur.');
+            return redirect()->route('dashboard')
+                ->with('error', 'Akses Ditolak! Khusus Direktur.');
         }
 
-        $pengajuan = PengajuanHapus::with('pemohon')->orderBy('created_at', 'desc')->get();
-        return view('pengajuan_hapus.index', compact('pengajuan'));
+        $pengajuan = PengajuanHapus::with('pemohon')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $menunggu = PengajuanHapus::where('status_approval', 'Pending')->count();
+
+        $disetujui = PengajuanHapus::where('status_approval', 'Disetujui')->count();
+
+        $ditolak = PengajuanHapus::where('status_approval', 'Ditolak')->count();
+
+        return view('pengajuan_hapus.index', compact(
+            'pengajuan',
+            'menunggu',
+            'disetujui',
+            'ditolak'
+        ));
     }
 
     public function store(Request $request)

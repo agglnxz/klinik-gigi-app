@@ -12,9 +12,9 @@ use App\Http\Controllers\Web\PasienWebController;
 use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
 use App\Http\Controllers\Web\PengajuanHapusWebController;
-use App\Http\Controllers\Web\UserWebController;
-use App\Http\Controllers\Web\ProfileController;
 
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\UserWebController;
 
 // -----------------------------------------------------------------------------
 // RUTE PUBLIK (Aman Diakses Tanpa Login)
@@ -53,22 +53,29 @@ Route::middleware('auth')->group(function () {
         Route::resource('pemeriksaan', PemeriksaanWebController::class)->except('show');
     });
 
-        // 🔵 KELOMPOK HAK AKSES: ADMIN, MARKETING, & DIREKTUR
-    Route::middleware('role:Admin,Marketing,Direktur')->group(function () {
-        Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
-        Route::get('pemesanan/{pemesanan}', [PemesananWebController::class, 'show'])->name('pemesanan.show');
-        Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
-    });
-
-    // 🟡 PEMESANAN - WRITE: Hanya Admin yang Bisa Tambah & Edit Data
+// 🟡 PEMESANAN - WRITE (Taruh di ATAS agar rute 'create' dieksekusi lebih dulu)
     Route::middleware('role:Admin')->group(function () {
         Route::get('pemesanan/create', [PemesananWebController::class, 'create'])->name('pemesanan.create');
         Route::post('pemesanan', [PemesananWebController::class, 'store'])->name('pemesanan.store');
-        Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])->name('pemesanan.edit');
-        Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])->name('pemesanan.update');
+
+        // Kunci edit dan update wajib angka
+        Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])
+            ->name('pemesanan.edit')->whereNumber('pemesanan');
+        Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])
+            ->name('pemesanan.update')->whereNumber('pemesanan');
+
         Route::post('/pengajuan-hapus', [PengajuanHapusWebController::class, 'store'])->name('pengajuan-hapus.store');
     });
 
+    // 🔵 KELOMPOK HAK AKSES: ADMIN, MARKETING, & DIREKTUR (Taruh di BAWAH)
+    Route::middleware('role:Admin,Marketing,Direktur')->group(function () {
+        Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
+        Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
+
+        // Kunci show wajib angka, dan cukup ditulis 1 kali saja
+        Route::get('pemesanan/{pemesanan}', [PemesananWebController::class, 'show'])
+            ->name('pemesanan.show')->whereNumber('pemesanan');
+    });
 
     // 🔴 KELOMPOK HAK AKSES: MUTLAK DIREKTUR UTAMA SAJA
     Route::middleware('role:Direktur')->group(function () {
@@ -79,6 +86,10 @@ Route::middleware('auth')->group(function () {
         // Manajemen Akun Karyawan/Staf Klinik
         Route::get('/users', [UserWebController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserWebController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserWebController::class, 'store'])->name('users.store');
+        Route::get('/users/{id}/edit', [UserWebController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{id}', [UserWebController::class, 'update'])->name('users.update');
+        Route::delete('/users/{id}', [UserWebController::class, 'destroy'])->name('users.destroy');
     });
 
 });
