@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dokter;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,11 @@ class DokterWebController extends Controller
     public function index()
     {
         $dokter = Dokter::orderBy('id', 'desc')->get();
-        return view('data_master.dokter.index', compact('dokter'));
+        // 6. Data Pengajuan Hapus
+        $pendingHapus = PengajuanHapus::where('nama_tabel', 'dokter')
+            ->where('status_approval', 'Pending')
+            ->pluck('id_referensi')->toArray();
+        return view('data_master.dokter.index', compact('dokter', 'pendingHapus'));
     }
 
     public function create()
@@ -61,16 +66,38 @@ class DokterWebController extends Controller
         return redirect()->route('dokter.index')->with('success', 'Dokter berhasil diperbarui!');
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
-        if (Auth::user()->role !== 'direktur') {
+        // 1. Ambil data dokter yang mau diajukan hapus
+        $dokter = Dokter::findOrFail($id);
+
+        // 2. CEK APAKAH SUDAH ADA PENGAJUAN PENDING UNTUK DATA INI
+        $sudahDiajukan = \App\Models\PengajuanHapus::where('nama_tabel', 'dokter')
+                            ->where('id_referensi', $dokter->id)
+                            ->where('status_approval', 'Pending')
+                            ->exists();
+
+        if ($sudahDiajukan) {
             return redirect()->route('dokter.index')
-                ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
+                ->with('error', 'Gagal! Data dokter ini sudah dalam proses pengajuan hapus dan sedang menunggu persetujuan Direktur.');
         }
 
-        $Dokter = Dokter::findOrFail($id);
-        $Dokter->delete(); // Soft Delete
+        // 3. Validasi input alasan dari Admin jika lolos pengecekan di atas
+        $request->validate([
+            'alasan_hapus' => 'required|string|min:5',
+        ]);
 
-        return redirect()->route('dokter.index')->with('success', 'Dokter berhasil dihapus!');
+        // 4. Masukkan ke tabel pengajuan_hapus
+        \App\Models\PengajuanHapus::create([
+            'nama_tabel'      => 'dokter',
+            'id_referensi'    => $dokter->id,
+            'nama_data'       => $dokter->nama,
+            'alasan_hapus'    => $request->alasan_hapus,
+            'status_approval' => 'Pending',
+            'id_pemohon'      => Auth::id(),
+        ]);
+
+        return redirect()->route('dokter.index')
+            ->with('success', 'Permohonan penghapusan dokter berhasil dikirim ke Direktur.');
     }
 }
