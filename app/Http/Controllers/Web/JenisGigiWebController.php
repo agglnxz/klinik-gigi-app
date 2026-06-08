@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\JenisGigi;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,11 @@ class JenisGigiWebController extends Controller
     public function index()
     {
         $jenis_gigi = JenisGigi::orderBy('id', 'desc')->get();
-        return view('data_master.jenis_gigi.index', compact('jenis_gigi'));
+        $pendingHapus = \App\Models\PengajuanHapus::where('nama_tabel', 'jenis_gigi')
+                        ->where('status_approval', 'Pending')
+                        ->pluck('id_referensi')
+                        ->toArray();
+        return view('data_master.jenis_gigi.index', compact('jenis_gigi', 'pendingHapus'));
     }
 
     public function create()

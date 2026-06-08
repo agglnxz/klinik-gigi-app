@@ -38,7 +38,7 @@ class PengajuanHapusWebController extends Controller
     public function store(Request $request)
     {
         // Kunci nama tabel yang diizinkan untuk diajukan (Anti-Hack Lapis 1)
-        $tabelDiizinkan = ['pasien', 'pemesanan', 'pemeriksaan'];
+        $tabelDiizinkan = ['pasien', 'pemesanan', 'pemeriksaan', 'dokter', 'asisten', 'laboratorium', 'jenis_gigi'];
 
         $request->validate([
             'nama_tabel'   => 'required|string|in:' . implode(',', $tabelDiizinkan),

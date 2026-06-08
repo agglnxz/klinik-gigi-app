@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Laboratorium;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,11 @@ class LaboratoriumWebController extends Controller
     public function index()
     {
         $laboratorium = Laboratorium::orderBy('id', 'desc')->get();
-        return view('data_master.laboratorium.index', compact('laboratorium'));
+        $pendingHapus = \App\Models\PengajuanHapus::where('nama_tabel', 'laboratorium')
+                        ->where('status_approval', 'Pending')
+                        ->pluck('id_referensi')
+                        ->toArray();
+        return view('data_master.laboratorium.index', compact('laboratorium', 'pendingHapus'));
     }
 
     public function create()

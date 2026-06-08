@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Asisten;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +14,11 @@ class AsistenWebController extends Controller
     public function index()
     {
         $asisten = Asisten::orderBy('id', 'desc')->get();
-        return view('data_master.asisten.index', compact('asisten'));
+        $pendingHapus = \App\Models\PengajuanHapus::where('nama_tabel', 'asisten')
+                        ->where('status_approval', 'Pending')
+                        ->pluck('id_referensi')
+                        ->toArray();
+        return view('data_master.asisten.index', compact('asisten', 'pendingHapus'));
     }
 
     // 2. FORM TAMBAH
