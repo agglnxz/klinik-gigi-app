@@ -133,10 +133,12 @@
 
     {{-- TOMBOL AKSI --}}
     <div class="flex items-center gap-3">
+        @if (auth()->user()->role === 'Admin')
         <a href="{{ route('pemesanan.edit', $data->id) }}"
             class="px-5 py-2.5 bg-[#176851] text-white text-sm rounded-lg hover:bg-[#357a66] transition font-bold flex items-center gap-2">
             <i class="fa-solid fa-pen"></i> Edit Pemesanan
         </a>
+        @endif
         <a href="{{ route('pemesanan.index') }}"
             class="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200 transition font-bold flex items-center gap-2">
             <i class="fa-solid fa-arrow-left"></i> Kembali

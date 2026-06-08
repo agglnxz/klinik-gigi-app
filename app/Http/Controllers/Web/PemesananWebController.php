@@ -8,6 +8,7 @@ use App\Models\PemesananItem;
 use App\Models\Pemeriksaan;
 use App\Models\Laboratorium;
 use App\Models\JenisGigi;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -57,14 +58,22 @@ class PemesananWebController extends Controller
         $query->orderBy('tanggal_dikirim', $sortOrder);
 
         // Ambil data akhir setelah disaring
-        $data = $query->get();
+        $data = $query->paginate(10)->withQueryString();
 
         // 5. Hitung Statistik Widget (Diambil dari data riil DB agar selalu akurat)
         $totalPesanan   = Pemesanan::count();
         $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
         $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
 
-        return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai'));
+        // Ambil daftar ID pemesanan yang berstatus 'Pending' hapus
+        $pendingHapus = PengajuanHapus::where('nama_tabel', 'pemesanan')
+            ->where('status_approval', 'Pending')
+            ->pluck('id_referensi')
+            ->toArray();
+
+        // Jangan lupa kirim $pendingHapus ke dalam return view compact()
+
+        return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai', 'pendingHapus'));
     }
 
     public function show(int $id)
