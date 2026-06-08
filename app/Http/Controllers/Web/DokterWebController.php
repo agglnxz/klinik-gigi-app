@@ -43,13 +43,15 @@ class DokterWebController extends Controller
 
     public function edit(int $id)
     {
-        $Dokter = Dokter::findOrFail($id);
-        return view('data_master.dokter.update', compact('Dokter'));
+        // Ubah $Dokter menjadi $dokter (huruf kecil)
+        $dokter = Dokter::findOrFail($id);
+        return view('data_master.dokter.update', compact('dokter'));
     }
 
     public function update(Request $request, int $id)
     {
-        $Dokter = Dokter::findOrFail($id);
+        // Ubah $Dokter menjadi $dokter (huruf kecil) agar konsisten dan rapi
+        $dokter = Dokter::findOrFail($id);
 
         $request->validate([
             'nama'     => 'required|string|max:100',
@@ -57,7 +59,7 @@ class DokterWebController extends Controller
             'is_aktif' => 'required|boolean',
         ]);
 
-        $Dokter->update([
+        $dokter->update([
             'nama'     => $request->nama,
             'kontak'   => $request->kontak,
             'is_aktif' => $request->is_aktif,
