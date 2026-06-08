@@ -56,11 +56,16 @@
     <div class="bg-[#f0f9f4] p-8 rounded-2xl flex justify-between items-center shadow-md border border-gray-100">
         <div class="max-w-md">
             <span class="bg-[#4d9078] text-white text-[10px] px-3 py-1 rounded-full font-bold">INFO SISTEM</span>
-            <h3 class="text-2xl font-bold text-gray-800 mt-4 leading-tight">Optimalkan Alur Kerja Protesa Anda Secara Real-time.</h3>
-            <p class="text-gray-500 text-sm mt-4">Gunakan dashboard ini untuk memantau setiap langkah pembuatan protesa gigi...</p>
-            <a href="{{ route('pemeriksaan.index') }}">
-                <button class="mt-6 bg-[#1b5e4b] text-white px-6 py-2 rounded-md font-semibold">Mulai Pemeriksaan Baru</button>
-            </a>
+            <h3 class="text-2xl font-bold text-gray-800 mt-4 leading-tight">Optimalkan Alur Kerja Protesa Anda Secara
+                Real-time.</h3>
+            <p class="text-gray-500 text-sm mt-4">Gunakan dashboard ini untuk memantau setiap langkah pembuatan protesa
+                gigi...</p>
+            @if (Auth::user()->role === 'Admin')
+                <a href="{{ route('pemeriksaan.index') }}">
+                    <button class="mt-6 bg-[#1b5e4b] text-white px-6 py-2 rounded-md font-semibold">Mulai Pemeriksaan
+                        Baru</button>
+                </a>
+            @endif
         </div>
         <img src="{{ asset('images/dental-tools.png') }}" class="w-72 h-48 object-cover rounded-xl shadow-lg">
     </div>
