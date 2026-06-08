@@ -25,7 +25,8 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Total Pasien</p>
-                    <h3 class="text-2xl font-black text-gray-800">{{ $pasien->count() }}</h3>
+                    {{-- UBAH INI: Gunakan $totalPasien dari Controller --}}
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($totalPasien, 0, ',', '.') }}</h3>
                 </div>
             </div>
 
@@ -35,7 +36,8 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Pasien Baru (Bulan Ini)</p>
-                    <h3 class="text-2xl font-black text-gray-800">42</h3>
+                    {{-- UBAH INI: Gunakan $pasienBaru dari Controller --}}
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($pasienBaru, 0, ',', '.') }}</h3>
                 </div>
             </div>
 
@@ -45,77 +47,82 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.15em]">Kunjungan Hari Ini</p>
-                    <h3 class="text-2xl font-black text-gray-800">18</h3>
+                    {{-- UBAH INI: Gunakan $kunjunganHariIni dari Controller --}}
+                    <h3 class="text-2xl font-black text-gray-800">{{ number_format($kunjunganHariIni, 0, ',', '.') }}</h3>
                 </div>
             </div>
         </div>
 
-        <div
+        {{-- BARIS PENCARIAN & FILTER (Kini Aktif & Terhubung ke Controller) --}}
+        <form action="{{ route('pasien.index') }}" method="GET"
             class="bg-[#F3F4F3] px-4 py-3 rounded-2xl flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 border border-gray-100">
+
+            {{-- Pencarian --}}
             <div class="relative w-full max-w-[380px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                <input type="text" placeholder="Cari nama pasien, dokter, atau catatan..."
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Cari nama pasien, No RM, atau kontak..."
                     class="w-full pl-11 pr-4 py-2.5 text-xs border-none rounded-xl bg-white ring-1 ring-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm placeholder:text-gray-600 font-medium">
             </div>
 
             <div class="flex items-center gap-8">
-                <div x-data="{ open: false, selected: 'Bulan Ini' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-
-                    <button @click="open = !open"
+                {{-- Filter Periode --}}
+                <div x-data="{ open: false, selected: '{{ request('periode', 'Semua Waktu') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
+                    <input type="hidden" name="periode" :value="selected">
+                    <button type="button" @click="open = !open"
                         class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center justify-between w-[160px] uppercase tracking-tight transition-colors">
-
                         <span>Periode</span>
-
                         <span class="text-[#176851] font-black flex items-center gap-1">
                             <span x-text="selected"></span>
                             <i class="fa-solid fa-chevron-down text-[8px]"></i>
                         </span>
                     </button>
-
-                    <!-- Dropdown -->
-                    <div x-show="open" @click.outside="open = false"
+                    <div x-show="open" @click.outside="open = false" style="display: none;"
                         class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden">
-
-                        <button @click="selected='Hari Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Semua Waktu'; open=false; $nextTick(() => $el.closest('form').submit())"
+                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Semua Waktu</button>
+                        <button type="button"
+                            @click="selected='Hari Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Hari Ini</button>
-
-                        <button @click="selected='Minggu Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Minggu Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Minggu Ini</button>
-
-                        <button @click="selected='Bulan Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Bulan Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Bulan Ini</button>
-
-                        <button @click="selected='Tahun Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Tahun Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tahun Ini</button>
                     </div>
                 </div>
-                <div x-data="{ open: false, selected: 'Tanggal Terbaru' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
 
-                    <button @click="open = !open"
+                {{-- Filter Urutkan --}}
+                <div x-data="{ open: false, selected: '{{ request('sort', 'Tanggal Terbaru') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
+                    <input type="hidden" name="sort" :value="selected">
+                    <button type="button" @click="open = !open"
                         class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center gap-2 uppercase tracking-tight transition-colors whitespace-nowrap">
-
                         Urutkan
                         <span class="text-[#176851] font-black" x-text="selected"></span>
                         <i class="fa-solid fa-chevron-down text-[8px]"></i>
                     </button>
-
-                    <div x-show="open" @click.outside="open = false"
+                    <div x-show="open" @click.outside="open = false" style="display: none;"
                         class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden">
-
-                        <button @click="selected='Tanggal Terbaru'; open=false"
+                        <button type="button"
+                            @click="selected='Tanggal Terbaru'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tanggal Terbaru</button>
-
-                        <button @click="selected='Tanggal Terlama'; open=false"
+                        <button type="button"
+                            @click="selected='Tanggal Terlama'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tanggal Terlama</button>
                     </div>
                 </div>
 
-                <button
+                <button type="button"
                     class="px-2 py-3 text-[9px] font-black text-gray-500 bg-white ring-1 ring-gray-100 rounded-xl flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm uppercase tracking-widest whitespace-nowrap">
                     <i class="fa-solid fa-download text-gray-400 text-xs"></i> Ekspor Data
                 </button>
             </div>
-        </div>
+        </form>
 
         @if (session('success'))
             <div
@@ -175,17 +182,29 @@
                                 </td>
                                 <td class="px-8 py-6">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('pasien.edit', $item->id) }}">
-                                            <button
+
+                                        {{-- CEK STATUS PENGAJUAN HAPUS --}}
+                                        @if (isset($pendingHapus) && in_array($item->id, $pendingHapus))
+                                            {{-- Tombol Disabled (Abu-abu) --}}
+                                            <span
+                                                class="flex items-center px-4 py-2 bg-gray-100 text-gray-400 text-[10px] font-bold rounded-md border border-gray-200 cursor-not-allowed">
+                                                <i class="fa-solid fa-hourglass-half mr-1.5 animate-pulse"></i> Menunggu
+                                                Hapus
+                                            </span>
+                                        @else
+                                            {{-- Tombol Normal Edit & Hapus --}}
+                                            <a href="{{ route('pasien.edit', $item->id) }}"
                                                 class="flex items-center px-4 py-2 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d] transition shadow-md hover:shadow">
                                                 <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                            </a>
+
+                                            <button type="button"
+                                                @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nama: '{{ $item->nama }}', tabel: 'pasien' })"
+                                                class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer transition shadow-md hover:shadow">
+                                                <i class="fa-solid fa-trash mr-1.5"></i> Hapus
                                             </button>
-                                        </a>
-                                        <button type="button"
-                                            @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nama: '{{ $item->nama }}', tabel: 'pasien' })"
-                                            class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer">
-                                            <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                        </button>
+                                        @endif
+
                                     </div>
                                 </td>
                             </tr>
@@ -202,50 +221,62 @@
                     </tbody>
                 </table>
             </div>
+            <div
+                class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-[11px] font-normal text-gray-400 italic order-2 sm:order-1">
+                    Menampilkan data ke-{{ $pasien->firstItem() ?? 0 }} sampai {{ $pasien->lastItem() ?? 0 }} dari total
+                    <span class="text-gray-600 font-bold not-italic">{{ $pasien->total() }} pasien</span>
+                </p>
 
-
-            <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-                <p class="text-[11px] text-gray-400 font-medium">Menampilkan {{ $pasien->count() }} Pasien Saat Ini</p>
+                {{-- Tombol Next - Previous Bawaan Laravel Tailwind --}}
+                <div class="order-1 sm:order-2 scale-90 origin-right global-pagination">
+                    {{ $pasien->onEachSide(1)->links() }}
+                </div>
             </div>
         </div>
     </div>
     <div x-data="{ open: false, idReferensi: '', namaData: '', namaTabel: '', alasan: '' }"
-     @buka-modal-hapus.window="open = true; idReferensi = $event.detail.id; namaData = $event.detail.nama; namaTabel = $event.detail.tabel"
-     x-show="open"
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4"
-     style="display: none;">
+        @buka-modal-hapus.window="open = true; idReferensi = $event.detail.id; namaData = $event.detail.nama; namaTabel = $event.detail.tabel"
+        x-show="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 p-4"
+        style="display: none;">
 
-    <div @click.outside="open = false" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100">
-        <div class="flex items-center gap-3 text-red-500 mb-4">
-            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-            <h3 class="text-base font-bold text-gray-800">Pengajuan Hapus Data Pasien</h3>
+        <div @click.outside="open = false"
+            class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100">
+            <div class="flex items-center gap-3 text-red-500 mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                <h3 class="text-base font-bold text-gray-800">Pengajuan Hapus Data Pasien</h3>
+            </div>
+
+            <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                Anda mengajukan penghapusan untuk pasien bernama: <span class="font-bold text-gray-800"
+                    x-text="namaData"></span>. Data tidak akan langsung terhapus sebelum disetujui oleh Direktur.
+            </p>
+
+            <form :action="'{{ route('pengajuan-hapus.store') }}'" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="id_referensi" :value="idReferensi">
+                <input type="hidden" name="nama_tabel" :value="namaTabel">
+                <input type="hidden" name="nama_data" :value="namaData">
+
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Alasan
+                        Penghapusan</label>
+                    <textarea name="alasan_hapus" x-model="alasan" required rows="3"
+                        placeholder="Tulis alasan medis atau administratif mengapa pasien ini dihapus..."
+                        class="w-full p-3 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all placeholder:text-gray-400 font-medium"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 border-t border-gray-50 pt-4">
+                    <button type="button" @click="open = false"
+                        class="px-4 py-2 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200">
+                        Batal
+                    </button>
+                    <button type="submit" :disabled="!alasan.trim()"
+                        class="px-4 py-2 bg-[#176851] text-white text-xs font-bold rounded-lg hover:bg-teal-700 disabled:opacity-50">
+                        Kirim Pengajuan
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-            Anda mengajukan penghapusan untuk pasien bernama: <span class="font-bold text-gray-800" x-text="namaData"></span>. Data tidak akan langsung terhapus sebelum disetujui oleh Direktur.
-        </p>
-
-        <form :action="'{{ route('pengajuan-hapus.store') }}'" method="POST" class="space-y-4">
-            @csrf
-            <input type="hidden" name="id_referensi" :value="idReferensi">
-            <input type="hidden" name="nama_tabel" :value="namaTabel">
-            <input type="hidden" name="nama_data" :value="namaData">
-
-            <div>
-                <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Alasan Penghapusan</label>
-                <textarea name="alasan_hapus" x-model="alasan" required rows="3" placeholder="Tulis alasan medis atau administratif mengapa pasien ini dihapus..."
-                    class="w-full p-3 text-xs border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all placeholder:text-gray-400 font-medium"></textarea>
-            </div>
-
-            <div class="flex justify-end gap-2 border-t border-gray-50 pt-4">
-                <button type="button" @click="open = false" class="px-4 py-2 bg-gray-100 text-gray-600 text-xs font-bold rounded-lg hover:bg-gray-200">
-                    Batal
-                </button>
-                <button type="submit" :disabled="!alasan.trim()" class="px-4 py-2 bg-[#176851] text-white text-xs font-bold rounded-lg hover:bg-teal-700 disabled:opacity-50">
-                    Kirim Pengajuan
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 @endsection

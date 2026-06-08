@@ -64,18 +64,22 @@
         </div>
 
         {{-- BARIS PENCARIAN & FILTER --}}
-        <div
+        <form action="{{ route('pemeriksaan.index') }}" method="GET"
             class="bg-[#F3F4F3] px-4 py-3 rounded-2xl flex flex-wrap lg:flex-nowrap justify-between items-center gap-3 border border-gray-100">
+
+            {{-- Pencarian --}}
             <div class="relative w-full max-w-[380px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                <input type="text" placeholder="Cari nama pasien, dokter, atau catatan..."
+                <input type="text" name="search" value="{{ request('search') }}"
+                    placeholder="Cari No Pemeriksaan, Pasien, Dokter, Catatan..."
                     class="w-full pl-11 pr-4 py-2.5 text-xs border-none rounded-xl bg-white ring-1 ring-gray-100 focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm placeholder:text-gray-600 font-medium">
             </div>
 
             <div class="flex items-center gap-8">
                 {{-- Filter Periode --}}
-                <div x-data="{ open: false, selected: 'Bulan Ini' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-                    <button @click="open = !open"
+                <div x-data="{ open: false, selected: '{{ request('periode', 'Semua Waktu') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
+                    <input type="hidden" name="periode" :value="selected">
+                    <button type="button" @click="open = !open"
                         class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center justify-between w-[160px] uppercase tracking-tight transition-colors">
                         <span>Periode</span>
                         <span class="text-[#176851] font-black flex items-center gap-1">
@@ -83,42 +87,52 @@
                             <i class="fa-solid fa-chevron-down text-[8px]"></i>
                         </span>
                     </button>
-                    <div x-show="open" @click.outside="open = false"
+                    <div x-show="open" @click.outside="open = false" style="display: none;"
                         class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden">
-                        <button @click="selected='Hari Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Semua Waktu'; open=false; $nextTick(() => $el.closest('form').submit())"
+                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Semua Waktu</button>
+                        <button type="button"
+                            @click="selected='Hari Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Hari Ini</button>
-                        <button @click="selected='Minggu Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Minggu Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Minggu Ini</button>
-                        <button @click="selected='Bulan Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Bulan Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Bulan Ini</button>
-                        <button @click="selected='Tahun Ini'; open=false"
+                        <button type="button"
+                            @click="selected='Tahun Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tahun Ini</button>
                     </div>
                 </div>
 
                 {{-- Filter Urutkan --}}
-                <div x-data="{ open: false, selected: 'Tanggal Terbaru' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-                    <button @click="open = !open"
+                <div x-data="{ open: false, selected: '{{ request('sort', 'Tanggal Terbaru') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
+                    <input type="hidden" name="sort" :value="selected">
+                    <button type="button" @click="open = !open"
                         class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center gap-2 uppercase tracking-tight transition-colors whitespace-nowrap">
                         Urutkan
                         <span class="text-[#176851] font-black" x-text="selected"></span>
                         <i class="fa-solid fa-chevron-down text-[8px]"></i>
                     </button>
-                    <div x-show="open" @click.outside="open = false"
+                    <div x-show="open" @click.outside="open = false" style="display: none;"
                         class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden">
-                        <button @click="selected='Tanggal Terbaru'; open=false"
+                        <button type="button"
+                            @click="selected='Tanggal Terbaru'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tanggal Terbaru</button>
-                        <button @click="selected='Tanggal Terlama'; open=false"
+                        <button type="button"
+                            @click="selected='Tanggal Terlama'; open=false; $nextTick(() => $el.closest('form').submit())"
                             class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tanggal Terlama</button>
                     </div>
                 </div>
 
-                <button
+                <button type="button"
                     class="px-2 py-3 text-[9px] font-black text-gray-500 bg-white ring-1 ring-gray-100 rounded-xl flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm uppercase tracking-widest whitespace-nowrap">
                     <i class="fa-solid fa-download text-gray-400 text-xs"></i> Ekspor Data
                 </button>
             </div>
-        </div>
+        </form>
 
         {{-- TABEL DATA PEMERIKSAAN --}}
         <div class="bg-white rounded-[24px] border border-gray-100 shadow-sm overflow-hidden">
@@ -194,16 +208,28 @@
                                 <td class="px-6 py-6">
                                     <div class="flex justify-center items-center gap-2">
                                         @if (auth()->user()->role === 'Admin')
-                                            <a href="{{ route('pemeriksaan.edit', $item->id) }}"
-                                                class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d]">
-                                                <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                            </a>
+                                            {{-- CEK APAKAH ID INI SEDANG DIAJUKAN HAPUS --}}
+                                            @if (in_array($item->id, $pendingHapus))
+                                                {{-- Tombol Disabled (Abu-abu & Tidak bisa diklik) --}}
+                                                <span
+                                                    class="flex items-center px-3 py-1.5 bg-gray-100 text-gray-400 text-[10px] font-bold rounded-md border border-gray-200 cursor-not-allowed">
+                                                    <i class="fa-solid fa-hourglass-half mr-1.5 animate-pulse"></i>
+                                                    Menunggu
+                                                    Hapus
+                                                </span>
+                                            @else
+                                                {{-- Tombol Normal (Jika tidak ada pengajuan) --}}
+                                                <a href="{{ route('pemeriksaan.edit', $item->id) }}"
+                                                    class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d]">
+                                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                                </a>
 
-                                            <button type="button"
-                                                @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nomor: '{{ $item->no_pemeriksaan }}', tabel: 'pemeriksaan' })"
-                                                class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer">
-                                                <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                            </button>
+                                                <button type="button"
+                                                    @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nomor: '{{ $item->no_pemeriksaan }}', tabel: 'pemeriksaan' })"
+                                                    class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer">
+                                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                                                </button>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>
@@ -211,7 +237,8 @@
                         @empty
                             {{-- TAMPILAN JIKA DATA KOSONG --}}
                             <tr>
-                                <td colspan="7" class="px-6 py-10 text-center text-gray-400 italic text-xs border-none">
+                                <td colspan="7"
+                                    class="px-6 py-10 text-center text-gray-400 italic text-xs border-none">
                                     Belum ada data pemeriksaan yang dicatat.
                                 </td>
                             </tr>
@@ -222,11 +249,18 @@
             </div>
 
             {{-- FOOTER INDIKATOR TOTAL DATA DINAMIS --}}
-            <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-                <p class="text-[11px] font-normal text-gray-400 italic">
-                    Total terdaftar: <span class="text-gray-600 font-bold not-italic">{{ $pemeriksaan->count() }} riwayat
+            <div
+                class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-[11px] font-normal text-gray-400 italic order-2 sm:order-1">
+                    Menampilkan data ke-{{ $pemeriksaan->firstItem() ?? 0 }} sampai {{ $pemeriksaan->lastItem() ?? 0 }}
+                    dari total <span class="text-gray-600 font-bold not-italic">{{ $pemeriksaan->total() }} riwayat
                         pemeriksaan</span>
                 </p>
+
+                {{-- Tombol Navigasi --}}
+                <div class="order-1 sm:order-2 scale-90 origin-right global-pagination">
+                    {{ $pemeriksaan->onEachSide(1)->links() }}
+                </div>
             </div>
         </div>
     </div>

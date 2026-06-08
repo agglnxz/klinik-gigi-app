@@ -7,30 +7,69 @@ use App\Models\Pemeriksaan;
 use App\Models\Pasien;
 use App\Models\Dokter;
 use App\Models\Asisten;
+use App\Models\PengajuanHapus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PemeriksaanWebController extends Controller
 {
-    public function index()
+public function index(Request $request)
     {
-        $pemeriksaan = Pemeriksaan::with(['pasien', 'dokter', 'asisten'])
-            ->orderBy('id', 'desc')
-            ->get();
-        // 2. Hitung statistik widget secara dinamis
-        $totalPasien = Pasien::count();
+        // 1. Inisialisasi Query Dasar dengan Eager Loading
+        $query = Pemeriksaan::with(['pasien', 'dokter', 'asisten']);
 
+        // 2. Logika Pencarian (Mencari No Pemeriksaan, Catatan, Nama Pasien, atau Nama Dokter)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('no_pemeriksaan', 'like', "%{$search}%")
+                  ->orWhere('catatan', 'like', "%{$search}%")
+                  ->orWhereHas('pasien', function ($qp) use ($search) {
+                      $qp->where('nama', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('dokter', function ($qd) use ($search) {
+                      $qd->where('nama', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // 3. Logika Filter Periode (Berdasarkan kolom tanggal pemeriksaan)
+        if ($request->filled('periode') && $request->periode != 'Semua Waktu') {
+            if ($request->periode == 'Hari Ini') $query->whereDate('tanggal', today());
+            if ($request->periode == 'Minggu Ini') $query->whereBetween('tanggal', [now()->startOfWeek(), now()->endOfWeek()]);
+            if ($request->periode == 'Bulan Ini') $query->whereMonth('tanggal', now()->month)->whereYear('tanggal', now()->year);
+            if ($request->periode == 'Tahun Ini') $query->whereYear('tanggal', now()->year);
+        }
+
+        // 4. Logika Urutkan (Sort)
+        if ($request->filled('sort') && $request->sort == 'Tanggal Terlama') {
+            $query->orderBy('tanggal', 'asc');
+        } else {
+            $query->orderBy('tanggal', 'desc'); // Default Tanggal Terbaru
+        }
+
+
+        $pemeriksaan = $query->paginate(10)->withQueryString();
+
+        // 6. Hitung statistik widget secara dinamis (Tetap Global)
+        $totalPasien = Pasien::count();
         $pasienBaru  = Pasien::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
+        $kunjunganHariIni = Pemeriksaan::whereDate('tanggal', today())->count();
 
-        $kunjunganHariIni = Pemeriksaan::whereDate('tanggal', now()->toDateString())->count();
+        // 7. Ambil daftar ID pemeriksaan yang berstatus 'Pending' hapus
+        $pendingHapus = PengajuanHapus::where('nama_tabel', 'pemeriksaan')
+            ->where('status_approval', 'Pending')
+            ->pluck('id_referensi')
+            ->toArray();
 
         return view('pemeriksaan.index', compact(
             'pemeriksaan',
             'totalPasien',
             'pasienBaru',
-            'kunjunganHariIni'
+            'kunjunganHariIni',
+            'pendingHapus'
         ));
     }
 

@@ -11,12 +11,14 @@
                 <h3 class="text-2xl font-bold text-black-1000">Daftar Pemesanan</h3>
                 <p class="text-sm text-gray-500 font-light">Mengelola data pemesanan dan pengiriman ke laboratorium gigi</p>
             </div>
+            @if (auth()->user()->role === 'Admin')
             <a href="{{ route('pemesanan.create') }}">
                 <button
                     class="bg-[#176851] hover:bg-[#357a66] text-white px-5 py-2.5 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-sm cursor-pointer">
                     <i class="fa-solid fa-plus text-xs"></i> Tambah Pemesanan
                 </button>
             </a>
+            @endif
         </div>
 
         {{-- STATISTIK WIDGET (Memakai variabel terhitung dari Controller agar akurat) --}}
@@ -248,22 +250,35 @@
 
                                 <td class="px-5 py-4">
                                     <div class="flex justify-center items-center gap-2">
+
+                                        {{-- TOMBOL DETAIL (Selalu aktif & perbaikan hover text putih) --}}
                                         <a href="{{ route('pemesanan.show', $item->id) }}"
-                                            class="flex items-center px-3 py-1.5 bg-[#e7f5f1] text-[#176851] text-xs font-bold rounded-md hover:bg-[#176851]">
+                                            class="flex items-center px-3 py-1.5 bg-[#e7f5f1] text-[#176851] text-xs font-bold rounded-md hover:bg-[#176851] hover:text-white transition-colors duration-200">
                                             <i class="fa-solid fa-eye mr-1.5"></i> Detail
                                         </a>
 
                                         @if (auth()->user()->role === 'Admin')
-                                            <a href="{{ route('pemesanan.edit', $item->id) }}"
-                                                class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d]">
-                                                <i class="fa-solid fa-pen mr-1.5"></i> Edit
-                                            </a>
+                                            {{-- CEK STATUS PENGAJUAN HAPUS --}}
+                                            @if (isset($pendingHapus) && in_array($item->id, $pendingHapus))
+                                                {{-- Tombol Disabled (Abu-abu) --}}
+                                                <span
+                                                    class="flex items-center px-3 py-1.5 bg-gray-100 text-gray-400 text-[10px] font-bold rounded-md border border-gray-200 cursor-not-allowed">
+                                                    <i class="fa-solid fa-hourglass-half mr-1.5 animate-pulse"></i>
+                                                    Menunggu Hapus
+                                                </span>
+                                            @else
+                                                {{-- Tombol Normal Edit & Hapus --}}
+                                                <a href="{{ route('pemesanan.edit', $item->id) }}"
+                                                    class="flex items-center px-3 py-1.5 bg-[#59a38a] text-white text-xs font-bold rounded-md hover:bg-[#46826d] transition-colors duration-200">
+                                                    <i class="fa-solid fa-pen mr-1.5"></i> Edit
+                                                </a>
 
-                                            <button type="button"
-                                                @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nomor: '{{ $item->no_pemesanan }}', tabel: 'pemesanan' })"
-                                                class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer">
-                                                <i class="fa-solid fa-trash mr-1.5"></i> Hapus
-                                            </button>
+                                                <button type="button"
+                                                    @click="$dispatch('buka-modal-hapus', { id: '{{ $item->id }}', nomor: '{{ $item->no_pemesanan }}', tabel: 'pemesanan' })"
+                                                    class="flex items-center px-3 py-1.5 bg-[#d65f5f] text-white text-xs font-bold rounded-md hover:bg-[#b54d4d] cursor-pointer transition-colors duration-200">
+                                                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                                                </button>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>
@@ -280,9 +295,14 @@
                 </table>
             </div>
 
-            <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100">
-                <p class="text-[11px] font-normal text-gray-400 italic">Total terdaftar: <span
-                        class="text-gray-600 font-bold not-italic">{{ $data->count() }} pesanan</span></p>
+           <div class="bg-[#F3F4F3] px-8 py-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-[11px] font-normal text-gray-400 italic order-2 sm:order-1">
+                    Menampilkan data ke-{{ $data->firstItem() ?? 0 }} sampai {{ $data->lastItem() ?? 0 }} dari total <span class="text-gray-600 font-bold not-italic">{{ $data->total() }} pesanan</span>
+                </p>
+
+                <div class="order-1 sm:order-2 scale-90 origin-right global-pagination">
+                    {{ $data->onEachSide(1)->links() }}
+                </div>
             </div>
         </div>
     </div>
