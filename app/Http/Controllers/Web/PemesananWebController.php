@@ -17,10 +17,29 @@ class PemesananWebController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Kueri Dasar dengan Eager Loading
+        $bulanIni = Carbon::now()->month;
+        $tahunIni = Carbon::now()->year;
+
+        // 1. Total Pesanan khusus BULAN INI saja (Saran Mitra)
+        $totalPesanan = Pemesanan::whereMonth('created_at', $bulanIni)
+            ->whereYear('created_at', $tahunIni)
+            ->count();
+
+        // 2. Sedang Diproses SEMUA PERIODE (Solusi Kebingungan Anda)
+        // Menghitung semua yang belum selesai tanpa batas waktu agar tidak ada yang kelupaan
+        $sedangDiproses = Pemesanan::whereIn('status_pemesanan', ['dalam_proses', 'tiba_di_klinik'])
+            ->count();
+
+        // 3. Selesai BULAN INI saja
+        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')
+            ->whereMonth('updated_at', $bulanIni) // dihitung berdasarkan kapan dia diselesaikan
+            ->whereYear('updated_at', $tahunIni)
+            ->count();
+
+        // 4. Kueri Dasar dengan Eager Loading
         $query = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi']);
 
-        // 2. Logika Filter Pencarian
+        // 5. Logika Filter Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -34,7 +53,7 @@ class PemesananWebController extends Controller
             });
         }
 
-        // 3. Logika Filter Periode Waktu
+        // 6. Logika Filter Periode Waktu (Tabel data utama)
         if ($request->filled('periode')) {
             switch ($request->periode) {
                 case 'hari_ini':
@@ -53,26 +72,20 @@ class PemesananWebController extends Controller
             }
         }
 
-        // 4. Logika Pengurutan Data (Sorting)
+        // 7. Logika Pengurutan Data (Sorting)
         $sortOrder = $request->get('urutkan', 'terbaru') === 'terlama' ? 'asc' : 'desc';
         $query->orderBy('tanggal_dikirim', $sortOrder);
 
         // Ambil data akhir setelah disaring
         $data = $query->paginate(10)->withQueryString();
 
-        // 5. Hitung Statistik Widget (Diambil dari data riil DB agar selalu akurat)
-        $totalPesanan   = Pemesanan::count();
-        $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
-        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
-
-        // Ambil daftar ID pemesanan yang berstatus 'Pending' hapus
+        // 8. Ambil daftar ID pemesanan yang berstatus 'Pending' hapus
         $pendingHapus = PengajuanHapus::where('nama_tabel', 'pemesanan')
             ->where('status_approval', 'Pending')
             ->pluck('id_referensi')
             ->toArray();
 
-        // Jangan lupa kirim $pendingHapus ke dalam return view compact()
-
+        // Mengirimkan semua variabel yang dibutuhkan ke view
         return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai', 'pendingHapus'));
     }
 
