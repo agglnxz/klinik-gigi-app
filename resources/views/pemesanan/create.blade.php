@@ -84,7 +84,6 @@
                                 <option value="dalam_proses" {{ old('status_pemesanan') == 'dalam_proses' ? 'selected' : '' }}>Dalam Proses</option>
                                 <option value="tiba_di_klinik" {{ old('status_pemesanan') == 'tiba_di_klinik' ? 'selected' : '' }}>Telah Tiba di Klinik</option>
                                 <option value="selesai" {{ old('status_pemesanan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                <option value="dibatalkan" {{ old('status_pemesanan') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                             </select>
                         </div>
                     </div>
