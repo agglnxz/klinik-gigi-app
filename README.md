@@ -85,7 +85,9 @@ Anda dapat menguji fungsi multi-role dan sistem *approval* menggunakan akun bawa
 | **Direktur** | `direktur@klinik.com` | `password` | *Approval* pengajuan hapus data & manajemen akun karyawan. |
 | **Marketing** | `marketing@klinik.com` | `password` | Memantau infografis dashboard & daftar pesanan (Dilarang melihat Rekam Medis). |
 
-### Struktur Folder Inti
+## 📂 Struktur Folder Inti
+
+```text
 klinik-gigi-app/
 ├── app/
 │   ├── Http/
@@ -102,6 +104,7 @@ klinik-gigi-app/
 │       └── vendor/pagination/    <-- Kustomisasi desain hijau tema kustom pagination
 └── routes/
     └── web.php                   <-- Manajemen rute aplikasi & proteksi role
+```
 
 ### Anggota Kelompok 2
 Proyek ini dikembangkan secara kolaboratif oleh:
