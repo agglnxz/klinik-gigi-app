@@ -12,6 +12,14 @@ class DashboardWebController extends Controller
     {
         $totalPasien = Pasien::count();
 
+        $laporanPesanan = Pemesanan::with(['pemeriksaan.pasien', 'lab'])
+            ->whereIn('status_pemesanan', ['dalam_proses', 'tiba_di_klinik', 'selesai'])
+            ->orderByDesc('tanggal_dikirim')
+            ->get();
+
+        $pesananBelumTiba = $laporanPesanan->where('status_pemesanan', 'dalam_proses')->count();
+        $pesananSudahTiba = $laporanPesanan->whereIn('status_pemesanan', ['tiba_di_klinik', 'selesai'])->count();
+
         $pesananProses = Pemesanan::where(
             'status_pemesanan',
             'Proses Lab'
@@ -25,7 +33,10 @@ class DashboardWebController extends Controller
         return view('dashboard', compact(
             'totalPasien',
             'pesananProses',
-            'pesananSelesai'
+            'pesananSelesai',
+            'laporanPesanan',
+            'pesananBelumTiba',
+            'pesananSudahTiba'
         ));
     }
 }
