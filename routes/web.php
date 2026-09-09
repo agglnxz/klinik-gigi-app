@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\JenisGigiWebController;
 use App\Http\Controllers\Web\PasienWebController;
 use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
+use App\Http\Controllers\Web\LaporanWebController;
 use App\Http\Controllers\Web\PengajuanHapusWebController;
 
 use App\Http\Controllers\Web\ProfileController;
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:Admin,Marketing,Direktur')->group(function () {
         Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
         Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
+        Route::get('laporan', [LaporanWebController::class, 'index'])->name('laporan.index');
 
         // Kunci show wajib angka, dan cukup ditulis 1 kali saja
         Route::get('pemesanan/{pemesanan}', [PemesananWebController::class, 'show'])
