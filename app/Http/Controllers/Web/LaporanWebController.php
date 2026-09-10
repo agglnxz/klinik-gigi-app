@@ -2,11 +2,27 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Exports\LaporanPemesananExport;
 use App\Http\Controllers\Controller;
 use App\Models\Pemesanan;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanWebController extends Controller
 {
+    public function export(Request $request)
+    {
+        return Excel::download(
+            new LaporanPemesananExport(
+                $request->string('search')->trim()->value() ?: null,
+                $request->string('dari')->value() ?: null,
+                $request->string('sampai')->value() ?: null,
+                $request->string('status')->value() ?: null,
+            ),
+            'laporan_pemesanan_gigi_palsu.xlsx'
+        );
+    }
+
     public function index()
     {
         $pesanan = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi'])

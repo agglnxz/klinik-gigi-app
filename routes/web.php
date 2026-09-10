@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
         Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
         Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
         Route::get('laporan', [LaporanWebController::class, 'index'])->name('laporan.index');
+        Route::get('laporan/export', [LaporanWebController::class, 'export'])->name('laporan.export');
 
         // Kunci show wajib angka, dan cukup ditulis 1 kali saja
         Route::get('pemesanan/{pemesanan}', [PemesananWebController::class, 'show'])
