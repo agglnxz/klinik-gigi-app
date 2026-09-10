@@ -3,7 +3,6 @@
 @section('title', 'Laporan Pemesanan')
 
 @section('content')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -813,43 +812,14 @@
                     return;
                 }
 
-                const exportData = rows.map((r, i) => ({
-                    "No": i + 1,
-                    "Tanggal Pesan": tglIndo(r.tgl).replace('&mdash;', ''),
-                    "Nama Pasien": r.pasien,
-                    "Jenis Gigi Palsu": r.jenis,
-                    "Tanggal Kirim": tglIndo(r.tgl),
-                    "Estimasi Selesai": r.tglSelesai ? tglIndo(r.tglSelesai) : "",
-                    "Laboratorium": r.laboratorium,
-                    "Biaya Lab (Rp)": r.biayaLab,
-                    "Bayar Lab (Rp)": r.bayarLab,
-                    "Harga Pasien (Rp)": r.harga,
-                    "Status": statusLabel(r.status)
-                }));
+                const params = new URLSearchParams({
+                    search: document.getElementById('fCari').value.trim(),
+                    dari: document.getElementById('fDari').value,
+                    sampai: document.getElementById('fSampai').value,
+                    status: document.getElementById('fStatus').value,
+                });
 
-                const ws = XLSX.utils.json_to_sheet(exportData);
-                ws['!cols'] = [{
-                    wch: 5
-                }, {
-                    wch: 14
-                }, {
-                    wch: 22
-                }, {
-                    wch: 24
-                }, {
-                    wch: 16
-                }, {
-                    wch: 20
-                }, {
-                    wch: 16
-                }, {
-                    wch: 14
-                }, {
-                    wch: 14
-                }];
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Laporan Pemesanan");
-                XLSX.writeFile(wb, "laporan_pemesanan_gigi_palsu.xlsx");
+                window.location.href = `{{ route('laporan.export') }}?${params.toString()}`;
             });
 
             render();
