@@ -102,11 +102,11 @@ class PemesananWebController extends Controller
         // Ambil data pemesanan spesifik beserta seluruh relasi yang dibutuhkan
         // untuk faktur (pasien, pemeriksaan, dokter, lab, dan rincian item gigi).
         $data = Pemesanan::with([
-                'pemeriksaan.pasien',
-                'pemeriksaan.dokter',
-                'lab',
-                'items.jenisGigi',
-            ])
+            'pemeriksaan.pasien',
+            'pemeriksaan.dokter',
+            'lab',
+            'items.jenisGigi',
+        ])
             ->findOrFail($id);
 
         // Kelompokkan item gigi berdasarkan jenisnya agar rapi di tabel invoice
@@ -138,7 +138,12 @@ class PemesananWebController extends Controller
 
     public function store(Request $request)
     {
-        // Pengetatan validasi menggunakan aturan 'in' sebagai satpam lapis pertama
+        // 1. Bersihkan format Rupiah pada biaya_lab sebelum divalidasi
+        $request->merge([
+            'biaya_lab' => str_replace('.', '', $request->biaya_lab)
+        ]);
+
+        // 2. Pengetatan validasi (Hapus harga_pasien, tambahkan diskon)
         $request->validate([
             'no_pemesanan'     => 'required|unique:pemesanan,no_pemesanan',
             'id_pemeriksaan'   => 'required|exists:pemeriksaan,id',
@@ -146,15 +151,30 @@ class PemesananWebController extends Controller
             'tanggal_dikirim'  => 'required|date',
             'estimasi_selesai' => 'required|date',
             'biaya_lab'        => 'required|numeric',
-            'harga_pasien'     => 'required|numeric',
+            'diskon'           => 'nullable|numeric|min:0|max:100', // Validasi diskon persen
             'status_bayar_lab' => 'required|in:belum_lunas,sudah_lunas',
             'status_pemesanan' => 'required|in:dalam_proses,tiba_di_klinik,dibatalkan,selesai',
             'items'            => 'required|array|min:1',
             'items.*'          => 'required|exists:jenis_gigi,id',
         ]);
 
+        // 3. LOGIKA PERHITUNGAN OTOMATIS
+        $totalGigi = \App\Models\JenisGigi::whereIn('id', $request->items)->sum('estimasi_biaya');
+        $biayaLab = $request->biaya_lab ?? 0;
+        $diskonPersen = $request->diskon ?? 0;
+
+        $subtotal = $totalGigi + $biayaLab;
+        $nominalDiskon = $subtotal * ($diskonPersen / 100);
+        $hargaPasien = $subtotal - $nominalDiskon;
+
+        $hargaPasien = $hargaPasien < 0 ? 0 : round($hargaPasien); // Cegah minus & bulatkan
+
+        // 4. Siapkan data untuk disimpan
+        $inputData = $request->except(['items', 'harga_pasien']);
+        $inputData['harga_pasien'] = $hargaPasien;
+
         // Simpan induk pemesanan
-        $pemesanan = Pemesanan::create($request->except('items'));
+        $pemesanan = Pemesanan::create($inputData);
 
         // Simpan rincian banyak gigi ke tabel perantara (pivot)
         foreach ($request->items as $id_gigi) {
@@ -180,10 +200,14 @@ class PemesananWebController extends Controller
 
     public function update(Request $request, int $id)
     {
-
         $pemesanan = Pemesanan::findOrFail($id);
 
-        // Pengetatan validasi pembaruan data
+        // 1. Bersihkan format Rupiah pada biaya_lab
+        $request->merge([
+            'biaya_lab' => str_replace('.', '', $request->biaya_lab)
+        ]);
+
+        // 2. Validasi pembaruan data
         $request->validate([
             'no_pemesanan'     => 'required|unique:pemesanan,no_pemesanan,' . $id,
             'id_pemeriksaan'   => 'required|exists:pemeriksaan,id',
@@ -191,17 +215,32 @@ class PemesananWebController extends Controller
             'tanggal_dikirim'  => 'required|date',
             'estimasi_selesai' => 'required|date',
             'biaya_lab'        => 'required|numeric',
-            'harga_pasien'     => 'required|numeric',
+            'diskon'           => 'nullable|numeric|min:0|max:100', // Validasi diskon persen
             'status_bayar_lab' => 'required|in:belum_lunas,sudah_lunas',
             'status_pemesanan' => 'required|in:dalam_proses,tiba_di_klinik,dibatalkan,selesai',
             'items'            => 'required|array|min:1',
             'items.*'          => 'required|exists:jenis_gigi,id',
         ]);
 
+        // 3. LOGIKA PERHITUNGAN OTOMATIS
+        $totalGigi = \App\Models\JenisGigi::whereIn('id', $request->items)->sum('estimasi_biaya');
+        $biayaLab = $request->biaya_lab ?? 0;
+        $diskonPersen = $request->diskon ?? 0;
+
+        $subtotal = $totalGigi + $biayaLab;
+        $nominalDiskon = $subtotal * ($diskonPersen / 100);
+        $hargaPasien = $subtotal - $nominalDiskon;
+
+        $hargaPasien = $hargaPasien < 0 ? 0 : round($hargaPasien);
+
+        // 4. Siapkan data untuk update
+        $inputData = $request->except(['items', 'harga_pasien']);
+        $inputData['harga_pasien'] = $hargaPasien;
+
         // Update data induk
-        $pemesanan->update($request->except('items'));
-        // ===== TAMBAHKAN LOGIKA INI =====
-        // Jika status diubah menjadi selain 'dalam_proses', hapus semua notifikasi pesanan ini
+        $pemesanan->update($inputData);
+
+        // Fitur dari teman Anda (Jangan dihapus)
         if (in_array($request->status_pemesanan, ['tiba_di_klinik', 'selesai', 'dibatalkan'])) {
             \App\Models\Notifikasi::where('pemesanan_id', $id)->delete();
         }

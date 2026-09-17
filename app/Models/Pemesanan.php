@@ -24,6 +24,7 @@ class Pemesanan extends Model
         'harga_pasien',
         'status_bayar_lab',
         'status_pemesanan',
+        'diskon'
     ];
 
     // Mengubah string tanggal menjadi objek Carbon secara otomatis
