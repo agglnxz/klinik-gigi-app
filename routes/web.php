@@ -65,6 +65,10 @@ Route::middleware('auth')->group(function () {
             ->name('pemesanan.update')->whereNumber('pemesanan');
 
         Route::post('/pengajuan-hapus', [PengajuanHapusWebController::class, 'store'])->name('pengajuan-hapus.store');
+
+        // Cetak Invoice (khusus Admin)
+        Route::get('pemesanan/{pemesanan}/invoice', [PemesananWebController::class, 'invoice'])
+            ->name('pemesanan.invoice')->whereNumber('pemesanan');
     });
 
     // 🔵 KELOMPOK HAK AKSES: ADMIN, MARKETING, & DIREKTUR (Taruh di BAWAH)

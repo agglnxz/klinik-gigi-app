@@ -266,6 +266,12 @@
                                 </a>
 
                                 @if (auth()->user()->role === 'Admin')
+                                {{-- TOMBOL CETAK INVOICE --}}
+                                <a href="{{ route('pemesanan.invoice', $item->id) }}" target="_blank"
+                                    class="flex items-center px-3 py-1.5 bg-[#eef2ff] text-[#3b4ab5] text-xs font-bold rounded-md hover:bg-[#3b4ab5] hover:text-white transition-colors duration-200">
+                                    <i class="fa-solid fa-print mr-1.5"></i> Cetak Invoice
+                                </a>
+
                                 {{-- CEK STATUS PENGAJUAN HAPUS --}}
                                 @if (isset($pendingHapus) && in_array($item->id, $pendingHapus))
                                 {{-- Tombol Disabled (Abu-abu) --}}

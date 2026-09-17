@@ -97,6 +97,26 @@ class PemesananWebController extends Controller
         return view('pemesanan.show', compact('data'));
     }
 
+    public function invoice(int $id)
+    {
+        // Ambil data pemesanan spesifik beserta seluruh relasi yang dibutuhkan
+        // untuk faktur (pasien, pemeriksaan, dokter, lab, dan rincian item gigi).
+        $data = Pemesanan::with([
+                'pemeriksaan.pasien',
+                'pemeriksaan.dokter',
+                'lab',
+                'items.jenisGigi',
+            ])
+            ->findOrFail($id);
+
+        // Kelompokkan item gigi berdasarkan jenisnya agar rapi di tabel invoice
+        $groupedItems = $data->items->groupBy(fn($i) => $i->jenisGigi->nama_jenis ?? 'Item Terhapus');
+
+        // Template invoice dirender terpisah dari layout utama (tanpa sidebar/navbar)
+        // supaya siap langsung dicetak / disimpan sebagai PDF.
+        return view('pemesanan.invoice', compact('data', 'groupedItems'));
+    }
+
     public function create()
     {
         // Logika Penomoran Otomatis: PSN-YYYYMMDD-NNN
