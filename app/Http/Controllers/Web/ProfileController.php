@@ -19,7 +19,7 @@ class ProfileController extends Controller
             'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
 
-        $user = auth()->user();
+        $user = auth()->user(); 
 
         if ($user->foto) {
             Storage::disk('public')->delete($user->foto);

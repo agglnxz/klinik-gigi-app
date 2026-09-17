@@ -88,43 +88,7 @@
                 <input type="hidden" name="periode" id="input-periode" value="{{ request('periode', 'bulan_ini') }}">
                 <input type="hidden" name="urutkan" id="input-urutkan" value="{{ request('urutkan', 'terbaru') }}">
 
-                {{-- Filter Periode (AlpineJS Terintegrasi Form Auto-Submit) --}}
-                @php
-                $labelsPeriode = [
-                'hari_ini' => 'Hari Ini',
-                'minggu_ini' => 'Minggu Ini',
-                'bulan_ini' => 'Bulan Ini',
-                'tahun_ini' => 'Tahun Ini',
-                ];
-                $currentPeriodeLabel = $labelsPeriode[request('periode')] ?? 'Bulan Ini';
-                @endphp
-                <div x-data="{ open: false, selected: '{{ $currentPeriodeLabel }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-                    <button @click="open = !open" type="button"
-                        class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center justify-between w-[160px] uppercase tracking-tight transition-colors">
-                        <span>Periode</span>
-                        <span class="text-[#176851] font-black flex items-center gap-1">
-                            <span x-text="selected"></span>
-                            <i class="fa-solid fa-chevron-down text-[8px]"></i>
-                        </span>
-                    </button>
-                    <div x-show="open" @click.outside="open = false"
-                        class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden"
-                        style="display: none;">
-                        <button type="button"
-                            @click="selected='Hari Ini'; open=false; document.getElementById('input-periode').value='hari_ini'; document.getElementById('filter-form').submit();"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Hari Ini</button>
-                        <button type="button"
-                            @click="selected='Minggu Ini'; open=false; document.getElementById('input-periode').value='minggu_ini'; document.getElementById('filter-form').submit();"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Minggu Ini</button>
-                        <button type="button"
-                            @click="selected='Bulan Ini'; open=false; document.getElementById('input-periode').value='bulan_ini'; document.getElementById('filter-form').submit();"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Bulan Ini</button>
-                        <button type="button"
-                            @click="selected='Tahun Ini'; open=false; document.getElementById('input-periode').value='tahun_ini'; document.getElementById('filter-form').submit();"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tahun Ini</button>
-                    </div>
-                </div>
-
+                
                 {{-- Filter Urutkan (AlpineJS Terintegrasi Form Auto-Submit) --}}
                 @php
                 $currentSortLabel = request('urutkan') === 'terlama' ? 'Tanggal Terlama' : 'Tanggal Terbaru';

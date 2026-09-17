@@ -66,36 +66,6 @@
             </div>
 
             <div class="flex items-center gap-8">
-                {{-- Filter Periode --}}
-                <div x-data="{ open: false, selected: '{{ request('periode', 'Semua Waktu') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-                    <input type="hidden" name="periode" :value="selected">
-                    <button type="button" @click="open = !open"
-                        class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center justify-between w-[160px] uppercase tracking-tight transition-colors">
-                        <span>Periode</span>
-                        <span class="text-[#176851] font-black flex items-center gap-1">
-                            <span x-text="selected"></span>
-                            <i class="fa-solid fa-chevron-down text-[8px]"></i>
-                        </span>
-                    </button>
-                    <div x-show="open" @click.outside="open = false" style="display: none;"
-                        class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden">
-                        <button type="button"
-                            @click="selected='Semua Waktu'; open=false; $nextTick(() => $el.closest('form').submit())"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Semua Waktu</button>
-                        <button type="button"
-                            @click="selected='Hari Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Hari Ini</button>
-                        <button type="button"
-                            @click="selected='Minggu Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Minggu Ini</button>
-                        <button type="button"
-                            @click="selected='Bulan Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Bulan Ini</button>
-                        <button type="button"
-                            @click="selected='Tahun Ini'; open=false; $nextTick(() => $el.closest('form').submit())"
-                            class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Tahun Ini</button>
-                    </div>
-                </div>
 
                 {{-- Filter Urutkan --}}
                 <div x-data="{ open: false, selected: '{{ request('sort', 'Tanggal Terbaru') }}' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
@@ -117,10 +87,7 @@
                     </div>
                 </div>
 
-                <button type="button"
-                    class="px-2 py-3 text-[9px] font-black text-gray-500 bg-white ring-1 ring-gray-100 rounded-xl flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm uppercase tracking-widest whitespace-nowrap">
-                    <i class="fa-solid fa-download text-gray-400 text-xs"></i> Ekspor Data
-                </button>
+                
             </div>
         </form>
 

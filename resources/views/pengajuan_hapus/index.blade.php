@@ -62,10 +62,7 @@ use Illuminate\Support\Str;
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
         <div class="px-6 py-4 flex justify-between items-center bg-white border-b border-gray-50">
             <h2 class="text-base font-bold text-gray-800">Permintaan Menunggu</h2>
-            <button class="flex items-center space-x-1 text-xs font-bold text-teal-600 hover:text-teal-700 transition">
-                <i class="fa-solid fa-sliders text-sm"></i>
-                <span>Filter</span>
-            </button>
+            
         </div>
 
         <div class="overflow-x-auto max-w-full custom-scrollbar">
