@@ -134,6 +134,10 @@
     {{-- TOMBOL AKSI --}}
     <div class="flex items-center gap-3">
         @if (auth()->user()->role === 'Admin')
+        <a href="{{ route('pemesanan.invoice', $data->id) }}" target="_blank"
+            class="px-5 py-2.5 bg-[#3b4ab5] text-white text-sm rounded-lg hover:bg-[#2f3993] transition font-bold flex items-center gap-2">
+            <i class="fa-solid fa-print"></i> Cetak Invoice
+        </a>
         <a href="{{ route('pemesanan.edit', $data->id) }}"
             class="px-5 py-2.5 bg-[#176851] text-white text-sm rounded-lg hover:bg-[#357a66] transition font-bold flex items-center gap-2">
             <i class="fa-solid fa-pen"></i> Edit Pemesanan

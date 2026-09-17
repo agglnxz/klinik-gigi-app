@@ -1,5 +1,5 @@
 <aside x-data="{ hoverSidebar: false }" @mouseenter="hoverSidebar = true" @mouseleave="hoverSidebar = false"
-    class="bg-white h-screen border-r border-gray-100 flex flex-col justify-between flex-shrink-0 fixed md:static inset-y-0 left-0 shadow-sm overflow-y-auto z-50 transform transition-all duration-300 ease-in-out"
+    class="bg-white h-screen border-r border-gray-100 flex flex-col justify-between flex-shrink-0 fixed md:static inset-y-0 left-0 shadow-sm overflow-y-auto z-50 transform transition-all duration-300 ease-in-out no-print"
     :class="isMobile
         ?
         (sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64') :
@@ -129,7 +129,7 @@
 
                 {{-- LAPORAN --}}
                 <li>
-                    <a href="{{ route('laporan.index') }}"
+                    <a href="#"
                         class="{{ $baseClass }} {{ request()->routeIs('laporan.*') ? $activeClass : $inactiveClass }}"
                         :class="(sidebarOpen || hoverSidebar) ? 'justify-start px-4' : 'justify-center'"
                         title="Laporan">

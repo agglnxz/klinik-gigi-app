@@ -1,4 +1,4 @@
-<nav class="bg-white p-4 flex justify-between items-center w-full border-b border-gray-100 shadow-sm relative z-30">
+<nav class="bg-white p-4 flex justify-between items-center w-full border-b border-gray-100 shadow-sm relative z-30 no-print">
 
     <div class="flex items-center">
         {{-- HAMBURGER --}}

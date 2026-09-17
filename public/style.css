@@ -70,3 +70,58 @@
         .status-diproses  { color: #2563eb; }
         .status-selesai   { color: #16a34a; }
         .status-terlambat { color: #dc2626; }
+
+/* NAVBAR DAN SIDEBAR TIDAK MUNCUL DI CETAK PDF*/
+        @media print {
+    .no-print,
+    aside,
+    nav,
+    .sidebar,
+    .navbar {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .lembar-invoice {
+        width: auto;
+        margin: 0;
+        box-shadow: none;
+    }
+}
+/* /// */
+
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+
+    html,
+    body {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+    }
+
+    .toolbar-aksi,
+    .no-print {
+        display: none !important;
+    }
+
+    .lembar-invoice {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        padding: 14mm;
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
