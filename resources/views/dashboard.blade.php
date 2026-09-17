@@ -38,6 +38,7 @@
             </div>
         </a>
         <a href="{{ route('laporan.index') }}">
+        <a href="{{ route('pemesanan-riwayat') }}">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <div class="flex justify-between items-start mb-4">
                     <div class="p-3 bg-teal-100 text-teal-600 rounded-lg">

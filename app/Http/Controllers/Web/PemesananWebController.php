@@ -17,10 +17,29 @@ class PemesananWebController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Kueri Dasar dengan Eager Loading
+        $bulanIni = Carbon::now()->month;
+        $tahunIni = Carbon::now()->year;
+
+        // 1. Total Pesanan khusus BULAN INI saja (Saran Mitra)
+        $totalPesanan = Pemesanan::whereMonth('created_at', $bulanIni)
+            ->whereYear('created_at', $tahunIni)
+            ->count();
+
+        // 2. Sedang Diproses SEMUA PERIODE (Solusi Kebingungan Anda)
+        // Menghitung semua yang belum selesai tanpa batas waktu agar tidak ada yang kelupaan
+        $sedangDiproses = Pemesanan::whereIn('status_pemesanan', ['dalam_proses', 'tiba_di_klinik'])
+            ->count();
+
+        // 3. Selesai BULAN INI saja
+        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')
+            ->whereMonth('updated_at', $bulanIni) // dihitung berdasarkan kapan dia diselesaikan
+            ->whereYear('updated_at', $tahunIni)
+            ->count();
+
+        // 4. Kueri Dasar dengan Eager Loading
         $query = Pemesanan::with(['pemeriksaan.pasien', 'lab', 'items.jenisGigi']);
 
-        // 2. Logika Filter Pencarian
+        // 5. Logika Filter Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -34,7 +53,7 @@ class PemesananWebController extends Controller
             });
         }
 
-        // 3. Logika Filter Periode Waktu
+        // 6. Logika Filter Periode Waktu (Tabel data utama)
         if ($request->filled('periode')) {
             switch ($request->periode) {
                 case 'hari_ini':
@@ -53,26 +72,20 @@ class PemesananWebController extends Controller
             }
         }
 
-        // 4. Logika Pengurutan Data (Sorting)
+        // 7. Logika Pengurutan Data (Sorting)
         $sortOrder = $request->get('urutkan', 'terbaru') === 'terlama' ? 'asc' : 'desc';
         $query->orderBy('tanggal_dikirim', $sortOrder);
 
         // Ambil data akhir setelah disaring
         $data = $query->paginate(10)->withQueryString();
 
-        // 5. Hitung Statistik Widget (Diambil dari data riil DB agar selalu akurat)
-        $totalPesanan   = Pemesanan::count();
-        $sedangDiproses = Pemesanan::where('status_pemesanan', 'dalam_proses')->count();
-        $pesananSelesai = Pemesanan::where('status_pemesanan', 'selesai')->count();
-
-        // Ambil daftar ID pemesanan yang berstatus 'Pending' hapus
+        // 8. Ambil daftar ID pemesanan yang berstatus 'Pending' hapus
         $pendingHapus = PengajuanHapus::where('nama_tabel', 'pemesanan')
             ->where('status_approval', 'Pending')
             ->pluck('id_referensi')
             ->toArray();
 
-        // Jangan lupa kirim $pendingHapus ke dalam return view compact()
-
+        // Mengirimkan semua variabel yang dibutuhkan ke view
         return view('pemesanan.index', compact('data', 'totalPesanan', 'sedangDiproses', 'pesananSelesai', 'pendingHapus'));
     }
 
@@ -82,6 +95,26 @@ class PemesananWebController extends Controller
             ->findOrFail($id);
 
         return view('pemesanan.show', compact('data'));
+    }
+
+    public function invoice(int $id)
+    {
+        // Ambil data pemesanan spesifik beserta seluruh relasi yang dibutuhkan
+        // untuk faktur (pasien, pemeriksaan, dokter, lab, dan rincian item gigi).
+        $data = Pemesanan::with([
+            'pemeriksaan.pasien',
+            'pemeriksaan.dokter',
+            'lab',
+            'items.jenisGigi',
+        ])
+            ->findOrFail($id);
+
+        // Kelompokkan item gigi berdasarkan jenisnya agar rapi di tabel invoice
+        $groupedItems = $data->items->groupBy(fn($i) => $i->jenisGigi->nama_jenis ?? 'Item Terhapus');
+
+        // Template invoice dirender terpisah dari layout utama (tanpa sidebar/navbar)
+        // supaya siap langsung dicetak / disimpan sebagai PDF.
+        return view('pemesanan.invoice', compact('data', 'groupedItems'));
     }
 
     public function create()
@@ -105,7 +138,12 @@ class PemesananWebController extends Controller
 
     public function store(Request $request)
     {
-        // Pengetatan validasi menggunakan aturan 'in' sebagai satpam lapis pertama
+        // 1. Bersihkan format Rupiah pada biaya_lab sebelum divalidasi
+        $request->merge([
+            'biaya_lab' => str_replace('.', '', $request->biaya_lab)
+        ]);
+
+        // 2. Pengetatan validasi (Hapus harga_pasien, tambahkan diskon)
         $request->validate([
             'no_pemesanan'     => 'required|unique:pemesanan,no_pemesanan',
             'id_pemeriksaan'   => 'required|exists:pemeriksaan,id',
@@ -113,15 +151,30 @@ class PemesananWebController extends Controller
             'tanggal_dikirim'  => 'required|date',
             'estimasi_selesai' => 'required|date',
             'biaya_lab'        => 'required|numeric',
-            'harga_pasien'     => 'required|numeric',
+            'diskon'           => 'nullable|numeric|min:0|max:100', // Validasi diskon persen
             'status_bayar_lab' => 'required|in:belum_lunas,sudah_lunas',
             'status_pemesanan' => 'required|in:dalam_proses,tiba_di_klinik,dibatalkan,selesai',
             'items'            => 'required|array|min:1',
             'items.*'          => 'required|exists:jenis_gigi,id',
         ]);
 
+        // 3. LOGIKA PERHITUNGAN OTOMATIS
+        $totalGigi = \App\Models\JenisGigi::whereIn('id', $request->items)->sum('estimasi_biaya');
+        $biayaLab = $request->biaya_lab ?? 0;
+        $diskonPersen = $request->diskon ?? 0;
+
+        $subtotal = $totalGigi + $biayaLab;
+        $nominalDiskon = $subtotal * ($diskonPersen / 100);
+        $hargaPasien = $subtotal - $nominalDiskon;
+
+        $hargaPasien = $hargaPasien < 0 ? 0 : round($hargaPasien); // Cegah minus & bulatkan
+
+        // 4. Siapkan data untuk disimpan
+        $inputData = $request->except(['items', 'harga_pasien']);
+        $inputData['harga_pasien'] = $hargaPasien;
+
         // Simpan induk pemesanan
-        $pemesanan = Pemesanan::create($request->except('items'));
+        $pemesanan = Pemesanan::create($inputData);
 
         // Simpan rincian banyak gigi ke tabel perantara (pivot)
         foreach ($request->items as $id_gigi) {
@@ -147,10 +200,14 @@ class PemesananWebController extends Controller
 
     public function update(Request $request, int $id)
     {
-
         $pemesanan = Pemesanan::findOrFail($id);
 
-        // Pengetatan validasi pembaruan data
+        // 1. Bersihkan format Rupiah pada biaya_lab
+        $request->merge([
+            'biaya_lab' => str_replace('.', '', $request->biaya_lab)
+        ]);
+
+        // 2. Validasi pembaruan data
         $request->validate([
             'no_pemesanan'     => 'required|unique:pemesanan,no_pemesanan,' . $id,
             'id_pemeriksaan'   => 'required|exists:pemeriksaan,id',
@@ -158,17 +215,32 @@ class PemesananWebController extends Controller
             'tanggal_dikirim'  => 'required|date',
             'estimasi_selesai' => 'required|date',
             'biaya_lab'        => 'required|numeric',
-            'harga_pasien'     => 'required|numeric',
+            'diskon'           => 'nullable|numeric|min:0|max:100', // Validasi diskon persen
             'status_bayar_lab' => 'required|in:belum_lunas,sudah_lunas',
             'status_pemesanan' => 'required|in:dalam_proses,tiba_di_klinik,dibatalkan,selesai',
             'items'            => 'required|array|min:1',
             'items.*'          => 'required|exists:jenis_gigi,id',
         ]);
 
+        // 3. LOGIKA PERHITUNGAN OTOMATIS
+        $totalGigi = \App\Models\JenisGigi::whereIn('id', $request->items)->sum('estimasi_biaya');
+        $biayaLab = $request->biaya_lab ?? 0;
+        $diskonPersen = $request->diskon ?? 0;
+
+        $subtotal = $totalGigi + $biayaLab;
+        $nominalDiskon = $subtotal * ($diskonPersen / 100);
+        $hargaPasien = $subtotal - $nominalDiskon;
+
+        $hargaPasien = $hargaPasien < 0 ? 0 : round($hargaPasien);
+
+        // 4. Siapkan data untuk update
+        $inputData = $request->except(['items', 'harga_pasien']);
+        $inputData['harga_pasien'] = $hargaPasien;
+
         // Update data induk
-        $pemesanan->update($request->except('items'));
-        // ===== TAMBAHKAN LOGIKA INI =====
-        // Jika status diubah menjadi selain 'dalam_proses', hapus semua notifikasi pesanan ini
+        $pemesanan->update($inputData);
+
+        // Fitur dari teman Anda (Jangan dihapus)
         if (in_array($request->status_pemesanan, ['tiba_di_klinik', 'selesai', 'dibatalkan'])) {
             \App\Models\Notifikasi::where('pemesanan_id', $id)->delete();
         }

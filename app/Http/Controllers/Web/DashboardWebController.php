@@ -8,7 +8,7 @@ use App\Models\Pemesanan;
 
 class DashboardWebController extends Controller
 {
-    public function dashboard()
+        public function dashboard()
     {
         $totalPasien = Pasien::count();
 
@@ -22,12 +22,12 @@ class DashboardWebController extends Controller
 
         $pesananProses = Pemesanan::where(
             'status_pemesanan',
-            'Proses Lab'
+            'dalam_proses'
         )->count();
 
         $pesananSelesai = Pemesanan::where(
             'status_pemesanan',
-            'Sudah Dipasang'
+            'selesai'
         )->count();
 
         return view('dashboard', compact(

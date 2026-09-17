@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('estimasi_selesai');
             $table->decimal('biaya_lab', 15, 2);
             $table->decimal('harga_pasien', 15, 2);
+            $table->decimal('diskon', 15, 2)->default(0);
 
             // Sesuai dengan opsi baru di Form Blade
             $table->enum('status_bayar_lab', ['belum_lunas', 'sudah_lunas'])->default('belum_lunas');

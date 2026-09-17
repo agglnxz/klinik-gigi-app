@@ -77,7 +77,7 @@ use Illuminate\Support\Str;
                         <th class="w-[250px] px-8 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-widest">Nama Data</th>
                         <th class="w-[250px] px-8 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-widest">Pemohon</th>
                         <th class="w-[250px] px-8 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-widest">Alasan</th>
-                        <th class="w-[250px] px-8 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-widest">Aksi</th>
+                        <th class="w-[250px] px-8 py-4 text-[11px] font-bold text-gray-900 uppercase tracking-widest text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50 text-sm">
@@ -105,26 +105,83 @@ use Illuminate\Support\Str;
                             {{ Str::limit($item->alasan_hapus, 40) }}
                         </td>
 
-                        <td class="px-8 py-6">
-                            <div class="flex gap-2">
+                        <td class="px-8 py-6 text-center">
+                            <button type="button" onclick="openHapusModal('modal-{{ $item->id }}')"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#176851] hover:bg-[#238066] text-white text-xs font-bold rounded-lg transition shadow-sm">
+                                <i class="fa-solid fa-eye"></i>
+                                <span>Lihat Detail</span>
+                            </button>
 
-                                <form action="{{ route('pengajuan-hapus.approve', $item->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="px-3 py-2 bg-green-600 text-white rounded">
-                                        Setujui
-                                    </button>
-                                </form>
+                            <div id="modal-{{ $item->id }}" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-left">
+                                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl max-w-lg w-full overflow-hidden transform transition-all flex flex-col">
+                                    
+                                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                                            <i class="fa-solid fa-file-shield text-amber-500"></i>
+                                            Detail Validasi Penghapusan Data
+                                        </h3>
+                                        <button type="button" onclick="closeHapusModal('modal-{{ $item->id }}')" class="text-gray-400 hover:text-gray-600 transition">
+                                            <i class="fa-solid fa-xmark text-base"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="p-6 space-y-4 text-xs font-medium text-gray-700">
+                                        <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2.5">
+                                            <span class="text-gray-400 font-bold uppercase tracking-wide">Tanggal Masuk</span>
+                                            <span class="col-span-2 text-gray-800 font-semibold">: {{ $item->created_at->format('d M Y H:i') }}</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2.5">
+                                            <span class="text-gray-400 font-bold uppercase tracking-wide">Modul / Tabel</span>
+                                            <span class="col-span-2">: 
+                                                <span class="px-2.5 py-0.5 bg-purple-100 text-purple-600 rounded-full text-[10px] font-bold uppercase ml-1">
+                                                    {{ $item->nama_tabel }}
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2.5">
+                                            <span class="text-gray-400 font-bold uppercase tracking-wide">Nama Data</span>
+                                            <span class="col-span-2 text-gray-900 font-bold">: {{ $item->nama_data }}</span>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2.5">
+                                            <span class="text-gray-400 font-bold uppercase tracking-wide">Pemohon Hapus</span>
+                                            <span class="col-span-2 text-gray-800 font-semibold">: {{ $item->pemohon->name ?? '-' }}</span>
+                                        </div>
+                                        <div class="space-y-2 pt-1">
+                                            <span class="text-gray-400 font-bold uppercase tracking-wide block">Alasan Yang Diajukan:</span>
+                                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-600 font-normal leading-relaxed whitespace-pre-line text-xs">
+                                                {{ $item->alasan_hapus }}
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <form action="{{ route('pengajuan-hapus.reject', $item->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        class="px-3 py-2 bg-red-600 text-white rounded">
-                                        Tolak
-                                    </button>
-                                </form>
+                                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2.5">
+                                        <button type="button" onclick="closeHapusModal('modal-{{ $item->id }}')"
+                                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-500 text-xs font-semibold hover:bg-gray-100 transition shadow-sm">
+                                            Batal
+                                        </button>
+                                        
+                                        <form action="{{ route('pengajuan-hapus.reject', $item->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin menolak pengajuan ini?')"
+                                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition shadow-sm flex items-center gap-1.5">
+                                                <i class="fa-solid fa-xmark"></i>
+                                                <span>Tolak</span>
+                                            </button>
+                                        </form>
+                                        
+                                        <form action="{{ route('pengajuan-hapus.approve', $item->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('PENTING: Menyetujui akan menghapus data permanen dari database. Lanjutkan?')"
+                                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition shadow-sm flex items-center gap-1.5">
+                                                <i class="fa-solid fa-check"></i>
+                                                <span>Setujui</span>
+                                            </button>
+                                        </form>
+                                    </div>
 
+                                </div>
                             </div>
+
                         </td>
                     </tr>
                     @empty
@@ -207,5 +264,35 @@ use Illuminate\Support\Str;
     </div>
 
 </div>
+
+<script>
+    function openHapusModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Kunci scroll latar belakang
+        }
+    }
+
+    // PERBAIKAN: Nama fungsi disamakan dengan yang dipanggil tombol (closeHapusModal)
+    function closeHapusModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Aktifkan scroll kembali
+        }
+    }
+
+    // Menutup modal otomatis jika pengguna mengklik area luar (backdrop hitam transparan)
+    window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('fixed')) {
+            event.target.classList.remove('flex');
+            event.target.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>
 
 @endsection

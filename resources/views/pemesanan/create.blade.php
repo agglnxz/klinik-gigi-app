@@ -7,7 +7,8 @@
         <div class="flex justify-between items-end">
             <div>
                 <h3 class="text-2xl font-bold text-black-1000">Registrasi Pemesanan Baru</h3>
-                <p class="text-sm text-gray-500 font-light">Satu pemesanan dapat menampung banyak item gigi sekaligus dengan estimasi harga otomatis.</p>
+                <p class="text-sm text-gray-500 font-light">Satu pemesanan dapat menampung banyak item gigi sekaligus dengan
+                    estimasi harga otomatis.</p>
             </div>
         </div>
 
@@ -16,7 +17,8 @@
             <tr class="border-t border-gray-100 item-row">
                 <td class="px-4 py-3">
                     {{-- Atribut data-price disisipkan pada setiap option untuk dibaca oleh JavaScript --}}
-                    <select name="items[]" required class="item-select w-full px-4 py-2 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm cursor-pointer">
+                    <select name="items[]" required
+                        class="item-select w-full px-4 py-2 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm cursor-pointer">
                         <option value="" data-price="0" disabled selected>Pilih Item Gigi</option>
                         @foreach ($jenis_gigi as $j)
                             <option value="{{ $j->id }}" data-price="{{ $j->estimasi_biaya }}">
@@ -30,7 +32,8 @@
                     Rp 0
                 </td>
                 <td class="px-4 py-3 text-center">
-                    <button type="button" class="delete-btn text-red-400 hover:text-red-600 text-xs font-semibold transition cursor-pointer">
+                    <button type="button"
+                        class="delete-btn text-red-400 hover:text-red-600 text-xs font-semibold transition cursor-pointer">
                         <i class="fa-solid fa-trash mr-1"></i> Hapus
                     </button>
                 </td>
@@ -45,46 +48,63 @@
                     {{-- Baris 1: No Pemesanan | Pemeriksaan --}}
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor Pemesanan</label>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Nomor
+                                Pemesanan</label>
                             <input type="text" name="no_pemesanan" value="{{ $no_pemesanan }}" readonly
                                 class="w-full px-4 py-3 bg-gray-100 border-none rounded-lg text-sm text-gray-500 cursor-not-allowed">
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Pilih Pemeriksaan (Pasien)</label>
-                            <select name="id_pemeriksaan" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_pemeriksaan') ring-2 ring-red-500 @enderror">
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Pilih
+                                Pemeriksaan (Pasien)</label>
+                            <select name="id_pemeriksaan"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_pemeriksaan') ring-2 ring-red-500 @enderror">
                                 <option value="" disabled selected>Pilih Rekam Medis</option>
                                 @foreach ($pemeriksaan as $p)
-                                    <option value="{{ $p->id }}" {{ old('id_pemeriksaan') == $p->id ? 'selected' : '' }}>
+                                    <option value="{{ $p->id }}"
+                                        {{ old('id_pemeriksaan') == $p->id ? 'selected' : '' }}>
                                         {{ $p->no_pemeriksaan }} - {{ $p->pasien->nama ?? 'Pasien' }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('id_pemeriksaan') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            @error('id_pemeriksaan')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     {{-- Baris 2: Laboratorium | Status Pemesanan --}}
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Laboratorium Mitra</label>
-                            <select name="id_lab" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_lab') ring-2 ring-red-500 @enderror">
+                            <label
+                                class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Laboratorium
+                                Mitra</label>
+                            <select name="id_lab"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('id_lab') ring-2 ring-red-500 @enderror">
                                 <option value="" disabled selected>Pilih Lab</option>
                                 @foreach ($lab as $l)
-                                    <option value="{{ $l->id }}" {{ old('id_lab') == $l->id ? 'selected' : '' }}>{{ $l->nama_lab }}</option>
+                                    <option value="{{ $l->id }}" {{ old('id_lab') == $l->id ? 'selected' : '' }}>
+                                        {{ $l->nama_lab }}</option>
                                 @endforeach
                             </select>
-                            @error('id_lab') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            @error('id_lab')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status Pemesanan</label>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status
+                                Pemesanan</label>
                             {{-- KOREKSI: Atribut value diselaraskan mutlak dengan ENUM database --}}
-                            <select name="status_pemesanan" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
-                                <option value="dalam_proses" {{ old('status_pemesanan') == 'dalam_proses' ? 'selected' : '' }}>Dalam Proses</option>
-                                <option value="tiba_di_klinik" {{ old('status_pemesanan') == 'tiba_di_klinik' ? 'selected' : '' }}>Telah Tiba di Klinik</option>
-                                <option value="selesai" {{ old('status_pemesanan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                <option value="dibatalkan" {{ old('status_pemesanan') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                            <select name="status_pemesanan"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
+                                <option value="dalam_proses"
+                                    {{ old('status_pemesanan') == 'dalam_proses' ? 'selected' : '' }}>Dalam Proses</option>
+                                <option value="tiba_di_klinik"
+                                    {{ old('status_pemesanan') == 'tiba_di_klinik' ? 'selected' : '' }}>Telah Tiba di
+                                    Klinik</option>
+                                <option value="selesai" {{ old('status_pemesanan') == 'selesai' ? 'selected' : '' }}>
+                                    Selesai</option>
                             </select>
                         </div>
                     </div>
@@ -92,17 +112,24 @@
                     {{-- Baris 3: Tanggal Kirim | Estimasi Selesai --}}
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Tanggal Dikirim</label>
-                            <input type="date" name="tanggal_dikirim" value="{{ old('tanggal_dikirim', date('Y-m-d')) }}"
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Tanggal
+                                Dikirim</label>
+                            <input type="date" name="tanggal_dikirim"
+                                value="{{ old('tanggal_dikirim', date('Y-m-d')) }}"
                                 class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('tanggal_dikirim') ring-2 ring-red-500 @enderror">
-                            @error('tanggal_dikirim') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            @error('tanggal_dikirim')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Estimasi Selesai</label>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Estimasi
+                                Selesai</label>
                             <input type="date" name="estimasi_selesai" value="{{ old('estimasi_selesai') }}"
                                 class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('estimasi_selesai') ring-2 ring-red-500 @enderror">
-                            @error('estimasi_selesai') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            @error('estimasi_selesai')
+                                <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -111,7 +138,8 @@
                         <div class="flex justify-between items-center mb-3">
                             <div>
                                 <h4 class="text-sm font-bold text-[#529e85]">Rincian Pilihan Gigi (Multiple Items)</h4>
-                                <p class="text-[11px] text-gray-400">Pilih item untuk melihat akumulasi harga modal dasar.</p>
+                                <p class="text-[11px] text-gray-400">Pilih item untuk melihat akumulasi harga modal dasar.
+                                </p>
                             </div>
                             <button type="button" id="tambah-item-btn"
                                 class="px-4 py-2 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-xs font-semibold flex items-center transition shadow-sm cursor-pointer">
@@ -119,15 +147,23 @@
                             </button>
                         </div>
 
-                        @error('items') <p class="text-xs text-red-500 mb-2 font-bold">⚠️ Minimal pilih 1 item gigi!</p> @enderror
+                        @error('items')
+                            <p class="text-xs text-red-500 mb-2 font-bold">⚠️ Minimal pilih 1 item gigi!</p>
+                        @enderror
 
                         <div class="rounded-lg overflow-hidden border border-gray-100">
                             <table class="w-full text-sm">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="text-left px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-7/12">Pilih Jenis Gigi / Protesa</th>
-                                        <th class="text-right px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-3/12">Harga Satuan (Est)</th>
-                                        <th class="text-center px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-2/12">Aksi</th>
+                                        <th
+                                            class="text-left px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-7/12">
+                                            Pilih Jenis Gigi / Protesa</th>
+                                        <th
+                                            class="text-right px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-3/12">
+                                            Harga Satuan (Est)</th>
+                                        <th
+                                            class="text-center px-4 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-widest w-2/12">
+                                            Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="item-table-body">
@@ -136,10 +172,12 @@
                                 {{-- FOOTER UNTUK TOTAL AKUMULASI HARGA GIGI --}}
                                 <tfoot class="bg-[#fcfdfd] border-t border-gray-100">
                                     <tr>
-                                        <td class="px-4 py-3.5 text-right font-bold text-gray-600 text-xs uppercase tracking-wider">
+                                        <td
+                                            class="px-4 py-3.5 text-right font-bold text-gray-600 text-xs uppercase tracking-wider">
                                             Total Estimasi Item Gigi:
                                         </td>
-                                        <td class="px-4 py-3.5 text-right font-black text-teal-700 text-base" id="subtotal-display">
+                                        <td class="px-4 py-3.5 text-right font-black text-teal-700 text-base"
+                                            id="subtotal-display">
                                             Rp 0
                                         </td>
                                         <td></td>
@@ -149,39 +187,58 @@
                         </div>
                     </div>
 
-                    {{-- BARIS 5: BIAYA LAB & HARGA PASIEN --}}
+                    {{-- BARIS 5: BIAYA LAB & DISKON --}}
                     <div class="grid grid-cols-2 gap-x-8 pt-4 border-t border-gray-50">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Biaya Tagihan Lab Akhir (Rp)</label>
-                            <input type="number" name="biaya_lab" value="{{ old('biaya_lab') }}" placeholder="Input real tagihan dari lab..."
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('biaya_lab') ring-2 ring-red-500 @enderror">
-                            @error('biaya_lab') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Biaya
+                                Tagihan Lab Akhir (Rp)</label>
+                            {{-- Ubah ke type="text", panggil fungsi JS onkeyup, dan format nilai awalnya --}}
+                            <input type="text" id="biaya_lab" name="biaya_lab"
+                                value="{{ number_format((float)old('biaya_lab', $data->biaya_lab ?? 0), 0, '', '.') }}"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
                         </div>
-
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Total Biaya Dikenakan Ke Pasien (Rp)</label>
-                            <input type="number" name="harga_pasien" value="{{ old('harga_pasien') }}" placeholder="Input harga jual final ke pasien..."
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('harga_pasien') ring-2 ring-red-500 @enderror">
-                            @error('harga_pasien') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Diskon
+                                (%)</label>
+                            {{-- Ubah ke persentase max 100 --}}
+                            <input type="number" id="diskon" name="diskon" min="0" max="100"
+                                value="{{ old('diskon', $data->diskon ?? 0) }}"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
                         </div>
                     </div>
 
-                    {{-- Baris 6: Status Bayar Lab --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status Pembayaran Ke Lab</label>
-                        {{-- KOREKSI: Mengubah opsi 'lunas' menjadi 'sudah_lunas' --}}
-                        <select name="status_bayar_lab" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm w-1/2">
-                            <option value="belum_lunas" {{ old('status_bayar_lab') == 'belum_lunas' ? 'selected' : '' }}>Belum Lunas</option>
-                            <option value="sudah_lunas" {{ old('status_bayar_lab') == 'sudah_lunas' ? 'selected' : '' }}>Sudah Lunas</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-x-8 mt-6">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status
+                                Pembayaran Ke Lab</label>
+                            <select name="status_bayar_lab"
+                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
+                                <option value="belum_lunas"
+                                    {{ old('status_bayar_lab', $data->status_bayar_lab ?? '') == 'belum_lunas' ? 'selected' : '' }}>
+                                    Belum Lunas</option>
+                                <option value="sudah_lunas"
+                                    {{ old('status_bayar_lab', $data->status_bayar_lab ?? '') == 'sudah_lunas' ? 'selected' : '' }}>
+                                    Sudah Lunas</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Total
+                                Harga Pasien (Otomatis)</label>
+                            {{-- Ubah ke type="text" agar 'Rp' bisa tampil --}}
+                            <input type="text" id="harga_pasien" name="harga_pasien"
+                                value="Rp {{ number_format((float)old('harga_pasien', $data->harga_pasien ?? 0), 0, ',', '.') }}"
+                                readonly
+                                class="w-full px-4 py-3 bg-gray-200 border-none rounded-lg text-sm text-gray-600 font-bold cursor-not-allowed">
+                        </div>
                     </div>
-
                 </div>
 
                 {{-- BUTTONS --}}
                 <div class="flex justify-end space-x-4 border-t border-gray-100 pt-8">
-                    <a href="{{ route('pemesanan.index') }}" class="px-12 py-2.5 border border-gray-300 rounded-lg text-gray-500 text-sm font-semibold hover:bg-gray-50 transition text-center min-w-[160px]">Batal</a>
-                    <button type="submit" class="px-12 py-2.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-sm font-semibold min-w-[160px]">
+                    <a href="{{ route('pemesanan.index') }}"
+                        class="px-12 py-2.5 border border-gray-300 rounded-lg text-gray-500 text-sm font-semibold hover:bg-gray-50 transition text-center min-w-[160px]">Batal</a>
+                    <button type="submit"
+                        class="px-12 py-2.5 bg-[#529e85] hover:bg-[#43846f] text-white rounded-lg text-sm font-semibold min-w-[160px]">
                         <i class="fa-solid fa-save mr-2"></i> Simpan Pesanan
                     </button>
                 </div>
@@ -191,41 +248,68 @@
 
     {{-- LOGIKA JAVASCRIPT REAKTIF (Terpisah Mutlak dari Blade) --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.getElementById('item-table-body');
             const template = document.getElementById('row-template');
             const subtotalDisplay = document.getElementById('subtotal-display');
             const tambahBtn = document.getElementById('tambah-item-btn');
+            const inputBiayaLab = document.getElementById('biaya_lab');
+            const inputDiskon = document.getElementById('diskon');
 
-            // Fungsi menghitung akumulasi total semua baris yang terpilih
+            // Fungsi Utama: Kalkulasi Total Harga
             function hitungTotalGigi() {
-                let total = 0;
-                const selects = tbody.querySelectorAll('.item-select');
+                let totalGigi = 0;
 
-                selects.forEach(select => {
+                // 1. Hitung akumulasi semua item gigi
+                document.querySelectorAll('.item-select').forEach(select => {
                     const selectedOption = select.selectedOptions[0];
                     if (selectedOption) {
-                        total += parseInt(selectedOption.getAttribute('data-price')) || 0;
+                        totalGigi += parseInt(selectedOption.getAttribute('data-price')) || 0;
                     }
                 });
 
-                subtotalDisplay.innerText = 'Rp ' + total.toLocaleString('id-ID');
+                // Tampilkan subtotal gigi
+                document.getElementById('subtotal-display').innerText = 'Rp ' + totalGigi.toLocaleString('id-ID');
+
+                // 2. Ambil Biaya Lab (Aman dari string kosong/huruf)
+                let biayaLabStr = inputBiayaLab.value.replace(/[^,\d]/g, '');
+                let biayaLab = parseInt(biayaLabStr) || 0;
+
+                // 3. Ambil Diskon Persen (Aman dari string kosong)
+                let diskonPersen = parseInt(inputDiskon.value) || 0;
+
+                // 4. Kalkulasi Akhir
+                let subtotal = totalGigi + biayaLab;
+                let nominalDiskon = subtotal * (diskonPersen / 100);
+                let totalAkhir = subtotal - nominalDiskon;
+
+                // Cegah angka minus & bulatkan hasil
+                totalAkhir = totalAkhir > 0 ? Math.round(totalAkhir) : 0;
+
+                // Tampilkan ke input harga_pasien
+                document.getElementById('harga_pasien').value = 'Rp ' + totalAkhir.toLocaleString('id-ID');
             }
 
-            // Fungsi memvalidasi ketersediaan baris
-            function cekTabelKosong() {
-                if (tbody.children.length === 0) {
-                    tbody.innerHTML = `
-                        <tr id="empty-row">
-                            <td colspan="3" class="px-4 py-6 text-sm text-gray-400 text-center italic">
-                                Belum ada item gigi yang dipilih. Klik tombol "Tambah Item Gigi" di atas.
-                            </td>
-                        </tr>
-                    `;
-                    subtotalDisplay.innerText = 'Rp 0';
+            // Event Listener 1: Format Rupiah saat mengetik Biaya Lab sekaligus hitung ulang
+            inputBiayaLab.addEventListener('input', function(e) {
+                let value = this.value.replace(/[^,\d]/g, '');
+                let split = value.split(',');
+                let sisa = split[0].length % 3;
+                let rupiah = split[0].substr(0, sisa);
+                let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    let separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
                 }
-            }
+                this.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
 
+                // Panggil fungsi hitung otomatis
+                hitungTotalGigi();
+            });
+
+            // Event Listener 2: Hitung ulang saat diskon diubah
+            inputDiskon.addEventListener('input', hitungTotalGigi);
             // Fungsi utama menambahkan baris baru
             function tambahBaris() {
                 const emptyRow = document.getElementById('empty-row');
@@ -237,13 +321,13 @@
                 const priceDisplay = clone.querySelector('.item-price-display');
                 const deleteBtn = clone.querySelector('.delete-btn');
 
-                selectElement.addEventListener('change', function () {
+                selectElement.addEventListener('change', function() {
                     const price = parseInt(this.selectedOptions[0].getAttribute('data-price')) || 0;
                     priceDisplay.innerText = 'Rp ' + price.toLocaleString('id-ID');
                     hitungTotalGigi();
                 });
 
-                deleteBtn.addEventListener('click', function () {
+                deleteBtn.addEventListener('click', function() {
                     newRow.remove();
                     cekTabelKosong();
                     hitungTotalGigi();

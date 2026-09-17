@@ -80,7 +80,6 @@
                                 <option value="dalam_proses" {{ old('status_pemesanan', $data->status_pemesanan) == 'dalam_proses' ? 'selected' : '' }}>Dalam Proses</option>
                                 <option value="tiba_di_klinik" {{ old('status_pemesanan', $data->status_pemesanan) == 'tiba_di_klinik' ? 'selected' : '' }}>Telah Tiba di Klinik</option>
                                 <option value="selesai" {{ old('status_pemesanan', $data->status_pemesanan) == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                <option value="dibatalkan" {{ old('status_pemesanan', $data->status_pemesanan) == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
                             </select>
                         </div>
                     </div>
@@ -169,20 +168,30 @@
                         </div>
                     </div>
 
-                    {{-- BARIS 5: BIAYA LAB & HARGA PASIEN --}}
+                    {{-- BARIS 5: BIAYA LAB & DISKON --}}
                     <div class="grid grid-cols-2 gap-x-8 pt-4 border-t border-gray-50">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Biaya Tagihan Lab Akhir (Rp)</label>
-                            <input type="number" name="biaya_lab" value="{{ old('biaya_lab', $data->biaya_lab) }}" placeholder="Input real tagihan dari lab..."
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('biaya_lab') ring-2 ring-red-500 @enderror">
-                            @error('biaya_lab') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <input type="number" id="biaya_lab" name="biaya_lab" value="{{ old('biaya_lab', $data->biaya_lab ?? 0) }}" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
                         </div>
-
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Total Biaya Dikenakan Ke Pasien (Rp)</label>
-                            <input type="number" name="harga_pasien" value="{{ old('harga_pasien', $data->harga_pasien) }}" placeholder="Input harga jual final ke pasien..."
-                                class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm @error('harga_pasien') ring-2 ring-red-500 @enderror">
-                            @error('harga_pasien') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Diskon (Rp)</label>
+                            <input type="number" id="diskon" name="diskon" value="{{ old('diskon', $data->diskon ?? 0) }}" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
+                        </div>
+                    </div>
+
+                    {{-- Baris 6: Status Bayar Lab & Total Biaya Pasien --}}
+                    <div class="grid grid-cols-2 gap-x-8 mt-6">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Status Pembayaran Ke Lab</label>
+                            <select name="status_bayar_lab" class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
+                                <option value="belum_lunas" {{ old('status_bayar_lab') == 'belum_lunas' ? 'selected' : '' }}>Belum Lunas</option>
+                                <option value="sudah_lunas" {{ old('status_bayar_lab') == 'sudah_lunas' ? 'selected' : '' }}>Sudah Lunas</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Total Harga Pasien (Otomatis)</label>
+                            <input type="number" id="harga_pasien" name="harga_pasien" value="{{ old('harga_pasien', $data->harga_pasien ?? 0) }}" readonly class="w-full px-4 py-3 bg-gray-200 border-none rounded-lg text-sm text-gray-600 font-bold cursor-not-allowed">
                         </div>
                     </div>
 
@@ -218,15 +227,29 @@
 
             // Kalkulasi akumulasi total
             function hitungTotalGigi() {
-                let total = 0;
-                tbody.querySelectorAll('.item-select').forEach(select => {
+                let totalGigi = 0;
+                // 1. Hitung total semua item gigi
+                const selects = tbody.querySelectorAll('.item-select');
+                selects.forEach(select => {
                     const selectedOption = select.selectedOptions[0];
                     if (selectedOption) {
-                        total += parseInt(selectedOption.getAttribute('data-price')) || 0;
+                        totalGigi += parseInt(selectedOption.getAttribute('data-price')) || 0;
                     }
                 });
-                subtotalDisplay.innerText = 'Rp ' + total.toLocaleString('id-ID');
+                subtotalDisplay.innerText = 'Rp ' + totalGigi.toLocaleString('id-ID');
+
+                // 2. Kalkulasi Total Akhir (Gigi + Lab - Diskon)
+                const biayaLab = parseInt(document.getElementById('biaya_lab').value) || 0;
+                const diskon = parseInt(document.getElementById('diskon').value) || 0;
+
+                let totalAkhir = (totalGigi + biayaLab) - diskon;
+                totalAkhir = totalAkhir > 0 ? totalAkhir : 0; // Cegah minus
+                document.getElementById('harga_pasien').value = totalAkhir;
             }
+
+            // Tambahkan Event Listener ini agar total berubah saat Biaya Lab / Diskon diketik
+            document.getElementById('biaya_lab').addEventListener('input', hitungTotalGigi);
+            document.getElementById('diskon').addEventListener('input', hitungTotalGigi);
 
             // Pesan kosong jika seluruh baris dihapus
             function cekTabelKosong() {
