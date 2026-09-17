@@ -59,26 +59,9 @@
             </form>
 
             <div class="flex items-center gap-8">
-                {{-- AlpineJS Periode Filter (Statis UI) --}}
-                <div x-data="{ open: false, selected: 'Bulan Ini' }" class="relative flex bg-white rounded-xl ring-1 ring-gray-100 shadow-sm">
-                    <button @click="open = !open" class="px-5 py-3 text-[10px] font-bold text-gray-500 hover:bg-gray-50 rounded-xl flex items-center justify-between w-[160px] uppercase tracking-tight transition-colors">
-                        <span>Periode</span>
-                        <span class="text-[#176851] font-black flex items-center gap-1">
-                            <span x-text="selected"></span>
-                            <i class="fa-solid fa-chevron-down text-[8px]"></i>
-                        </span>
-                    </button>
-                    <div x-show="open" @click.outside="open = false" class="absolute top-full mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-gray-100 z-50 overflow-hidden" style="display: none;">
-                        <button @click="selected='Hari Ini'; open=false" class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Hari Ini</button>
-                        <button @click="selected='Minggu Ini'; open=false" class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Minggu Ini</button>
-                        <button @click="selected='Bulan Ini'; open=false" class="w-full px-4 py-2 text-[10px] text-left hover:bg-gray-50">Bulan Ini</button>
-                    </div>
-                </div>
+               
 
-                {{-- Ekspor Tombol --}}
-                <button class="px-4 py-3 text-[9px] font-black text-gray-500 bg-white ring-1 ring-gray-100 rounded-xl flex items-center gap-3 hover:bg-gray-50 transition-all shadow-sm uppercase tracking-widest whitespace-nowrap cursor-pointer">
-                    <i class="fa-solid fa-download text-gray-400 text-xs"></i> Ekspor Data
-                </button>
+                
             </div>
         </div>
 
