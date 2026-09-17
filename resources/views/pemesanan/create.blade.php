@@ -194,16 +194,21 @@
                                 Tagihan Lab Akhir (Rp)</label>
                             {{-- Ubah ke type="text", panggil fungsi JS onkeyup, dan format nilai awalnya --}}
                             <input type="text" id="biaya_lab" name="biaya_lab"
-                                value="{{ number_format((float)old('biaya_lab', $data->biaya_lab ?? 0), 0, '', '.') }}"
+                                value="{{ number_format((float) old('biaya_lab', $data->biaya_lab ?? 0), 0, '', '.') }}"
                                 class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-gray-800 uppercase tracking-widest mb-2">Diskon
                                 (%)</label>
-                            {{-- Ubah ke persentase max 100 --}}
-                            <input type="number" id="diskon" name="diskon" min="0" max="100"
-                                value="{{ old('diskon', $data->diskon ?? 0) }}"
+                            <select id="diskon" name="diskon"
                                 class="w-full px-4 py-3 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-teal-500 text-sm">
+                                @for ($i = 0; $i <= 100; $i += 5)
+                                    <option value="{{ $i }}"
+                                        {{ old('diskon', $data->diskon ?? 0) == $i ? 'selected' : '' }}>
+                                        {{ $i }}% {{ $i == 0 ? '(Tidak ada)' : ($i == 100 ? '(Gratis)' : '') }}
+                                    </option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
 
@@ -226,7 +231,7 @@
                                 Harga Pasien (Otomatis)</label>
                             {{-- Ubah ke type="text" agar 'Rp' bisa tampil --}}
                             <input type="text" id="harga_pasien" name="harga_pasien"
-                                value="Rp {{ number_format((float)old('harga_pasien', $data->harga_pasien ?? 0), 0, ',', '.') }}"
+                                value="Rp {{ number_format((float) old('harga_pasien', $data->harga_pasien ?? 0), 0, ',', '.') }}"
                                 readonly
                                 class="w-full px-4 py-3 bg-gray-200 border-none rounded-lg text-sm text-gray-600 font-bold cursor-not-allowed">
                         </div>
@@ -309,7 +314,7 @@
             });
 
             // Event Listener 2: Hitung ulang saat diskon diubah
-            inputDiskon.addEventListener('input', hitungTotalGigi);
+            inputDiskon.addEventListener('change', hitungTotalGigi);
             // Fungsi utama menambahkan baris baru
             function tambahBaris() {
                 const emptyRow = document.getElementById('empty-row');
