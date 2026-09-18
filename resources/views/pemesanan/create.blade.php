@@ -105,6 +105,7 @@
                                     Klinik</option>
                                 <option value="selesai" {{ old('status_pemesanan') == 'selesai' ? 'selected' : '' }}>
                                     Selesai</option>
+                                    
                             </select>
                         </div>
                     </div>
