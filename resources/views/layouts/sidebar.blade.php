@@ -172,19 +172,7 @@
                         </a>
                     </li>
 
-                <li>
-                    <a href="{{ route('laporan.index') }}"
-                        class="{{ $baseClass }} {{ request()->routeIs('laporan.*') ? $activeClass : $inactiveClass }}"
-                        :class="(sidebarOpen || hoverSidebar) ? 'justify-start px-4' : 'justify-center'"
-                        title="Laporan">
-                        <i class="fa-solid fa-chart-line w-6 text-center text-lg flex-shrink-0"
-                            :class="(sidebarOpen || hoverSidebar) ? 'mr-3' : ''"></i>
-                        <span x-cloak x-show="sidebarOpen || hoverSidebar" x-transition.opacity
-                            class="whitespace-nowrap text-sm">
-                            Laporan
-                        </span>
-                    </a>
-                </li>
+                
                 @endif
             </ul>
         </nav>
