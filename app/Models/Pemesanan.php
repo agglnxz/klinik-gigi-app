@@ -58,13 +58,19 @@ class Pemesanan extends Model
         return $this->hasMany(PemesananItem::class, 'id_pemesanan');
     }
 
-    /**
+/**
      * SCOPE: Notifikasi H-3 s.d Overdue
-     * Memastikan status pemesanan sesuai dengan ENUM baru di migrasi (dalam_proses)
+     * Mengambil pesanan yang masih 'dalam_proses' dan tenggat waktunya <= 3 hari ke depan
      */
     public function scopeHampirJatuhTempo($query)
     {
-        return $query->whereNotIn('status_pemesanan', ['tiba_di_klinik', 'selesai', 'dibatalkan'])
-                     ->whereDate('estimasi_selesai', '<=', Carbon::now()->addDays(3));
+        return $query->where('status_pemesanan', 'dalam_proses')
+                     ->whereDate('estimasi_selesai', '<=', \Carbon\Carbon::now()->addDays(3));
+    }
+
+    public function getIsTerlambatAttribute()
+    {
+        return $this->status_pemesanan === 'dalam_proses'
+            && \Carbon\Carbon::now()->startOfDay()->gt(\Carbon\Carbon::parse($this->estimasi_selesai));
     }
 }

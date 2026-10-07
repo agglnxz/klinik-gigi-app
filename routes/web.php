@@ -59,14 +59,10 @@ Route::middleware('auth')->group(function () {
         Route::get('pemesanan/create', [PemesananWebController::class, 'create'])->name('pemesanan.create');
         Route::post('pemesanan', [PemesananWebController::class, 'store'])->name('pemesanan.store');
 
-        // Kunci edit dan update wajib angka
-        Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])
-            ->name('pemesanan.edit')->whereNumber('pemesanan');
-        Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])
-            ->name('pemesanan.update')->whereNumber('pemesanan');
-
+        // route pengajuan hapus data (khusus Admin)
         Route::post('/pengajuan-hapus', [PengajuanHapusWebController::class, 'store'])->name('pengajuan-hapus.store');
-
+        // route update status pemesanan (khusus Admin)
+        Route::patch('/pemesanan/{id}/update-status', [PemesananWebController::class, 'updateStatus'])->name('pemesanan.update-status');
         // Cetak Invoice (khusus Admin)
         Route::get('pemesanan/{pemesanan}/invoice', [PemesananWebController::class, 'invoice'])
             ->name('pemesanan.invoice')->whereNumber('pemesanan');
@@ -97,6 +93,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/users/{id}/edit', [UserWebController::class, 'edit'])->name('users.edit');
         Route::put('/users/{id}', [UserWebController::class, 'update'])->name('users.update');
         Route::delete('/users/{id}', [UserWebController::class, 'destroy'])->name('users.destroy');
+
+        // Edit & Update Pemesanan (Hanya Direktur yang Bisa Akses)
+        // Kunci edit dan update wajib angka
+        Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])
+            ->name('pemesanan.edit')->whereNumber('pemesanan');
+        Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])
+            ->name('pemesanan.update')->whereNumber('pemesanan');
+
     });
 
 });
