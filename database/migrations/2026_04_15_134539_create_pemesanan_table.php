@@ -19,7 +19,7 @@ return new class extends Migration
 
             // Sesuai dengan opsi baru di Form Blade
             $table->enum('status_bayar_lab', ['belum_lunas', 'sudah_lunas'])->default('belum_lunas');
-            $table->enum('status_pemesanan', ['dalam_proses', 'tiba_di_klinik', 'dibatalkan', 'selesai'])->default('dalam_proses');
+            $table->enum('status_pemesanan', ['dalam_proses', 'tiba_di_klinik', 'selesai'])->default('dalam_proses');
 
             // Relasi Induk (id_jenis_gigi dihapus karena dipindahkan ke tabel pivot pemesanan_items)
             $table->unsignedBigInteger('id_pemeriksaan');

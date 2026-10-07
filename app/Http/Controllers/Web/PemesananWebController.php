@@ -188,8 +188,24 @@ class PemesananWebController extends Controller
             ->with('success', 'Berhasil menyimpan pemesanan dengan multiple item gigi!');
     }
 
+    // Fungsi ini khusus untuk Admin agar bisa mengubah status pemesanan tanpa harus mengedit seluruh data
+    public function updateStatus(Request $request, int $id)
+    {
+        $request->validate([
+            'status_bayar_lab' => 'sometimes|in:belum_lunas,sudah_lunas',
+            'status_pemesanan' => 'sometimes|in:dalam_proses,tiba_di_klinik,dibatalkan,selesai',
+        ]);
+
+        Pemesanan::findOrFail($id)->update($request->only(['status_bayar_lab', 'status_pemesanan']));
+
+        return back()->with('success', 'Status pemesanan berhasil diperbarui!');
+    }
+
     public function edit(int $id)
     {
+        if (Auth::check() && strtolower(Auth::user()->role) !== 'direktur') {
+            return redirect()->route('pemesanan.index')->with('error', 'Akses Ditolak! Hanya Direktur yang berhak mengedit keseluruhan rincian data.');
+        }
         return view('pemesanan.update', [
             'data'        => Pemesanan::with('items')->findOrFail($id),
             'pemeriksaan' => Pemeriksaan::all(),
@@ -200,6 +216,9 @@ class PemesananWebController extends Controller
 
     public function update(Request $request, int $id)
     {
+        if (Auth::check() && strtolower(Auth::user()->role) !== 'direktur') {
+            return redirect()->route('pemesanan.index')->with('error', 'Akses Ditolak!');
+        }
         $pemesanan = Pemesanan::findOrFail($id);
 
         // 1. Bersihkan format Rupiah pada biaya_lab
