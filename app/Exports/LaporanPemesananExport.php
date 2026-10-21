@@ -4,8 +4,8 @@ namespace App\Exports;
 
 use App\Models\Pemesanan;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -15,16 +15,17 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class LaporanPemesananExport implements
     FromCollection,
     WithHeadings,
     WithMapping,
-    ShouldAutoSize,
     WithCustomStartCell,
     WithEvents
 {
     private ?Collection $data = null;
+    private int $nomor = 0;
 
     public function __construct(
         private readonly ?string $search = null,
@@ -43,64 +44,43 @@ class LaporanPemesananExport implements
         return $this->data = Pemesanan::with([
             'pemeriksaan.pasien',
             'lab',
-            'items.jenisGigi'
+            'items.jenisGigi',
         ])
             ->whereIn('status_pemesanan', [
                 'dalam_proses',
                 'tiba_di_klinik',
-                'selesai'
+                'selesai',
             ])
-            ->when(
-                $this->dari,
-                fn ($query) =>
-                $query->whereDate('tanggal_dikirim', '>=', $this->dari)
-            )
-            ->when(
-                $this->sampai,
-                fn ($query) =>
-                $query->whereDate('tanggal_dikirim', '<=', $this->sampai)
-            )
-            ->when(
-                $this->status,
-                fn ($query) =>
-                $query->where('status_pemesanan', $this->status)
-            )
+            ->when($this->dari, function ($query) {
+                $query->whereDate('tanggal_dikirim', '>=', $this->dari);
+            })
+            ->when($this->sampai, function ($query) {
+                $query->whereDate('tanggal_dikirim', '<=', $this->sampai);
+            })
+            ->when($this->status, function ($query) {
+                $query->where('status_pemesanan', $this->status);
+            })
             ->when($this->search, function ($query) {
                 $search = '%' . $this->search . '%';
 
                 $query->where(function ($query) use ($search) {
-
                     $query->whereHas(
                         'pemeriksaan.pasien',
-                        fn ($query) =>
-                        $query->where('nama', 'like', $search)
+                        fn ($q) => $q->where('nama', 'like', $search)
                     )
-
                     ->orWhereHas(
                         'lab',
-                        fn ($query) =>
-                        $query->where('nama_lab', 'like', $search)
+                        fn ($q) => $q->where('nama_lab', 'like', $search)
                     )
-
                     ->orWhereHas(
                         'items.jenisGigi',
-                        fn ($query) =>
-                        $query->where('nama_jenis', 'like', $search)
+                        fn ($q) => $q->where('nama_jenis', 'like', $search)
                     );
                 });
             })
             ->orderByDesc('tanggal_dikirim')
             ->get();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | TABEL DIMULAI DARI BARIS 9
-    |--------------------------------------------------------------------------
-    |
-    | Baris 8 sengaja dikosongkan sebagai jarak antara card dan tabel.
-    |
-    */
 
     public function startCell(): string
     {
@@ -115,54 +95,67 @@ class LaporanPemesananExport implements
             'Tgl Pesan',
             'Nama Pasien',
             'Jenis Gigi',
-            'Tgl Kirim',
+            'Tanggal Kirim',
             'Estimasi Selesai',
+            'Tanggal Lunas Pembayaran',
             'Laboratorium',
             'Biaya Lab',
-            'Bayar Lab',
-            'Harga Pasien',
+            'Total Harga',
             'Status',
         ];
     }
 
+    private function formatTanggal($tanggal): string
+    {
+        if (empty($tanggal)) {
+            return '-';
+        }
+
+        try {
+            return Carbon::parse($tanggal)->format('d/m/Y');
+        } catch (\Throwable $e) {
+            return '-';
+        }
+    }
+
     public function map($pemesanan): array
     {
-        static $no = 0;
+        $this->nomor++;
 
-        $no++;
+        $tanggalLunas =
+            $pemesanan->tanggal_lunas_pembayaran
+            ?? $pemesanan->tanggal_lunas
+            ?? $pemesanan->tanggal_lunas_pasien
+            ?? $pemesanan->tanggal_bayar
+            ?? null;
+
+        $biayaLab = $pemesanan->getRawOriginal('biaya_lab');
+        $hargaPasien = $pemesanan->getRawOriginal('harga_pasien');
+
+        $biayaLab = ($biayaLab === null || $biayaLab === '')
+            ? 0
+            : (float) $biayaLab;
+
+        $hargaPasien = ($hargaPasien === null || $hargaPasien === '')
+            ? 0
+            : (float) $hargaPasien;
 
         return [
-            $no,
-
-            $pemesanan->no_pemesanan,
-
-            optional($pemesanan->created_at)
-                ->format('d/m/Y'),
-
-            $pemesanan->pemeriksaan->pasien->nama
-                ?? 'Pasien Terhapus',
-
+            $this->nomor,
+            $pemesanan->no_pemesanan ?? '-',
+            $this->formatTanggal($pemesanan->created_at),
+            $pemesanan->pemeriksaan?->pasien?->nama ?? 'Pasien Terhapus',
             $pemesanan->items
                 ->pluck('jenisGigi.nama_jenis')
                 ->filter()
+                ->unique()
                 ->join(', ') ?: '-',
-
-            optional($pemesanan->tanggal_dikirim)
-                ->format('d/m/Y'),
-
-            optional($pemesanan->estimasi_selesai)
-                ->format('d/m/Y'),
-
-            $pemesanan->lab->nama_lab ?? '-',
-
-            (float) $pemesanan->biaya_lab,
-
-            $pemesanan->status_bayar_lab === 'sudah_lunas'
-                ? (float) $pemesanan->biaya_lab
-                : 0,
-
-            (float) $pemesanan->harga_pasien,
-
+            $this->formatTanggal($pemesanan->tanggal_dikirim),
+            $this->formatTanggal($pemesanan->estimasi_selesai),
+            $this->formatTanggal($tanggalLunas),
+            $pemesanan->lab?->nama_lab ?? '-',
+            $biayaLab,
+            $hargaPasien,
             match ($pemesanan->status_pemesanan) {
                 'dalam_proses' => 'Belum Tiba',
                 'tiba_di_klinik' => 'Tiba di Klinik',
@@ -176,927 +169,379 @@ class LaporanPemesananExport implements
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-
                 $sheet = $event->sheet->getDelegate();
-
-                /*
-                |--------------------------------------------------------------------------
-                | POSISI BARIS
-                |--------------------------------------------------------------------------
-                */
+                $data = $this->collection();
 
                 $headerRow = 9;
                 $dataStartRow = 10;
+                $lastDataRow = $dataStartRow + $data->count() - 1;
+                $totalRow = max($dataStartRow, $lastDataRow + 2);
 
-                $lastRow = max(
-                    $dataStartRow,
-                    $sheet->getHighestRow()
-                );
-
-                /*
-                |--------------------------------------------------------------------------
-                | WARNA
-                |--------------------------------------------------------------------------
-                */
-
-                $blueDark  = '174A7E';
-                $blue      = '1769AA';
+                $blueDark = '174A7E';
+                $blue = '1769AA';
                 $blueLight = 'EAF4FC';
-                $blueSoft  = 'F7FBFE';
-                $border    = 'B8CEDF';
-                $white     = 'FFFFFF';
-                $text      = '173B5C';
+                $blueSoft = 'F7FBFE';
+                $border = 'B8CEDF';
+                $white = 'FFFFFF';
+                $text = '173B5C';
 
-                /*
-                |--------------------------------------------------------------------------
-                | JUDUL UTAMA
-                |--------------------------------------------------------------------------
-                */
+                // KOP KLINIK
+                $sheet->mergeCells('A1:B3');
+                $sheet->mergeCells('C1:L1');
+                $sheet->mergeCells('C2:L2');
+                $sheet->mergeCells('C3:L3');
+                $sheet->mergeCells('A4:L4');
 
-                $sheet->mergeCells('A1:L3');
+                $sheet->setCellValue('C1', 'KLINIK GIGI WINARDI');
 
                 $sheet->setCellValue(
-                    'A1',
-                    'LAPORAN PEMESANAN GIGI PALSU KLINIK GIGI WINARDI'
+                    'C2',
+                    'Alamat: Jl. KH Hasyim Asyari No. 88, Pancoran Kulon, Rogojampi, Banyuwangi, Jawa Timur 68462'
                 );
 
-                $sheet->getStyle('A1:L3')->applyFromArray([
+                $sheet->setCellValue(
+                    'C3',
+                    'Telepon: 082131797341'
+                );
 
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => [
-                            'rgb' => $blueLight,
-                        ],
-                    ],
+                // LOGO TANPA GARIS PEMBATAS
+                $lokasiLogo = [
+                    public_path('images/logo-winardi.png'),
+                    public_path('logo-winardi.png'),
+                ];
 
-                    'borders' => [
-                        'bottom' => [
-                            'borderStyle' => Border::BORDER_MEDIUM,
-                            'color' => [
-                                'rgb' => $blue,
-                            ],
-                        ],
+                foreach ($lokasiLogo as $pathLogo) {
+                    if (file_exists($pathLogo)) {
+                        $drawing = new Drawing();
+                        $drawing->setName('Logo Klinik');
+                        $drawing->setDescription('Logo Klinik Gigi Winardi');
+                        $drawing->setPath($pathLogo);
+                        $drawing->setCoordinates('A1');
+                        $drawing->setHeight(64);
+                        $drawing->setOffsetX(12);
+                        $drawing->setOffsetY(1);
+                        $drawing->setWorksheet($sheet);
+                        break;
+                    }
+                }
+
+                // Hilangkan seluruh border di area logo.
+                $sheet->getStyle('A1:B3')
+                    ->getBorders()
+                    ->getAllBorders()
+                    ->setBorderStyle(Border::BORDER_NONE);
+
+                $sheet->getStyle('A1:B3')->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                     ],
                 ]);
 
-                /*
-                |--------------------------------------------------------------------------
-                | POSISI JUDUL
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle('A1')->applyFromArray([
-
+                // NAMA KLINIK
+                $sheet->getStyle('C1:L1')->applyFromArray([
                     'font' => [
+                        'name' => 'Calibri',
+                        'size' => 15,
                         'bold' => true,
-                        'size' => 20,
-                        'color' => [
-                            'rgb' => $blueDark,
-                        ],
+                        'color' => ['rgb' => $blueDark],
                     ],
-
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_LEFT,
-                        'vertical' => Alignment::VERTICAL_TOP,
+                        'vertical' => Alignment::VERTICAL_BOTTOM,
+                    ],
+                ]);
+
+                // ALAMAT DAN TELEPON DIBUAT RAPAT
+                $sheet->getStyle('C2:L3')->applyFromArray([
+                    'font' => [
+                        'name' => 'Calibri',
+                        'size' => 9,
+                        'color' => ['rgb' => $text],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_LEFT,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                         'wrapText' => false,
                     ],
                 ]);
 
-                $sheet->getRowDimension(1)->setRowHeight(30);
-                $sheet->getRowDimension(2)->setRowHeight(12);
-                $sheet->getRowDimension(3)->setRowHeight(10);
+                // JARAK ANTARBARIS KOP DIPERKECIL
+                $sheet->getRowDimension(1)->setRowHeight(24);
+                $sheet->getRowDimension(2)->setRowHeight(18);
+                $sheet->getRowDimension(3)->setRowHeight(18);
+                $sheet->getRowDimension(4)->setRowHeight(8);
 
-                /*
-                |--------------------------------------------------------------------------
-                | JARAK SEBELUM CARD
-                |--------------------------------------------------------------------------
-                */
+                // GARIS PEMISAH KOP
+                $sheet->getStyle('A4:L4')
+                    ->getBorders()
+                    ->getBottom()
+                    ->setBorderStyle(Border::BORDER_MEDIUM)
+                    ->getColor()
+                    ->setRGB($blueDark);
 
-                $sheet->getRowDimension(4)->setRowHeight(20);
+                // JUDUL LAPORAN
+                $judul = match ($this->status) {
+                    'dalam_proses' => 'LAPORAN PEMESANAN GIGI PALSU - BELUM TIBA',
+                    'tiba_di_klinik' => 'LAPORAN PEMESANAN GIGI PALSU - TIBA DI KLINIK',
+                    'selesai' => 'LAPORAN PEMESANAN GIGI PALSU - SELESAI',
+                    default => 'LAPORAN PEMESANAN GIGI PALSU',
+                };
 
-                /*
-                |--------------------------------------------------------------------------
-                | RINGKASAN
-                |--------------------------------------------------------------------------
-                */
+                $sheet->mergeCells('A5:L5');
+                $sheet->setCellValue('A5', $judul);
 
-                $data = $this->collection();
-
-                $total = $data->count();
-
-                $belumTiba = $data->where(
-                    'status_pemesanan',
-                    'dalam_proses'
-                )->count();
-
-                $tibaDiKlinik = $data->where(
-                    'status_pemesanan',
-                    'tiba_di_klinik'
-                )->count();
-
-                $selesai = $data->where(
-                    'status_pemesanan',
-                    'selesai'
-                )->count();
-
-                /*
-                |--------------------------------------------------------------------------
-                | CARD
-                |--------------------------------------------------------------------------
-                */
-
-                $cards = [
-                    ['A5:C5', 'A6:C7', 'TOTAL PEMESANAN', $total],
-                    ['D5:F5', 'D6:F7', 'BELUM TIBA', $belumTiba],
-                    ['G5:I5', 'G6:I7', 'TIBA DI KLINIK', $tibaDiKlinik],
-                    ['J5:L5', 'J6:L7', 'SELESAI', $selesai],
-                ];
-
-                foreach ($cards as [$titleRange, $valueRange, $title, $value]) {
-
-                    $sheet->mergeCells($titleRange);
-                    $sheet->mergeCells($valueRange);
-
-                    $titleCell = explode(':', $titleRange)[0];
-                    $valueCell = explode(':', $valueRange)[0];
-
-                    $sheet->setCellValue($titleCell, $title);
-                    $sheet->setCellValue($valueCell, $value);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | JUDUL CARD
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle($titleRange)->applyFromArray([
-
-                        'fill' => [
-                            'fillType' => Fill::FILL_SOLID,
-                            'startColor' => [
-                                'rgb' => $blue,
-                            ],
-                        ],
-
-                        'font' => [
-                            'bold' => true,
-                            'size' => 10,
-                            'color' => [
-                                'rgb' => $white,
-                            ],
-                        ],
-
-                        'alignment' => [
-                            'horizontal' => Alignment::HORIZONTAL_CENTER,
-                            'vertical' => Alignment::VERTICAL_CENTER,
-                        ],
-
-                        'borders' => [
-                            'top' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'bottom' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'left' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'right' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-                        ],
-                    ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | ISI CARD
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle($valueRange)->applyFromArray([
-
-                        'fill' => [
-                            'fillType' => Fill::FILL_SOLID,
-                            'startColor' => [
-                                'rgb' => $white,
-                            ],
-                        ],
-
-                        'font' => [
-                            'bold' => true,
-                            'size' => 20,
-                            'color' => [
-                                'rgb' => $blueDark,
-                            ],
-                        ],
-
-                        'alignment' => [
-                            'horizontal' => Alignment::HORIZONTAL_CENTER,
-                            'vertical' => Alignment::VERTICAL_CENTER,
-                        ],
-
-                        'borders' => [
-                            'top' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'bottom' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'left' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'right' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-                        ],
-                    ]);
-                }
-
-                $sheet->getRowDimension(5)->setRowHeight(22);
-                $sheet->getRowDimension(6)->setRowHeight(25);
-                $sheet->getRowDimension(7)->setRowHeight(25);
-
-                /*
-                |--------------------------------------------------------------------------
-                | BARIS 8 = JARAK KOSONG
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getRowDimension(8)->setRowHeight(18);
-
-                /*
-                |--------------------------------------------------------------------------
-                | HEADER TABEL
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle(
-                    "A{$headerRow}:L{$headerRow}"
-                )->applyFromArray([
-
+                $sheet->getStyle('A5:L5')->applyFromArray([
                     'font' => [
+                        'name' => 'Calibri',
                         'bold' => true,
-                        'size' => 10,
-                        'color' => [
-                            'rgb' => $white,
-                        ],
+                        'size' => 14,
+                        'color' => ['rgb' => $blueDark],
                     ],
-
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => [
-                            'rgb' => $blue,
-                        ],
-                    ],
-
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
-                        'wrapText' => true,
-                    ],
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | SEMUA GARIS HEADER TEBAL
-                    |--------------------------------------------------------------------------
-                    */
-
-                    'borders' => [
-                        'top' => [
-                            'borderStyle' => Border::BORDER_MEDIUM,
-                            'color' => [
-                                'rgb' => $blueDark,
-                            ],
-                        ],
-
-                        'bottom' => [
-                            'borderStyle' => Border::BORDER_MEDIUM,
-                            'color' => [
-                                'rgb' => $blueDark,
-                            ],
-                        ],
-
-                        'left' => [
-                            'borderStyle' => Border::BORDER_MEDIUM,
-                            'color' => [
-                                'rgb' => $blueDark,
-                            ],
-                        ],
-
-                        'right' => [
-                            'borderStyle' => Border::BORDER_MEDIUM,
-                            'color' => [
-                                'rgb' => $blueDark,
-                            ],
-                        ],
                     ],
                 ]);
 
-                $sheet->getRowDimension($headerRow)->setRowHeight(40);
+                $sheet->getRowDimension(5)->setRowHeight(27);
 
-                /*
-                |--------------------------------------------------------------------------
-                | ISI TABEL
-                |--------------------------------------------------------------------------
-                */
+                // INFORMASI LAPORAN
+                $periodeDari = $this->dari
+                    ? date('d/m/Y', strtotime($this->dari))
+                    : 'Semua tanggal';
 
-                if ($lastRow >= $dataStartRow) {
+                $periodeSampai = $this->sampai
+                    ? date('d/m/Y', strtotime($this->sampai))
+                    : 'Semua tanggal';
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | STYLE DASAR ISI TABEL
-                    |--------------------------------------------------------------------------
-                    |
-                    | SEMUA GARIS ATAS, BAWAH, KIRI, KANAN = MEDIUM
-                    |
-                    */
+                $statusText = match ($this->status) {
+                    'dalam_proses' => 'Belum Tiba',
+                    'tiba_di_klinik' => 'Tiba di Klinik',
+                    'selesai' => 'Selesai',
+                    default => 'Semua Status',
+                };
 
-                    $sheet->getStyle(
-                        "A{$dataStartRow}:L{$lastRow}"
-                    )->applyFromArray([
+                $sheet->setCellValue('A7', 'Jenis Laporan');
+                $sheet->setCellValue('B7', 'Pemesanan Gigi Palsu');
+                $sheet->setCellValue('A8', 'Status');
+                $sheet->setCellValue('B8', $statusText);
+                $sheet->setCellValue('D7', 'Periode Laporan');
+                $sheet->setCellValue(
+                    'E7',
+                    "{$periodeDari} s.d. {$periodeSampai}"
+                );
+                $sheet->setCellValue('D8', 'Tanggal Cetak');
+                $sheet->setCellValue('E8', date('d/m/Y'));
 
+                $sheet->getStyle('A7:E8')->applyFromArray([
+                    'font' => [
+                        'name' => 'Calibri',
+                        'size' => 9,
+                        'color' => ['rgb' => $text],
+                    ],
+                    'alignment' => [
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                $sheet->getStyle('A7:A8')->getFont()->setBold(true);
+                $sheet->getStyle('D7:D8')->getFont()->setBold(true);
+
+                $sheet->getRowDimension(6)->setRowHeight(5);
+                $sheet->getRowDimension(7)->setRowHeight(18);
+                $sheet->getRowDimension(8)->setRowHeight(18);
+
+                // HEADER TABEL
+                $sheet->getStyle("A{$headerRow}:L{$headerRow}")
+                    ->applyFromArray([
                         'font' => [
                             'name' => 'Calibri',
-                            'size' => 10,
-                            'color' => [
-                                'rgb' => $text,
-                            ],
+                            'bold' => true,
+                            'size' => 9,
+                            'color' => ['rgb' => $white],
                         ],
-
+                        'fill' => [
+                            'fillType' => Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => $blue],
+                        ],
                         'alignment' => [
+                            'horizontal' => Alignment::HORIZONTAL_CENTER,
                             'vertical' => Alignment::VERTICAL_CENTER,
+                            'wrapText' => true,
                         ],
-
                         'borders' => [
-
-                            'top' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'bottom' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'left' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-
-                            'right' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                                'color' => ['rgb' => $blueDark],
                             ],
                         ],
                     ]);
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PEMBATAS VERTIKAL SETIAP KOLOM
-                    |--------------------------------------------------------------------------
-                    |
-                    | Semua garis:
-                    |
-                    | A | B | C | D | E | F | G | H | I | J | K | L
-                    |
-                    | dibuat TEBAL dan SAMA.
-                    |
-                    */
+                $sheet->getRowDimension($headerRow)->setRowHeight(34);
 
-                    $columns = [
-                        'A',
-                        'B',
-                        'C',
-                        'D',
-                        'E',
-                        'F',
-                        'G',
-                        'H',
-                        'I',
-                        'J',
-                        'K',
-                        'L',
-                    ];
-
-                    foreach ($columns as $column) {
-
-                        $sheet->getStyle(
-                            "{$column}{$headerRow}:{$column}{$lastRow}"
-                        )->applyFromArray([
+                // STYLE DATA
+                if ($data->count() > 0) {
+                    $sheet->getStyle("A{$dataStartRow}:L{$lastDataRow}")
+                        ->applyFromArray([
+                            'font' => [
+                                'name' => 'Calibri',
+                                'size' => 9,
+                                'color' => ['rgb' => $text],
+                            ],
+                            'alignment' => [
+                                'vertical' => Alignment::VERTICAL_CENTER,
+                            ],
                             'borders' => [
-
-                                'left' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-
-                                'right' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
+                                'allBorders' => [
+                                    'borderStyle' => Border::BORDER_THIN,
+                                    'color' => ['rgb' => $border],
                                 ],
                             ],
                         ]);
-                    }
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | GARIS HORIZONTAL SETIAP BARIS
-                    |--------------------------------------------------------------------------
-                    |
-                    | INI BAGIAN YANG KAMU MAKSUD.
-                    |
-                    | Garis antara baris 10 dan 11,
-                    | 11 dan 12,
-                    | 12 dan 13,
-                    | dst.
-                    |
-                    | SEMUANYA MEDIUM / TEBAL.
-                    |
-                    */
-
-                    for (
-                        $row = $dataStartRow;
-                        $row <= $lastRow;
-                        $row++
-                    ) {
-
-                        $sheet->getStyle(
-                            "A{$row}:L{$row}"
-                        )->applyFromArray([
-                            'borders' => [
-
-                                'top' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-
-                                'bottom' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-                            ],
-                        ]);
-                    }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | BARIS SELANG-SELING
-                    |--------------------------------------------------------------------------
-                    */
-
-                    for (
-                        $row = $dataStartRow;
-                        $row <= $lastRow;
-                        $row++
-                    ) {
-
+                    for ($row = $dataStartRow; $row <= $lastDataRow; $row++) {
                         if (($row - $dataStartRow) % 2 === 1) {
+                            $sheet->getStyle("A{$row}:L{$row}")
+                                ->getFill()
+                                ->setFillType(Fill::FILL_SOLID);
 
-                            $sheet->getStyle(
-                                "A{$row}:L{$row}"
-                            )->getFill()->setFillType(
-                                Fill::FILL_SOLID
-                            );
-
-                            $sheet->getStyle(
-                                "A{$row}:L{$row}"
-                            )->getFill()->getStartColor()
+                            $sheet->getStyle("A{$row}:L{$row}")
+                                ->getFill()
+                                ->getStartColor()
                                 ->setRGB($blueSoft);
                         }
 
-                        $sheet->getRowDimension($row)
-                            ->setRowHeight(24);
+                        $sheet->getRowDimension($row)->setRowHeight(21);
                     }
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | GARIS LUAR TABEL
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle(
-                        "A{$headerRow}:A{$lastRow}"
-                    )->applyFromArray([
-                        'borders' => [
-                            'left' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-                        ],
-                    ]);
-
-                    $sheet->getStyle(
-                        "L{$headerRow}:L{$lastRow}"
-                    )->applyFromArray([
-                        'borders' => [
-                            'right' => [
-                                'borderStyle' => Border::BORDER_MEDIUM,
-                                'color' => [
-                                    'rgb' => $blueDark,
-                                ],
-                            ],
-                        ],
-                    ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | FORMAT RUPIAH
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle(
-                        "I{$dataStartRow}:K{$lastRow}"
-                    )
+                    // FORMAT RUPIAH
+                    $sheet->getStyle("J{$dataStartRow}:K{$lastDataRow}")
                         ->getNumberFormat()
-                        ->setFormatCode('"Rp" #,##0');
+                        ->setFormatCode('"Rp" #,##0;-"Rp" #,##0;"Rp" 0');
 
-                    $sheet->getStyle(
-                        "I{$dataStartRow}:K{$lastRow}"
-                    )
+                    $sheet->getStyle("J{$dataStartRow}:K{$lastDataRow}")
                         ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_RIGHT
-                        );
+                        ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TANGGAL
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle(
-                        "C{$dataStartRow}:C{$lastRow}"
-                    )
+                    $sheet->getStyle("A{$dataStartRow}:C{$lastDataRow}")
                         ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    $sheet->getStyle(
-                        "F{$dataStartRow}:G{$lastRow}"
-                    )
+                    $sheet->getStyle("F{$dataStartRow}:H{$lastDataRow}")
                         ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | NOMOR
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle(
-                        "A{$dataStartRow}:B{$lastRow}"
-                    )
+                    $sheet->getStyle("L{$dataStartRow}:L{$lastDataRow}")
                         ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | STATUS
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $sheet->getStyle(
-                        "L{$dataStartRow}:L{$lastRow}"
-                    )
-                        ->getAlignment()
-                        ->setHorizontal(
-                            Alignment::HORIZONTAL_CENTER
-                        );
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | WARNA STATUS
-                    |--------------------------------------------------------------------------
-                    */
-
-                    for (
-                        $row = $dataStartRow;
-                        $row <= $lastRow;
-                        $row++
-                    ) {
-
-                        $status = $sheet
-                            ->getCell("L{$row}")
-                            ->getValue();
-
-                        if ($status === 'Selesai') {
-
-                            $sheet->getStyle("L{$row}")
-                                ->applyFromArray([
-
-                                    'fill' => [
-                                        'fillType' => Fill::FILL_SOLID,
-                                        'startColor' => [
-                                            'rgb' => 'DDF5E8',
-                                        ],
-                                    ],
-
-                                    'font' => [
-                                        'bold' => true,
-                                        'color' => [
-                                            'rgb' => '087443',
-                                        ],
-                                    ],
-                                ]);
-
-                        } elseif ($status === 'Tiba di Klinik') {
-
-                            $sheet->getStyle("L{$row}")
-                                ->applyFromArray([
-
-                                    'fill' => [
-                                        'fillType' => Fill::FILL_SOLID,
-                                        'startColor' => [
-                                            'rgb' => 'FFF1D6',
-                                        ],
-                                    ],
-
-                                    'font' => [
-                                        'bold' => true,
-                                        'color' => [
-                                            'rgb' => '9A6200',
-                                        ],
-                                    ],
-                                ]);
-
-                        } elseif ($status === 'Belum Tiba') {
-
-                            $sheet->getStyle("L{$row}")
-                                ->applyFromArray([
-
-                                    'fill' => [
-                                        'fillType' => Fill::FILL_SOLID,
-                                        'startColor' => [
-                                            'rgb' => 'DDEEFF',
-                                        ],
-                                    ],
-
-                                    'font' => [
-                                        'bold' => true,
-                                        'color' => [
-                                            'rgb' => $blue,
-                                        ],
-                                    ],
-                                ]);
-                        }
-                    }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PAKSA SEMUA GARIS VERTIKAL TETAP TEBAL
-                    |--------------------------------------------------------------------------
-                    */
-
-                    foreach ($columns as $column) {
-
-                        $sheet->getStyle(
-                            "{$column}{$headerRow}:{$column}{$lastRow}"
-                        )->applyFromArray([
-                            'borders' => [
-                                'left' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-
-                                'right' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-                            ],
-                        ]);
-                    }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PAKSA SEMUA GARIS HORIZONTAL TETAP TEBAL
-                    |--------------------------------------------------------------------------
-                    */
-
-                    for (
-                        $row = $headerRow;
-                        $row <= $lastRow;
-                        $row++
-                    ) {
-
-                        $sheet->getStyle(
-                            "A{$row}:L{$row}"
-                        )->applyFromArray([
-                            'borders' => [
-                                'top' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-
-                                'bottom' => [
-                                    'borderStyle' => Border::BORDER_MEDIUM,
-                                    'color' => [
-                                        'rgb' => $blueDark,
-                                    ],
-                                ],
-                            ],
-                        ]);
-                    }
+                        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | TIDAK ADA AUTOFILTER
-                |--------------------------------------------------------------------------
-                |
-                | Tidak menggunakan setAutoFilter()
-                | agar tombol dropdown tidak muncul.
-                |
-                */
-
-                /*
-                |--------------------------------------------------------------------------
-                | FREEZE HEADER
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->freezePane('A10');
-
-                /*
-                |--------------------------------------------------------------------------
-                | CATATAN
-                |--------------------------------------------------------------------------
-                */
-
-                $footerRow = $lastRow + 3;
-
-                $sheet->mergeCells(
-                    "A{$footerRow}:H{$footerRow}"
+                // TOTAL KESELURUHAN
+                $totalHarga = $data->sum(
+                    fn ($item) => (float) (
+                        $item->getRawOriginal('harga_pasien') ?? 0
+                    )
                 );
 
-                $sheet->setCellValue(
-                    "A{$footerRow}",
-                    'Catatan: Data laporan mengikuti filter yang dipilih.'
-                );
+                $sheet->mergeCells("A{$totalRow}:J{$totalRow}");
+                $sheet->setCellValue("A{$totalRow}", 'TOTAL KESELURUHAN');
+                $sheet->setCellValue("K{$totalRow}", $totalHarga);
 
-                $sheet->getStyle(
-                    "A{$footerRow}:H{$footerRow}"
-                )->applyFromArray([
-
-                    'font' => [
-                        'italic' => true,
-                        'size' => 9,
-                        'color' => [
-                            'rgb' => '607D8B',
+                $sheet->getStyle("A{$totalRow}:L{$totalRow}")
+                    ->applyFromArray([
+                        'fill' => [
+                            'fillType' => Fill::FILL_SOLID,
+                            'startColor' => ['rgb' => $blueLight],
                         ],
-                    ],
-                ]);
-
-                /*
-                |--------------------------------------------------------------------------
-                | TANGGAL CETAK
-                |--------------------------------------------------------------------------
-                */
-
-                $tanggalCetak = date('d/m/Y');
-
-                $sheet->mergeCells(
-                    "J{$footerRow}:L{$footerRow}"
-                );
-
-                $sheet->setCellValue(
-                    "J{$footerRow}",
-                    "Rogojampi, {$tanggalCetak}"
-                );
-
-                $sheet->getStyle(
-                    "J{$footerRow}:L{$footerRow}"
-                )->applyFromArray([
-
-                    'font' => [
-                        'size' => 9,
-                        'color' => [
-                            'rgb' => $text,
+                        'font' => [
+                            'name' => 'Calibri',
+                            'bold' => true,
+                            'size' => 10,
+                            'color' => ['rgb' => $blueDark],
                         ],
-                    ],
+                        'alignment' => [
+                            'vertical' => Alignment::VERTICAL_CENTER,
+                        ],
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_NONE,
+                            ],
+                        ],
+                    ]);
 
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_RIGHT,
-                    ],
-                ]);
+                $sheet->getStyle("A{$totalRow}:L{$totalRow}")
+                    ->getBorders()
+                    ->getTop()
+                    ->setBorderStyle(Border::BORDER_MEDIUM)
+                    ->getColor()
+                    ->setRGB($blueDark);
 
-                /*
-                |--------------------------------------------------------------------------
-                | LEBAR KOLOM
-                |--------------------------------------------------------------------------
-                */
+                $sheet->getStyle("A{$totalRow}:L{$totalRow}")
+                    ->getBorders()
+                    ->getBottom()
+                    ->setBorderStyle(Border::BORDER_MEDIUM)
+                    ->getColor()
+                    ->setRGB($blueDark);
 
+                $sheet->getStyle("K{$totalRow}")
+                    ->getNumberFormat()
+                    ->setFormatCode('"Rp" #,##0;-"Rp" #,##0;"Rp" 0');
+
+                $sheet->getStyle("K{$totalRow}")
+                    ->getAlignment()
+                    ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+                $sheet->getRowDimension($totalRow)->setRowHeight(25);
+
+                // LEBAR KOLOM DISESUAIKAN AGAR CETAKAN LEBIH RINGKAS
                 $widths = [
                     'A' => 6,
                     'B' => 17,
-                    'C' => 13,
-                    'D' => 24,
-                    'E' => 27,
-                    'F' => 14,
-                    'G' => 18,
+                    'C' => 12,
+                    'D' => 21,
+                    'E' => 22,
+                    'F' => 13,
+                    'G' => 15,
                     'H' => 19,
-                    'I' => 17,
-                    'J' => 17,
-                    'K' => 18,
-                    'L' => 17,
+                    'I' => 18,
+                    'J' => 13,
+                    'K' => 15,
+                    'L' => 14,
                 ];
 
                 foreach ($widths as $column => $width) {
-
-                    $sheet->getColumnDimension($column)
-                        ->setWidth($width);
+                    $sheet->getColumnDimension($column)->setWidth($width);
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | PRINT A4 LANDSCAPE
-                |--------------------------------------------------------------------------
-                */
+                $sheet->freezePane('A10');
 
+                // PENGATURAN CETAK
                 $sheet->getPageSetup()
-                    ->setOrientation(
-                        PageSetup::ORIENTATION_LANDSCAPE
-                    )
-                    ->setPaperSize(
-                        PageSetup::PAPERSIZE_A4
-                    )
+                    ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
+                    ->setPaperSize(PageSetup::PAPERSIZE_A4)
                     ->setFitToWidth(1)
                     ->setFitToHeight(0);
 
+                $sheet->getPageSetup()->setFitToPage(true);
+
+                // Area cetak sesuai isi laporan.
+                $sheet->getPageSetup()->setPrintArea("A1:L{$totalRow}");
+
+                // Margin cetak lebih seimbang.
                 $sheet->getPageMargins()
-                    ->setTop(0.4)
-                    ->setRight(0.4)
-                    ->setLeft(0.4)
-                    ->setBottom(0.4);
+                    ->setTop(0.3)
+                    ->setRight(0.3)
+                    ->setLeft(0.3)
+                    ->setBottom(0.4)
+                    ->setHeader(0.1)
+                    ->setFooter(0.1);
 
-                /*
-                |--------------------------------------------------------------------------
-                | FONT
-                |--------------------------------------------------------------------------
-                */
-
-                $sheet->getStyle("A1:L{$lastRow}")
+                $sheet->getStyle("A1:L{$totalRow}")
                     ->getFont()
                     ->setName('Calibri');
+
+                $sheet->getProtection()->setSheet(false);
             },
         ];
     }
