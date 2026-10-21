@@ -85,7 +85,7 @@
         /* Stat cards */
         .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
             margin-bottom: 16px;
         }
@@ -119,12 +119,6 @@
             font-size: 20px;
         }
 
-        .rupiah-symbol {
-            font-size: 17px;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
-
         .stat-icon.total {
             background: var(--green-tint);
             color: var(--green);
@@ -138,11 +132,6 @@
         .stat-icon.progress {
             background: var(--coral-tint);
             color: var(--coral);
-        }
-
-        .stat-icon.value {
-            background: var(--amber-tint);
-            color: var(--amber);
         }
 
         .stat-body .num {
@@ -493,15 +482,6 @@
                         <span class="label">Masih diproses</span>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon value">
-                        <span class="rupiah-symbol" aria-label="Rupiah">Rp</span>
-                    </div>
-                    <div class="stat-body">
-                        <span class="num" id="sumOmzet">Rp 0</span>
-                        <span class="label">Total nilai pesanan</span>
-                    </div>
-                </div>
             </div>
 
             <div class="toolbar">
@@ -556,8 +536,7 @@
                                 <th>ESTIMASI SELESAI</th>
                                 <th>LABORATORIUM</th>
                                 <th>BIAYA LAB</th>
-                                <th>BAYAR LAB</th>
-                                <th>HARGA PASIEN</th>
+                                <th>TOTAL HARGA</th>
                                 <th>STATUS</th>
                                 <th>AKSI</th>
                             </tr>
@@ -770,7 +749,6 @@
                 <td>${tglIndo(r.tglSelesai)}</td>
                 <td>${r.laboratorium}</td>
                 <td>${rupiah(r.biayaLab)}</td>
-                <td>${r.bayarLab > 0 ? rupiah(r.bayarLab) : 'Belum Lunas'}</td>
                 <td>${rupiah(r.harga)}</td>
                 <td><span class="status ${statusClass(r.status)}">${statusLabel(r.status)}</span></td>
                 <td><a class="btn-sm" href="${@json(url('/pemesanan'))}/${r.id}">Detail</a></td>
@@ -783,7 +761,6 @@
                 document.getElementById('sumSelesai').textContent = rows.filter(r => r.status === "selesai" || r.status ===
                     "tiba_di_klinik").length;
                 document.getElementById('sumProses').textContent = rows.filter(r => r.status === "dalam_proses").length;
-                document.getElementById('sumOmzet').textContent = rupiah(rows.reduce((a, r) => a + r.harga, 0));
                 document.getElementById('printedCount').textContent = rows.length;
 
                 return rows;
