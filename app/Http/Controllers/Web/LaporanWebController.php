@@ -40,7 +40,6 @@ class LaporanWebController extends Controller
                 'tglSelesai' => optional($item->estimasi_selesai)->format('Y-m-d'),
                 'laboratorium' => $item->lab->nama_lab ?? '-',
                 'biayaLab' => (float) $item->biaya_lab,
-                'bayarLab' => $item->status_bayar_lab === 'sudah_lunas' ? (float) $item->biaya_lab : 0,
                 'harga' => (float) $item->harga_pasien,
                 'status' => $item->status_pemesanan,
             ];
