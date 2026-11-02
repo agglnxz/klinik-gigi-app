@@ -63,7 +63,16 @@ class LaporanWebControllerTest extends TestCase
 
         // Assert
         Excel::assertDownloaded('laporan_pemesanan_gigi_palsu.xlsx', function (LaporanPemesananExport $export) {
-            return true;
+            $reflection = new \ReflectionClass($export);
+            $searchProp = $reflection->getProperty('search');
+            $dariProp = $reflection->getProperty('dari');
+            $sampaiProp = $reflection->getProperty('sampai');
+            $statusProp = $reflection->getProperty('status');
+
+            return $searchProp->getValue($export) === 'Budi'
+                && $dariProp->getValue($export) === '2026-10-01'
+                && $sampaiProp->getValue($export) === '2026-10-31'
+                && $statusProp->getValue($export) === 'selesai';
         });
     }
 }

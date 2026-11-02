@@ -165,4 +165,262 @@ class PengajuanHapusWebControllerTest extends TestCase
         $pengajuan->refresh();
         self::assertSame('Ditolak', $pengajuan->status_approval);
     }
+
+    /**
+     * Data provider untuk role non-direktur.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function nonDirekturRoles(): array
+    {
+        return [
+            'role_admin'     => ['Admin'],
+            'role_marketing' => ['Marketing'],
+        ];
+    }
+
+    /**
+     * Test approve is forbidden for non-direktur roles (Admin and Marketing).
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nonDirekturRoles')]
+    public function test_approve_forbids_non_direktur_roles(string $role): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => $role]);
+        Auth::login($user);
+
+        $pasien = Pasien::factory()->create();
+        $pengajuan = PengajuanHapus::factory()->create([
+            'nama_tabel'      => 'pasien',
+            'id_referensi'    => $pasien->id,
+            'status_approval' => 'Pending',
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+
+        // Act
+        $response = $controller->approve($pengajuan->id);
+
+        // Assert
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertSame('Akses Terbatas.', session('error'));
+
+        // Status must remain Pending and patient must NOT be deleted
+        $pengajuan->refresh();
+        self::assertSame('Pending', $pengajuan->status_approval);
+        self::assertDatabaseHas('pasien', ['id' => $pasien->id]);
+    }
+
+    /**
+     * Test reject is forbidden for non-direktur roles (Admin and Marketing).
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nonDirekturRoles')]
+    public function test_reject_forbids_non_direktur_roles(string $role): void
+    {
+        // Arrange
+        $user = User::factory()->create(['role' => $role]);
+        Auth::login($user);
+
+        $pengajuan = PengajuanHapus::factory()->create([
+            'status_approval' => 'Pending',
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+
+        // Act
+        $response = $controller->reject($pengajuan->id);
+
+        // Assert
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertSame('Akses Terbatas.', session('error'));
+
+        $pengajuan->refresh();
+        self::assertSame('Pending', $pengajuan->status_approval);
+    }
+
+    /**
+     * Test store prevents duplicate pending deletion request for the same record.
+     */
+    public function test_store_prevents_duplicate_pending_deletion_request(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $pasien = Pasien::factory()->create();
+
+        // First deletion request
+        PengajuanHapus::create([
+            'nama_tabel'      => 'pasien',
+            'id_referensi'    => (string) $pasien->id,
+            'nama_data'       => $pasien->nama,
+            'alasan_hapus'    => 'Pengajuan pertama valid',
+            'status_approval' => 'Pending',
+            'id_pemohon'      => $user->id,
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+
+        $secondRequest = Request::create('/pengajuan-hapus', 'POST', [
+            'nama_tabel'   => 'pasien',
+            'id_referensi' => $pasien->id,
+            'nama_data'    => $pasien->nama,
+            'alasan_hapus' => 'Pengajuan kedua tidak boleh dobel',
+        ]);
+        $secondRequest->setLaravelSession(app('session.store'));
+
+        // Act
+        $response = $controller->store($secondRequest);
+
+        // Assert
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertStringContainsString('menunggu persetujuan', session('error'));
+
+        // Count should remain 1
+        self::assertSame(1, PengajuanHapus::where('nama_tabel', 'pasien')->where('id_referensi', $pasien->id)->count());
+    }
+
+    /**
+     * Test store fails and does not save when alasan_hapus is too short (< 5 characters).
+     */
+    public function test_store_fails_when_reason_is_too_short(): void
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $pasien = Pasien::factory()->create();
+
+        $request = Request::create('/pengajuan-hapus', 'POST', [
+            'nama_tabel'   => 'pasien',
+            'id_referensi' => $pasien->id,
+            'nama_data'    => $pasien->nama,
+            'alasan_hapus' => '1234', // 4 chars (min:5)
+        ]);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new PengajuanHapusWebController();
+
+        try {
+            $controller->store($request);
+            self::fail('Expected ValidationException for short alasan_hapus');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey('alasan_hapus', $e->errors());
+        }
+
+        self::assertDatabaseCount('pengajuan_hapus', 0);
+    }
+
+    /**
+     * Test store fails and does not save when nama_tabel is not in allowed whitelist.
+     */
+    public function test_store_fails_when_target_table_is_invalid(): void
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $request = Request::create('/pengajuan-hapus', 'POST', [
+            'nama_tabel'   => 'users', // table not in allowed list
+            'id_referensi' => 1,
+            'nama_data'    => 'Administrator',
+            'alasan_hapus' => 'Mencoba menghapus user lewat pengajuan',
+        ]);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new PengajuanHapusWebController();
+
+        try {
+            $controller->store($request);
+            self::fail('Expected ValidationException for unwhitelisted nama_tabel');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey('nama_tabel', $e->errors());
+        }
+
+        self::assertDatabaseCount('pengajuan_hapus', 0);
+    }
+
+    /**
+     * Test approve returns error when request has already been processed.
+     */
+    public function test_approve_fails_when_already_processed(): void
+    {
+        $direktur = User::factory()->create(['role' => 'Direktur']);
+        Auth::login($direktur);
+
+        $pengajuan = PengajuanHapus::factory()->create([
+            'status_approval' => 'Disetujui',
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+        $response = $controller->approve($pengajuan->id);
+
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertSame('Sudah diproses.', session('error'));
+    }
+
+    /**
+     * Test reject returns error when request has already been processed.
+     */
+    public function test_reject_fails_when_already_processed(): void
+    {
+        $direktur = User::factory()->create(['role' => 'Direktur']);
+        Auth::login($direktur);
+
+        $pengajuan = PengajuanHapus::factory()->create([
+            'status_approval' => 'Ditolak',
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+        $response = $controller->reject($pengajuan->id);
+
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertSame('Sudah diproses.', session('error'));
+    }
+
+    /**
+     * Test approve maintains consistency and keeps pending status if deletion fails due to relation constraints.
+     */
+    public function test_approve_handles_foreign_key_constraint_gracefully_and_keeps_pending_status(): void
+    {
+        // Arrange
+        $direktur = User::factory()->create(['role' => 'Direktur']);
+        Auth::login($direktur);
+
+        // Buat jenis gigi yang direferensikan oleh pemesanan_items (Foreign Key tanpa CASCADE)
+        $jenisGigi = \App\Models\JenisGigi::factory()->create();
+        $pemesanan = \App\Models\Pemesanan::factory()->create();
+        \App\Models\PemesananItem::create([
+            'id_pemesanan'  => $pemesanan->id,
+            'id_jenis_gigi' => $jenisGigi->id,
+        ]);
+
+        $pengajuan = PengajuanHapus::factory()->create([
+            'nama_tabel'      => 'jenis_gigi',
+            'id_referensi'    => $jenisGigi->id,
+            'status_approval' => 'Pending',
+        ]);
+
+        $controller = new PengajuanHapusWebController();
+
+        // Act
+        $response = $controller->approve($pengajuan->id);
+
+        // Assert
+        self::assertInstanceOf(RedirectResponse::class, $response);
+        self::assertTrue(session()->has('error'));
+        self::assertSame('Gagal mengeksekusi penghapusan. Data terikat relasi.', session('error'));
+
+        // Status pengajuan tetap konsisten 'Pending'
+        $pengajuan->refresh();
+        self::assertSame('Pending', $pengajuan->status_approval);
+
+        // Data jenis gigi tetap ada di database (tidak terhapus)
+        self::assertDatabaseHas('jenis_gigi', [
+            'id' => $jenisGigi->id,
+        ]);
+    }
 }

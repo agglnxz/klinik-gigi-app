@@ -175,4 +175,91 @@ class PasienWebControllerTest extends TestCase
         self::assertNotSoftDeleted('pasien', ['id' => $pasien->id]);
         self::assertTrue(session()->has('error'));
     }
+
+    /**
+     * Test store fails and does not save data when No. RM is duplicate.
+     */
+    public function test_store_fails_when_no_rm_is_duplicate_and_does_not_save_data(): void
+    {
+        // Arrange
+        Pasien::factory()->create(['no_rm' => 'RM-DUP-001']);
+        self::assertDatabaseCount('pasien', 1);
+
+        $request = Request::create('/pasien', 'POST', [
+            'no_rm'         => 'RM-DUP-001',
+            'nama'          => 'Pasien Duplikat Baru',
+            'kontak'        => '081299998888',
+            'jenis_kelamin' => 'Laki-laki',
+            'alamat'        => 'Jl. Duplikat No. 2',
+        ]);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new PasienWebController();
+
+        // Act & Assert
+        try {
+            $controller->store($request);
+            self::fail('Expected ValidationException was not thrown for duplicate no_rm');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey('no_rm', $e->errors());
+        }
+
+        // Verify no duplicate data is saved
+        self::assertDatabaseCount('pasien', 1);
+        self::assertDatabaseMissing('pasien', [
+            'nama' => 'Pasien Duplikat Baru',
+        ]);
+    }
+
+    /**
+     * Data provider untuk field-field wajib pasien.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function requiredPasienFields(): array
+    {
+        return [
+            'missing_no_rm'         => ['no_rm'],
+            'missing_nama'          => ['nama'],
+            'missing_kontak'        => ['kontak'],
+            'missing_jenis_kelamin' => ['jenis_kelamin'],
+            'missing_alamat'        => ['alamat'],
+        ];
+    }
+
+    /**
+     * Test store fails and does not save data when required fields are empty.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredPasienFields')]
+    public function test_store_fails_when_required_field_is_empty(string $missingField): void
+    {
+        // Arrange
+        $validPayload = [
+            'no_rm'         => 'RM-VALID-001',
+            'nama'          => 'Pasien Valid',
+            'kontak'        => '081234567890',
+            'jenis_kelamin' => 'Perempuan',
+            'alamat'        => 'Jl. Pahlawan No. 10',
+        ];
+
+        // Kosongkan field yang sedang diuji
+        $payload = $validPayload;
+        $payload[$missingField] = '';
+
+        $request = Request::create('/pasien', 'POST', $payload);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new PasienWebController();
+
+        // Act & Assert
+        try {
+            $controller->store($request);
+            self::fail("Expected ValidationException was not thrown when field '{$missingField}' is empty");
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey($missingField, $e->errors());
+        }
+
+        // Verify data was NOT saved to database
+        self::assertDatabaseCount('pasien', 0);
+    }
 }

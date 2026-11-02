@@ -89,7 +89,7 @@ class GenerateNotifikasiTest extends TestCase
     }
 
     /**
-     * Test handle ignores orders not in 'dalam_proses' status.
+     * Test handle ignores orders not active (status selesai, tiba_di_klinik, or soft-deleted/dibatalkan).
      */
     public function test_handle_ignores_non_active_orders(): void
     {
@@ -102,6 +102,11 @@ class GenerateNotifikasiTest extends TestCase
             'status_pemesanan' => 'tiba_di_klinik',
             'estimasi_selesai' => Carbon::today()->subDays(1),
         ]);
+        $pemesananDibatalkan = Pemesanan::factory()->create([
+            'status_pemesanan' => 'dalam_proses',
+            'estimasi_selesai' => Carbon::today()->subDays(1),
+        ]);
+        $pemesananDibatalkan->delete(); // Soft-deleted / order dibatalkan
 
         $command = new GenerateNotifikasi();
 
@@ -111,5 +116,68 @@ class GenerateNotifikasiTest extends TestCase
         // Assert
         self::assertSame(0, Notifikasi::where('pemesanan_id', $pemesananSelesai->id)->count());
         self::assertSame(0, Notifikasi::where('pemesanan_id', $pemesananTiba->id)->count());
+        self::assertSame(0, Notifikasi::where('pemesanan_id', $pemesananDibatalkan->id)->count());
+    }
+
+    /**
+     * Test handle generates separate notifications across different days.
+     */
+    public function test_handle_generates_new_notification_across_days(): void
+    {
+        try {
+            // Day 1: 2026-10-25 (H+1)
+            Carbon::setTestNow(Carbon::parse('2026-10-25 09:00:00'));
+            $pemesanan = Pemesanan::factory()->create([
+                'status_pemesanan' => 'dalam_proses',
+                'estimasi_selesai' => '2026-10-26',
+            ]);
+
+            $command = new GenerateNotifikasi();
+            $command->handle();
+
+            self::assertSame(1, Notifikasi::where('pemesanan_id', $pemesanan->id)->count());
+            $firstNotif = Notifikasi::where('pemesanan_id', $pemesanan->id)->first();
+            self::assertSame('akan segera tiba 1 hari lagi', $firstNotif->pesan);
+
+            // Day 2: 2026-10-26 (Hari H)
+            Carbon::setTestNow(Carbon::parse('2026-10-26 09:00:00'));
+            $command->handle();
+
+            // Should have 2 notifications across the 2 days
+            self::assertSame(2, Notifikasi::where('pemesanan_id', $pemesanan->id)->count());
+            $latestNotif = Notifikasi::where('pemesanan_id', $pemesanan->id)->latest('id')->first();
+            self::assertSame('dijadwalkan tiba hari ini', $latestNotif->pesan);
+        } finally {
+            Carbon::setTestNow(null);
+        }
+    }
+
+    /**
+     * Test handle generates notification when estimasi_selesai is updated to near deadline.
+     */
+    public function test_handle_generates_notification_when_estimation_date_is_updated(): void
+    {
+        // 1. Initial state: estimation is 10 days away (no notification generated)
+        $pemesanan = Pemesanan::factory()->create([
+            'status_pemesanan' => 'dalam_proses',
+            'estimasi_selesai' => Carbon::today()->addDays(10),
+        ]);
+
+        $command = new GenerateNotifikasi();
+        $command->handle();
+        self::assertSame(0, Notifikasi::where('pemesanan_id', $pemesanan->id)->count());
+
+        // 2. Updated state: doctor/staff moves estimation closer to H+1
+        $pemesanan->update([
+            'estimasi_selesai' => Carbon::today()->addDays(1),
+        ]);
+
+        $command->handle();
+
+        // 3. Notification should now be generated
+        self::assertSame(1, Notifikasi::where('pemesanan_id', $pemesanan->id)->count());
+        $notif = Notifikasi::where('pemesanan_id', $pemesanan->id)->first();
+        self::assertSame('akan segera tiba 1 hari lagi', $notif->pesan);
+        self::assertSame('segera_tiba', $notif->status);
     }
 }

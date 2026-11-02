@@ -144,4 +144,94 @@ class JenisGigiWebControllerTest extends TestCase
         self::assertNotSoftDeleted('jenis_gigi', ['id' => $jenis->id]);
         self::assertTrue(session()->has('error'));
     }
+
+    /**
+     * Test store fails and does not save data when estimasi_biaya is negative.
+     */
+    public function test_store_fails_with_negative_cost_and_does_not_save_data(): void
+    {
+        $request = Request::create('/jenis-gigi', 'POST', [
+            'kode_gigi'      => 'GIGI-NEG-01',
+            'nama_jenis'     => 'Gigi Biaya Negatif',
+            'estimasi_biaya' => -50000,
+        ]);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new JenisGigiWebController();
+
+        try {
+            $controller->store($request);
+            self::fail('Expected ValidationException for negative estimasi_biaya');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey('estimasi_biaya', $e->errors());
+        }
+
+        self::assertDatabaseCount('jenis_gigi', 0);
+    }
+
+    /**
+     * Test store fails and does not save data when estimasi_biaya is non-numeric.
+     */
+    public function test_store_fails_with_non_numeric_cost_and_does_not_save_data(): void
+    {
+        $request = Request::create('/jenis-gigi', 'POST', [
+            'kode_gigi'      => 'GIGI-NONNUM-01',
+            'nama_jenis'     => 'Gigi Biaya Huruf',
+            'estimasi_biaya' => 'seratus_ribu',
+        ]);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new JenisGigiWebController();
+
+        try {
+            $controller->store($request);
+            self::fail('Expected ValidationException for non-numeric estimasi_biaya');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey('estimasi_biaya', $e->errors());
+        }
+
+        self::assertDatabaseCount('jenis_gigi', 0);
+    }
+
+    /**
+     * Data provider untuk field-field wajib jenis gigi.
+     *
+     * @return array<string, array{string}>
+     */
+    public static function requiredJenisGigiFields(): array
+    {
+        return [
+            'missing_kode_gigi'      => ['kode_gigi'],
+            'missing_nama_jenis'     => ['nama_jenis'],
+            'missing_estimasi_biaya' => ['estimasi_biaya'],
+        ];
+    }
+
+    /**
+     * Test store fails and does not save data when required fields are empty.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredJenisGigiFields')]
+    public function test_store_fails_when_required_field_is_empty(string $missingField): void
+    {
+        $payload = [
+            'kode_gigi'      => 'GIGI-VALID-01',
+            'nama_jenis'     => 'Gigi Tiruan Valid',
+            'estimasi_biaya' => 750000,
+        ];
+        $payload[$missingField] = '';
+
+        $request = Request::create('/jenis-gigi', 'POST', $payload);
+        $request->setLaravelSession(app('session.store'));
+
+        $controller = new JenisGigiWebController();
+
+        try {
+            $controller->store($request);
+            self::fail("Expected ValidationException when field '{$missingField}' is empty");
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            self::assertArrayHasKey($missingField, $e->errors());
+        }
+
+        self::assertDatabaseCount('jenis_gigi', 0);
+    }
 }

@@ -194,4 +194,90 @@ class LaporanPemesananExportTest extends TestCase
         self::assertArrayHasKey(AfterSheet::class, $events);
         self::assertIsCallable($events[AfterSheet::class]);
     }
+
+    /**
+     * Test collection filters by boundary dates (dari == sampai).
+     */
+    public function test_collection_filters_with_boundary_dates(): void
+    {
+        // Arrange
+        $pemYesterday = Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-14',
+            'status_pemesanan' => 'dalam_proses',
+        ]);
+        $pemTargetDay = Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-15',
+            'status_pemesanan' => 'dalam_proses',
+        ]);
+        $pemTomorrow = Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-16',
+            'status_pemesanan' => 'dalam_proses',
+        ]);
+
+        // Act: dari == sampai on 2026-10-15
+        $export = new LaporanPemesananExport(dari: '2026-10-15', sampai: '2026-10-15');
+        $collection = $export->collection();
+
+        // Assert: only pemTargetDay should be included
+        self::assertFalse($collection->contains('id', $pemYesterday->id));
+        self::assertTrue($collection->contains('id', $pemTargetDay->id));
+        self::assertFalse($collection->contains('id', $pemTomorrow->id));
+        self::assertSame(1, $collection->count());
+    }
+
+    /**
+     * Test collection returns empty collection when filters match no data.
+     */
+    public function test_collection_returns_empty_when_no_match(): void
+    {
+        Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-15',
+            'status_pemesanan' => 'dalam_proses',
+        ]);
+
+        $export = new LaporanPemesananExport(search: 'KataKunciYangPastiTidakAdaDiDatabase999');
+        $collection = $export->collection();
+
+        self::assertTrue($collection->isEmpty());
+        self::assertSame(0, $collection->count());
+    }
+
+    /**
+     * Test export collection verifies exact row counts, nominal mapping, and total sums.
+     */
+    public function test_export_verifies_exact_rows_and_financial_totals(): void
+    {
+        // Arrange
+        $pem1 = Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-20',
+            'biaya_lab'        => 150000,
+            'harga_pasien'     => 600000,
+            'status_pemesanan' => 'dalam_proses',
+        ]);
+        $pem2 = Pemesanan::factory()->create([
+            'tanggal_dikirim'  => '2026-10-21',
+            'biaya_lab'        => 250000,
+            'harga_pasien'     => 900000,
+            'status_pemesanan' => 'selesai',
+        ]);
+
+        $export = new LaporanPemesananExport(dari: '2026-10-20', sampai: '2026-10-21');
+        $collection = $export->collection();
+
+        // Assert count and financial sums
+        self::assertCount(2, $collection);
+        $totalNominal = $collection->sum(fn ($item) => (float) $item->getRawOriginal('harga_pasien'));
+        self::assertEquals(1500000.0, $totalNominal);
+
+        // Map rows and assert each column matches
+        $row1 = $export->map($collection->firstWhere('id', $pem1->id));
+        self::assertEquals(150000.0, $row1[9]); // biaya lab
+        self::assertEquals(600000.0, $row1[10]); // harga pasien
+        self::assertSame('Belum Tiba', $row1[11]); // status label
+
+        $row2 = $export->map($collection->firstWhere('id', $pem2->id));
+        self::assertEquals(250000.0, $row2[9]);
+        self::assertEquals(900000.0, $row2[10]);
+        self::assertSame('Selesai', $row2[11]);
+    }
 }

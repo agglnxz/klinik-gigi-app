@@ -54,6 +54,16 @@ class PengajuanHapusWebController extends Controller
             return redirect()->back()->with('error', 'Aksi ilegal terdeteksi! Data tidak ditemukan.');
         }
 
+        // Cegah pengajuan ganda untuk data yang statusnya masih Pending
+        $sudahAdaPending = PengajuanHapus::where('nama_tabel', $request->nama_tabel)
+            ->where('id_referensi', $request->id_referensi)
+            ->where('status_approval', 'Pending')
+            ->exists();
+
+        if ($sudahAdaPending) {
+            return redirect()->back()->with('error', 'Data ini sudah memiliki pengajuan penghapusan yang sedang menunggu persetujuan.');
+        }
+
         PengajuanHapus::create([
             'nama_tabel'      => $request->nama_tabel,
             'id_referensi'    => $request->id_referensi,
@@ -94,6 +104,10 @@ class PengajuanHapusWebController extends Controller
         }
 
         $pengajuan = PengajuanHapus::findOrFail($id);
+        if ($pengajuan->status_approval !== 'Pending') {
+            return redirect()->back()->with('error', 'Sudah diproses.');
+        }
+
         $pengajuan->update(['status_approval' => 'Ditolak']);
 
         return redirect()->back()->with('success', 'Pengajuan ditolak. Data aman.');
