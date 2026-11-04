@@ -240,6 +240,10 @@ class PemesananWebController extends Controller
      * Memperbarui status alur pemesanan pasien.
      * Menerapkan validasi ketat dosen saat status diubah menjadi 'selesai'.
      */
+    /**
+     * Memperbarui status alur pemesanan pasien.
+     * Menerapkan validasi ketat dosen saat status diubah menjadi 'selesai'.
+     */
     public function updateStatus(Request $request, int $id)
     {
         $pemesanan = Pemesanan::with('pesananLab')->findOrFail($id);
@@ -251,15 +255,22 @@ class PemesananWebController extends Controller
 
         // 🔴 VALIDASI KETAT STATUS 'SELESAI'
         if ($request->input('status_booking') === 'selesai') {
+            $errors = [];
+
             // Syarat 1: Gigi harus sudah tiba dari laboratorium
             if (!$pemesanan->pesananLab || is_null($pemesanan->pesananLab->tanggal_tiba)) {
-                return back()->with('error', 'Gigi belum tiba dari laboratorium.');
+                $errors['status_booking'] = 'Gigi belum tiba dari laboratorium.';
             }
 
             // Syarat 2: Pembayaran pasien harus sudah lunas
             $statusBayar = $request->input('status_bayar_pasien', $pemesanan->status_bayar_pasien);
             if ($statusBayar !== 'sudah_lunas') {
-                return back()->with('error', 'Pembayaran pasien belum lunas.');
+                $errors['status_bayar_pasien'] = 'Pembayaran pasien belum lunas.';
+            }
+
+            // Lempar exception otomatis jika ada syarat yang tidak terpenuhi (menghindari multiple returns)
+            if (!empty($errors)) {
+                throw \Illuminate\Validation\ValidationException::withMessages($errors);
             }
         }
 
