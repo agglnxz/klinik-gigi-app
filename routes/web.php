@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\JenisGigiWebController;
 use App\Http\Controllers\Web\PasienWebController;
 use App\Http\Controllers\Web\PemeriksaanWebController;
 use App\Http\Controllers\Web\PemesananWebController;
+use App\Http\Controllers\Web\PesananLabWebController;
 use App\Http\Controllers\Web\LaporanWebController;
 use App\Http\Controllers\Web\PengajuanHapusWebController;
 
@@ -66,11 +67,22 @@ Route::middleware('auth')->group(function () {
         // Cetak Invoice (khusus Admin)
         Route::get('pemesanan/{pemesanan}/invoice', [PemesananWebController::class, 'invoice'])
             ->name('pemesanan.invoice')->whereNumber('pemesanan');
+
+        // 🟣 OPERASIONAL PESANAN LAB (Khusus Admin)
+        Route::prefix('pesanan-lab')->name('pesanan-lab.')->group(function () {
+            Route::get('/create/{id_pemesanan?}', [PesananLabWebController::class, 'create'])->name('create');
+            Route::post('/{id_pemesanan?}', [PesananLabWebController::class, 'store'])->name('store');
+            Route::patch('/{id}/konfirmasi-tiba', [PesananLabWebController::class, 'konfirmasiTiba'])->name('konfirmasi-tiba');
+            Route::patch('/{id}/mark-as-arrived', [PesananLabWebController::class, 'markAsArrived'])->name('mark-as-arrived');
+            Route::patch('/{id}/update-bayar', [PesananLabWebController::class, 'updateStatusBayar'])->name('update-bayar');
+        });
     });
 
     // 🔵 KELOMPOK HAK AKSES: ADMIN, MARKETING, & DIREKTUR (Taruh di BAWAH)
     Route::middleware('role:Admin,Marketing,Direktur')->group(function () {
         Route::get('pemesanan', [PemesananWebController::class, 'index'])->name('pemesanan.index');
+        Route::get('pesanan-lab', [PesananLabWebController::class, 'index'])->name('pesanan-lab.index');
+        Route::get('pesanan-lab/{id}', [PesananLabWebController::class, 'show'])->name('pesanan-lab.show');
         Route::get('riwayat-pemesanan', [PemesananWebController::class, 'pemesananRiwayat'])->name('pemesanan-riwayat');
         Route::get('laporan', [LaporanWebController::class, 'index'])->name('laporan.index');
         Route::get('laporan/export', [LaporanWebController::class, 'export'])->name('laporan.export');
@@ -94,12 +106,17 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{id}', [UserWebController::class, 'update'])->name('users.update');
         Route::delete('/users/{id}', [UserWebController::class, 'destroy'])->name('users.destroy');
 
-        // Edit & Update Pemesanan (Hanya Direktur yang Bisa Akses)
-        // Kunci edit dan update wajib angka
+        // Edit & Update Pemesanan Pasien (Hanya Direktur yang Bisa Akses)
         Route::get('pemesanan/{pemesanan}/edit', [PemesananWebController::class, 'edit'])
             ->name('pemesanan.edit')->whereNumber('pemesanan');
         Route::put('pemesanan/{pemesanan}', [PemesananWebController::class, 'update'])
             ->name('pemesanan.update')->whereNumber('pemesanan');
+
+        // Edit & Update Pesanan Lab (Hanya Direktur yang Bisa Akses)
+        Route::get('pesanan-lab/{id}/edit', [PesananLabWebController::class, 'edit'])
+            ->name('pesanan-lab.edit')->whereNumber('id');
+        Route::put('pesanan-lab/{id}', [PesananLabWebController::class, 'update'])
+            ->name('pesanan-lab.update')->whereNumber('id');
 
     });
 

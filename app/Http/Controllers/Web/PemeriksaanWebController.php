@@ -168,7 +168,7 @@ public function index(Request $request)
 
     public function destroy(int $id)
     {
-        if (Auth::user()->role !== 'direktur') {
+        if (strtolower(Auth::user()->role) !== 'direktur') {
             return redirect()->route('pemeriksaan.index')
                 ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
         }

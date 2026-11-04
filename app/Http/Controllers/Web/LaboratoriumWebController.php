@@ -72,7 +72,7 @@ class LaboratoriumWebController extends Controller
 
     public function destroy(int $id)
     {
-        if (Auth::user()->role !== 'direktur') {
+        if (strtolower(Auth::user()->role) !== 'direktur') {
             return redirect()->route('laboratorium.index')
                 ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
         }

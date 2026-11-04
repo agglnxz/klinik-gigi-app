@@ -77,7 +77,7 @@ class AsistenWebController extends Controller
     public function destroy(int $id)
     {
         // Proteksi RBAC: Tolak jika bukan direktur
-        if (Auth::user()->role !== 'direktur') {
+        if (strtolower(Auth::user()->role) !== 'direktur') {
             return redirect()->route('asisten.index')
                 ->with('error', 'Akses Ditolak! Hanya Direktur yang berhak menghapus data.');
         }

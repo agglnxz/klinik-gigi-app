@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,9 @@
            navigasi lain — cocok untuk dicetak langsung atau disimpan
            sebagai PDF.
            ========================================================== */
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
@@ -22,16 +25,19 @@
             color: #1f2937;
             margin: 0;
             padding: 32px 16px;
+            font-size: 8px;
         }
 
         .lembar-invoice {
-            width: 210mm;         /* Ukuran A4 */
-            min-height: 297mm;
+            width: 148mm;
+            /* Ukuran A6 Landscape (1/4 A4) */
+            min-height: 105mm;
             margin: 0 auto;
             background: #ffffff;
-            padding: 16mm 14mm;
+            padding: 8mm;
+            /* Padding dikecilkan agar muat */
             border-radius: 8px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
         }
 
         .header-klinik {
@@ -118,8 +124,15 @@
             padding: 3px 0;
         }
 
-        .baris-info .k { color: #6b7280; }
-        .baris-info .v { font-weight: 700; color: #1f2937; text-align: right; }
+        .baris-info .k {
+            color: #6b7280;
+        }
+
+        .baris-info .v {
+            font-weight: 700;
+            color: #1f2937;
+            text-align: right;
+        }
 
         table.tabel-item {
             width: 100%;
@@ -138,8 +151,13 @@
             letter-spacing: 0.05em;
         }
 
-        table.tabel-item thead th.text-right { text-align: right; }
-        table.tabel-item thead th.text-center { text-align: center; }
+        table.tabel-item thead th.text-right {
+            text-align: right;
+        }
+
+        table.tabel-item thead th.text-center {
+            text-align: center;
+        }
 
         table.tabel-item tbody td {
             padding: 9px 10px;
@@ -147,10 +165,17 @@
             vertical-align: top;
         }
 
-        table.tabel-item tbody td.text-right { text-align: right; }
-        table.tabel-item tbody td.text-center { text-align: center; }
+        table.tabel-item tbody td.text-right {
+            text-align: right;
+        }
 
-        table.tabel-item tbody tr:last-child td { border-bottom: none; }
+        table.tabel-item tbody td.text-center {
+            text-align: center;
+        }
+
+        table.tabel-item tbody tr:last-child td {
+            border-bottom: none;
+        }
 
         .ringkasan-bayar {
             display: flex;
@@ -188,8 +213,15 @@
             text-transform: uppercase;
         }
 
-        .badge-lunas   { background: #dcfce7; color: #15803d; }
-        .badge-belum   { background: #fee2e2; color: #b91c1c; }
+        .badge-lunas {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-belum {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
 
         .footer-invoice {
             display: flex;
@@ -230,7 +262,8 @@
             gap: 10px;
         }
 
-        .toolbar-aksi button, .toolbar-aksi a {
+        .toolbar-aksi button,
+        .toolbar-aksi a {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -243,10 +276,23 @@
             text-decoration: none;
         }
 
-        .btn-cetak { background: #176851; color: #fff; }
-        .btn-cetak:hover { background: #145a46; }
-        .btn-kembali { background: #e5e7eb; color: #374151; }
-        .btn-kembali:hover { background: #d1d5db; }
+        .btn-cetak {
+            background: #176851;
+            color: #fff;
+        }
+
+        .btn-cetak:hover {
+            background: #145a46;
+        }
+
+        .btn-kembali {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-kembali:hover {
+            background: #d1d5db;
+        }
 
         /* ==========================================================
            MODE CETAK: sembunyikan toolbar & isolasi dokumen faktur
@@ -254,13 +300,10 @@
            ========================================================== */
         @media print {
             @page {
-                size: A4;
-                margin: 12mm;
-            }
-
-            body {
-                background: #ffffff;
-                padding: 0;
+                size: 148mm 105mm landscape;
+                /* Memaksa kertas fisik menjadi A6 Landscape */
+                margin: 5mm;
+                /* Margin kertas printer dikecilkan */
             }
 
             .toolbar-aksi,
@@ -279,6 +322,7 @@
         }
     </style>
 </head>
+
 <body>
 
     {{-- TOOLBAR AKSI (tidak ikut tercetak) --}}
@@ -335,26 +379,28 @@
             </div>
 
             <div class="kotak-info">
-                <p class="judul">Data Pemesanan</p>
+                <p class="judul">Data Pemesanan Pasien</p>
                 <div class="baris-info">
                     <span class="k">No. Pemesanan</span>
                     <span class="v">{{ $data->no_pemesanan }}</span>
                 </div>
                 <div class="baris-info">
-                    <span class="k">Laboratorium</span>
-                    <span class="v">{{ $data->lab->nama_lab ?? '-' }}</span>
+                    <span class="k">Tanggal Pemesanan</span>
+                    <span class="v">{{ \Carbon\Carbon::parse($data->created_at)->translatedFormat('d F Y') }}</span>
                 </div>
                 <div class="baris-info">
-                    <span class="k">Tanggal Dikirim</span>
-                    <span class="v">{{ \Carbon\Carbon::parse($data->tanggal_dikirim)->translatedFormat('d F Y') }}</span>
+                    <span class="k">Status Booking</span>
+                    <span class="v">{{ strtoupper(str_replace('_', ' ', $data->status_booking)) }}</span>
                 </div>
                 <div class="baris-info">
-                    <span class="k">Estimasi Selesai</span>
-                    <span class="v">{{ \Carbon\Carbon::parse($data->estimasi_selesai)->translatedFormat('d F Y') }}</span>
-                </div>
-                <div class="baris-info">
-                    <span class="k">Status Pemesanan</span>
-                    <span class="v">{{ str_replace('_', ' ', ucwords($data->status_pemesanan)) }}</span>
+                    <span class="k">Status Pembayaran</span>
+                    <span class="v">
+                        @if($data->status_bayar_pasien === 'sudah_lunas')
+                        <span class="badge-status badge-lunas">Lunas</span>
+                        @else
+                        <span class="badge-status badge-belum">Belum Lunas</span>
+                        @endif
+                    </span>
                 </div>
             </div>
         </div>
@@ -366,60 +412,68 @@
                     <th style="width:32px;">No</th>
                     <th>Jenis Protesa Gigi</th>
                     <th class="text-center" style="width:90px;">Jumlah</th>
-                    <th class="text-right" style="width:130px;">Harga Acuan</th>
-                    <th class="text-right" style="width:140px;">Subtotal Acuan</th>
+                    <th class="text-right" style="width:130px;">Harga Satuan</th>
+                    <th class="text-right" style="width:140px;">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
                 @php $totalAcuan = 0; @endphp
                 @forelse($groupedItems as $namaJenis => $items)
-                    @php
-                        $hargaSatuan = optional($items->first()->jenisGigi)->estimasi_biaya ?? 0;
-                        $jumlah = $items->count();
-                        $subtotal = $hargaSatuan * $jumlah;
-                        $totalAcuan += $subtotal;
-                    @endphp
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $namaJenis }}</td>
-                        <td class="text-center">{{ $jumlah }}</td>
-                        <td class="text-right">Rp {{ number_format($hargaSatuan, 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-                    </tr>
+                @php
+                $hargaSatuan = $items->first()->harga_jual_pasien ?? (optional($items->first()->jenisGigi)->estimasi_biaya ?? 0);
+                $jumlah = $items->count();
+                $subtotal = $hargaSatuan * $jumlah;
+                $totalAcuan += $subtotal;
+                @endphp
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $namaJenis }}</td>
+                    <td class="text-center">{{ $jumlah }}</td>
+                    <td class="text-right">Rp {{ number_format($hargaSatuan, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="5" style="text-align:center; color:#9ca3af; font-style:italic;">
-                            Tidak ada item gigi tercatat pada pemesanan ini.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#9ca3af; font-style:italic;">
+                        Tidak ada item gigi tercatat pada pemesanan ini.
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
 
-        {{-- RINGKASAN PEMBAYARAN --}}
+        {{-- RINGKASAN PEMBAYARAN PASIEN --}}
         <div class="ringkasan-bayar">
             <div class="kotak-ringkasan">
                 <div class="baris">
-                    <span>Total Harga Acuan Item</span>
-                    <span>Rp {{ number_format($totalAcuan, 0, ',', '.') }}</span>
+                    <span>Total Biaya Item Gigi</span>
+                    <span>Rp {{ number_format($totalItemGigi ?? $totalAcuan, 0, ',', '.') }}</span>
                 </div>
+                @if(($data->biaya_pemasangan ?? 0) > 0)
                 <div class="baris">
-                    <span>Biaya Laboratorium</span>
-                    <span>Rp {{ number_format($data->biaya_lab, 0, ',', '.') }}</span>
+                    <span>Biaya Pemasangan</span>
+                    <span>Rp {{ number_format($data->biaya_pemasangan, 0, ',', '.') }}</span>
                 </div>
+                @endif
+                @if(($data->diskon ?? 0) > 0)
                 <div class="baris">
-                    <span>Status Bayar Lab</span>
-                    <span>
-                        @if($data->status_bayar_lab === 'sudah_lunas')
-                            <span class="badge-status badge-lunas">Lunas</span>
-                        @else
-                            <span class="badge-status badge-belum">Belum Lunas</span>
-                        @endif
-                    </span>
+                    <span>Diskon ({{ (int)$data->diskon }}%)</span>
+                    <span style="color: #dc2626;">- Rp {{ number_format((($totalAcuan + ($data->biaya_pemasangan ?? 0)) * ($data->diskon / 100)), 0, ',', '.') }}</span>
                 </div>
+                @endif
                 <div class="baris total">
                     <span>Total Tagihan Pasien</span>
                     <span>Rp {{ number_format($data->harga_pasien, 0, ',', '.') }}</span>
+                </div>
+                <div class="baris" style="margin-top: 6px;">
+                    <span>Status Pembayaran</span>
+                    <span>
+                        @if($data->status_bayar_pasien === 'sudah_lunas')
+                        <span class="badge-status badge-lunas">Lunas</span>
+                        @else
+                        <span class="badge-status badge-belum">Belum Lunas</span>
+                        @endif
+                    </span>
                 </div>
             </div>
         </div>
@@ -441,9 +495,10 @@
     <script>
         // Membuka dialog cetak bawaan browser secara otomatis setelah
         // halaman faktur selesai dirender, sesuai alur cetak invoice.
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function() {
             window.print();
         });
     </script>
 </body>
+
 </html>

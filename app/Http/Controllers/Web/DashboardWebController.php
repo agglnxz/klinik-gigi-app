@@ -8,25 +8,30 @@ use App\Models\Pemesanan;
 
 class DashboardWebController extends Controller
 {
-        public function dashboard()
+    public function dashboard()
     {
         $totalPasien = Pasien::count();
 
-        $laporanPesanan = Pemesanan::with(['pemeriksaan.pasien', 'lab'])
-            ->whereIn('status_pemesanan', ['dalam_proses', 'tiba_di_klinik', 'selesai'])
-            ->orderByDesc('tanggal_dikirim')
+        // Mengambil data pemesanan beserta relasi pemeriksaan, pasien, dan detail pesanan lab
+        $laporanPesanan = Pemesanan::with(['pemeriksaan.pasien', 'pesananLab.lab'])
+            ->whereIn('status_booking', ['proses_lab', 'siap_pasang', 'selesai'])
+            ->orderByDesc('created_at') // Menggunakan created_at karena tanggal_dikirim pindah ke pesanan_lab
             ->get();
 
-        $pesananBelumTiba = $laporanPesanan->where('status_pemesanan', 'dalam_proses')->count();
-        $pesananSudahTiba = $laporanPesanan->whereIn('status_pemesanan', ['tiba_di_klinik', 'selesai'])->count();
+        // Hitung pesanan yang giginya belum tiba dari lab
+        $pesananBelumTiba = $laporanPesanan->where('status_booking', 'proses_lab')->count();
+        
+        // Hitung pesanan yang giginya sudah tiba dan siap pasang, atau sudah selesai
+        $pesananSudahTiba = $laporanPesanan->whereIn('status_booking', ['siap_pasang', 'selesai'])->count();
 
-        $pesananProses = Pemesanan::where(
-            'status_pemesanan',
-            'dalam_proses'
+        // Hitung seluruh pesanan yang belum selesai (pending, proses ke lab, atau siap pasang)
+        $pesananProses = Pemesanan::whereIn(
+            'status_booking',
+            ['pending', 'proses_lab', 'siap_pasang']
         )->count();
 
         $pesananSelesai = Pemesanan::where(
-            'status_pemesanan',
+            'status_booking',
             'selesai'
         )->count();
 
