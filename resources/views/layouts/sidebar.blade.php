@@ -97,17 +97,32 @@
                     </li>
                 @endif
 
-                {{-- PEMESANAN --}}
+                {{-- PEMESANAN PASIEN --}}
                 <li>
                     <a href="{{ route('pemesanan.index') }}"
                         class="{{ $baseClass }} {{ request()->routeIs('pemesanan.index') || request()->routeIs('pemesanan.create') || request()->routeIs('pemesanan.edit') ? $activeClass : $inactiveClass }}"
                         :class="(sidebarOpen || hoverSidebar) ? 'justify-start px-4' : 'justify-center'"
-                        title="Pemesanan">
+                        title="Pemesanan Pasien">
                         <i class="fa-solid fa-cart-shopping w-6 text-center text-lg flex-shrink-0"
                             :class="(sidebarOpen || hoverSidebar) ? 'mr-3' : ''"></i>
                         <span x-cloak x-show="sidebarOpen || hoverSidebar" x-transition.opacity
                             class="whitespace-nowrap text-sm">
-                            Pemesanan
+                            Booking Pasien
+                        </span>
+                    </a>
+                </li>
+                
+                {{-- PESANAN LAB --}}
+                <li>
+                    <a href="{{ route('pesanan-lab.index') }}"
+                        class="{{ $baseClass }} {{ request()->routeIs('pesanan-lab.*') ? $activeClass : $inactiveClass }}"
+                        :class="(sidebarOpen || hoverSidebar) ? 'justify-start px-4' : 'justify-center'"
+                        title="Pesanan Lab">
+                        <i class="fa-solid fa-truck-medical w-6 text-center text-lg flex-shrink-0"
+                            :class="(sidebarOpen || hoverSidebar) ? 'mr-3' : ''"></i>
+                        <span x-cloak x-show="sidebarOpen || hoverSidebar" x-transition.opacity
+                            class="whitespace-nowrap text-sm">
+                            Pesanan Lab
                         </span>
                     </a>
                 </li>
@@ -171,8 +186,6 @@
                             </span>
                         </a>
                     </li>
-
-                
                 @endif
             </ul>
         </nav>

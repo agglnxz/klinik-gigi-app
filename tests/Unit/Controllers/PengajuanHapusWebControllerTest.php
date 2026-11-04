@@ -32,17 +32,20 @@ class PengajuanHapusWebControllerTest extends TestCase
 
         $controller = new PengajuanHapusWebController();
 
-        // Act
+        // Act berfungsi untuk mengeksekusi
+        // untuk kasus ini menjalankan method index()
         $response = $controller->index();
 
-        // Assert
-        self::assertInstanceOf(View::class, $response);
-        self::assertSame('pengajuan_hapus.index', $response->name());
+        // Assert berfungsi untuk memverifikasi hasil apakah sudah sesuai dengan yang diharapkan
+        self::assertInstanceOf(View::class, $response); // memastikan method index mengembalikan view
+        self::assertSame('pengajuan_hapus.index', $response->name()); // memastikan view yang di render sesuai dengan controller
 
-        $data = $response->getData();
+        $data = $response->getData(); // mengambil seluruh data yang dikirim ke view
+
+        // Memastikan controller menghitung jumlah data per status approval dengan tepat
         self::assertSame(1, $data['menunggu']);
         self::assertSame(1, $data['disetujui']);
-        self::assertSame(1, $data['ditolak']);
+        self::assertSame(1, $data['ditolak']); 
     }
 
     /**
@@ -54,6 +57,7 @@ class PengajuanHapusWebControllerTest extends TestCase
         Auth::login($admin);
 
         $controller = new PengajuanHapusWebController();
+
         $response = $controller->index();
 
         self::assertInstanceOf(RedirectResponse::class, $response);
@@ -228,7 +232,7 @@ class PengajuanHapusWebControllerTest extends TestCase
 
         $controller = new PengajuanHapusWebController();
 
-        // Act
+        
         $response = $controller->reject($pengajuan->id);
 
         // Assert
