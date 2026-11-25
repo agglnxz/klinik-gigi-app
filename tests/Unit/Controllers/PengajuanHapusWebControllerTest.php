@@ -11,7 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Tests\TestCase;
+use Tests\TestCase; 
 
 class PengajuanHapusWebControllerTest extends TestCase
 {
@@ -30,20 +30,20 @@ class PengajuanHapusWebControllerTest extends TestCase
         PengajuanHapus::factory()->create(['status_approval' => 'Disetujui']);
         PengajuanHapus::factory()->create(['status_approval' => 'Ditolak']);
 
+        
         $controller = new PengajuanHapusWebController();
-
+ 
         // Act berfungsi untuk mengeksekusi
-        // untuk kasus ini menjalankan method index()
-        $response = $controller->index();
+        $response = $controller->index(); 
 
         // Assert berfungsi untuk memverifikasi hasil apakah sudah sesuai dengan yang diharapkan
-        self::assertInstanceOf(View::class, $response); // memastikan method index mengembalikan view
-        self::assertSame('pengajuan_hapus.index', $response->name()); // memastikan view yang di render sesuai dengan controller
+        self::assertInstanceOf(View::class, $response);
+        self::assertSame('pengajuan_hapus.index', $response->name()); 
 
-        $data = $response->getData(); // mengambil seluruh data yang dikirim ke view
+        $data = $response->getData(); //Mengambil seluruh data  
 
         // Memastikan controller menghitung jumlah data per status approval dengan tepat
-        self::assertSame(1, $data['menunggu']);
+        self::assertSame(1, $data['menunggu']); 
         self::assertSame(1, $data['disetujui']);
         self::assertSame(1, $data['ditolak']); 
     }

@@ -253,22 +253,24 @@ class PemesananWebController extends Controller
             'status_bayar_pasien' => 'sometimes|in:belum_lunas,sudah_lunas',
         ]);
 
-        // 🔴 VALIDASI KETAT STATUS 'SELESAI'
-        if ($request->input('status_booking') === 'selesai') {
+        // 🔴 VALIDASI KETAT STATUS 'SIAP PASANG' & 'SELESAI'
+        if (in_array($request->input('status_booking'), ['siap_pasang', 'selesai'])) {
             $errors = [];
 
-            // Syarat 1: Gigi harus sudah tiba dari laboratorium
+            // Syarat 1: Gigi harus sudah tiba dari lab ("Tandai Telah Tiba" harus sudah dipencet)
             if (!$pemesanan->pesananLab || is_null($pemesanan->pesananLab->tanggal_tiba)) {
-                $errors['status_booking'] = 'Gigi belum tiba dari laboratorium.';
+                $errors['status_booking'] = 'Aksi Ditolak: Gigi belum tiba dari Lab. Silakan klik "Tandai Telah Tiba" pada menu Pesanan Lab terlebih dahulu.';
             }
 
-            // Syarat 2: Pembayaran pasien harus sudah lunas
-            $statusBayar = $request->input('status_bayar_pasien', $pemesanan->status_bayar_pasien);
-            if ($statusBayar !== 'sudah_lunas') {
-                $errors['status_bayar_pasien'] = 'Pembayaran pasien belum lunas.';
+            // Syarat 2: Pembayaran pasien harus sudah lunas (Khusus jika status diubah ke 'selesai')
+            if ($request->input('status_booking') === 'selesai') {
+                $statusBayar = $request->input('status_bayar_pasien', $pemesanan->status_bayar_pasien);
+                if ($statusBayar !== 'sudah_lunas') {
+                    $errors['status_bayar_pasien'] = 'Pembayaran pasien belum lunas.';
+                }
             }
 
-            // Lempar exception otomatis jika ada syarat yang tidak terpenuhi (menghindari multiple returns)
+            // Lempar exception otomatis
             if (!empty($errors)) {
                 throw \Illuminate\Validation\ValidationException::withMessages($errors);
             }
@@ -340,12 +342,15 @@ class PemesananWebController extends Controller
             'items.*'             => 'required|exists:jenis_gigi,id',
         ]);
 
-        // Validasi ketat jika status diubah ke 'selesai'
-        if ($request->status_booking === 'selesai') {
+        // 🔴 VALIDASI KETAT STATUS 'SIAP PASANG' & 'SELESAI'
+        if (in_array($request->status_booking, ['siap_pasang', 'selesai'])) {
+            // Syarat 1: Gigi harus sudah tiba dari lab
             if (!$pemesanan->pesananLab || is_null($pemesanan->pesananLab->tanggal_tiba)) {
-                return back()->withInput()->with('error', 'Gigi belum tiba dari laboratorium.');
+                return back()->withInput()->with('error', 'Aksi Ditolak: Gigi belum tiba dari Lab. Silakan tandai kedatangan pada menu Pesanan Lab terlebih dahulu.');
             }
-            if ($request->status_bayar_pasien !== 'sudah_lunas') {
+            
+            // Syarat 2: Pembayaran pasien harus sudah lunas (Khusus status 'selesai')
+            if ($request->status_booking === 'selesai' && $request->status_bayar_pasien !== 'sudah_lunas') {
                 return back()->withInput()->with('error', 'Pembayaran pasien belum lunas.');
             }
         }

@@ -8,6 +8,7 @@ use App\Models\Asisten;
 use App\Models\Laboratorium;
 use App\Models\JenisGigi;
 use App\Models\Pasien;
+use App\Models\Pemeriksaan;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -47,5 +48,7 @@ class DatabaseSeeder extends Seeder
         Laboratorium::factory(5)->create();  // Buat 5 Lab Mitra
         JenisGigi::factory(8)->create();     // Buat 8 Katalog Jenis Gigi
         Pasien::factory(30)->create();       // Buat 30 Pasien
+        Pemeriksaan::factory(10)->create();  // Buat 10 Pemeriksaan
+        
     }
 }

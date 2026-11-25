@@ -5,6 +5,7 @@ namespace Tests\Unit\Console;
 use App\Console\Commands\GenerateNotifikasi;
 use App\Models\Notifikasi;
 use App\Models\Pemesanan;
+use App\Models\PesananLab;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -43,8 +44,12 @@ class GenerateNotifikasiTest extends TestCase
         // Arrange
         $estimasi = Carbon::today()->addDays($offsetDays);
         $pemesanan = Pemesanan::factory()->create([
-            'status_pemesanan' => 'dalam_proses',
+            'status_booking' => 'proses_lab',
+        ]);
+        $pesananLab = PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesanan->id,
             'estimasi_selesai' => $estimasi,
+            'tanggal_tiba'     => null,
         ]);
 
         $command = new GenerateNotifikasi();
@@ -71,8 +76,12 @@ class GenerateNotifikasiTest extends TestCase
     {
         // Arrange
         $pemesanan = Pemesanan::factory()->create([
-            'status_pemesanan' => 'dalam_proses',
+            'status_booking' => 'proses_lab',
+        ]);
+        PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesanan->id,
             'estimasi_selesai' => Carbon::today(),
+            'tanggal_tiba'     => null,
         ]);
 
         $command = new GenerateNotifikasi();
@@ -89,22 +98,39 @@ class GenerateNotifikasiTest extends TestCase
     }
 
     /**
-     * Test handle ignores orders not active (status selesai, tiba_di_klinik, or soft-deleted/dibatalkan).
+     * Test handle ignores orders not active (status selesai, tiba_di_klinik/siap_pasang, or soft-deleted/dibatalkan).
      */
     public function test_handle_ignores_non_active_orders(): void
     {
         // Arrange
+        // 1. Pesanan sudah selesai
         $pemesananSelesai = Pemesanan::factory()->create([
-            'status_pemesanan' => 'selesai',
+            'status_booking' => 'selesai',
+        ]);
+        PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesananSelesai->id,
             'estimasi_selesai' => Carbon::today()->subDays(2),
+            'tanggal_tiba'     => Carbon::today()->subDays(2),
         ]);
+
+        // 2. Pesanan sudah tiba di klinik (siap pasang)
         $pemesananTiba = Pemesanan::factory()->create([
-            'status_pemesanan' => 'tiba_di_klinik',
-            'estimasi_selesai' => Carbon::today()->subDays(1),
+            'status_booking' => 'siap_pasang',
         ]);
-        $pemesananDibatalkan = Pemesanan::factory()->create([
-            'status_pemesanan' => 'dalam_proses',
+        PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesananTiba->id,
             'estimasi_selesai' => Carbon::today()->subDays(1),
+            'tanggal_tiba'     => Carbon::today()->subDays(1),
+        ]);
+
+        // 3. Pesanan dibatalkan (soft-deleted)
+        $pemesananDibatalkan = Pemesanan::factory()->create([
+            'status_booking' => 'proses_lab',
+        ]);
+        PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesananDibatalkan->id,
+            'estimasi_selesai' => Carbon::today()->subDays(1),
+            'tanggal_tiba'     => null,
         ]);
         $pemesananDibatalkan->delete(); // Soft-deleted / order dibatalkan
 
@@ -128,8 +154,12 @@ class GenerateNotifikasiTest extends TestCase
             // Day 1: 2026-10-25 (H+1)
             Carbon::setTestNow(Carbon::parse('2026-10-25 09:00:00'));
             $pemesanan = Pemesanan::factory()->create([
-                'status_pemesanan' => 'dalam_proses',
+                'status_booking' => 'proses_lab',
+            ]);
+            PesananLab::factory()->create([
+                'id_pemesanan'     => $pemesanan->id,
                 'estimasi_selesai' => '2026-10-26',
+                'tanggal_tiba'     => null,
             ]);
 
             $command = new GenerateNotifikasi();
@@ -159,16 +189,20 @@ class GenerateNotifikasiTest extends TestCase
     {
         // 1. Initial state: estimation is 10 days away (no notification generated)
         $pemesanan = Pemesanan::factory()->create([
-            'status_pemesanan' => 'dalam_proses',
+            'status_booking' => 'proses_lab',
+        ]);
+        $pesananLab = PesananLab::factory()->create([
+            'id_pemesanan'     => $pemesanan->id,
             'estimasi_selesai' => Carbon::today()->addDays(10),
+            'tanggal_tiba'     => null,
         ]);
 
         $command = new GenerateNotifikasi();
         $command->handle();
         self::assertSame(0, Notifikasi::where('pemesanan_id', $pemesanan->id)->count());
 
-        // 2. Updated state: doctor/staff moves estimation closer to H+1
-        $pemesanan->update([
+        // 2. Updated state: moves estimation closer to H+1
+        $pesananLab->update([
             'estimasi_selesai' => Carbon::today()->addDays(1),
         ]);
 

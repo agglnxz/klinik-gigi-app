@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Pemesanan;
+use App\Models\PesananLab;
 use App\Models\Notifikasi;
 use Carbon\Carbon;
 
@@ -31,13 +32,22 @@ class GenerateNotifikasi extends Command
     {
         $hariIni = Carbon::today();
 
-        // Hanya cek pesanan yang masih dalam proses
-        $pesananAktif = Pemesanan::with('pemeriksaan.pasien')
-            ->where('status_pemesanan', 'dalam_proses')
+        // Ambil pesanan lab yang sedang dalam pengerjaan (belum tiba di klinik)
+        // dan pemesanan induknya masih aktif (belum dibatalkan/dihapus)
+        $pesananLabAktif = PesananLab::with('pemesanan.pemeriksaan.pasien')
+            ->whereNull('tanggal_tiba')
+            ->whereHas('pemesanan', function ($q) {
+                $q->whereIn('status_booking', ['proses_lab', 'pending']);
+            })
             ->get();
 
-        foreach ($pesananAktif as $p) {
-            $estimasi = Carbon::parse($p->estimasi_selesai)->startOfDay();
+        foreach ($pesananLabAktif as $lab) {
+            $p = $lab->pemesanan;
+            if (!$p) {
+                continue;
+            }
+
+            $estimasi = Carbon::parse($lab->estimasi_selesai)->startOfDay();
             $selisihHari = $hariIni->diffInDays($estimasi, false); // false agar menghasilkan nilai minus saat terlambat
 
             $pesan = '';
