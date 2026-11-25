@@ -32,7 +32,7 @@
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Order Lab</p>
                     <h3 class="text-2xl font-black text-gray-800">{{ $totalPesananLab }}</h3>
-                    <span class="text-[10px] text-teal-600 font-medium">Semua SPK</span>
+                    <span class="text-[10px] text-teal-600 font-medium">Semua pesanan</span>
                 </div>
             </div>
 
@@ -68,7 +68,7 @@
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Tenggat H-3</p>
                     <h3 class="text-2xl font-black text-red-600">{{ $jatuhTempo }}</h3>
-                    <span class="text-[10px] text-red-600 font-medium">Perlu Ditekan</span>
+                    <span class="text-[10px] text-red-600 font-medium">Mendekati Tenggat</span>
                 </div>
             </div>
         </div>
@@ -244,7 +244,7 @@
                                         {{-- AKSI KHUSUS: Form / Tombol "Tandai Telah Tiba" jika tanggal_tiba null --}}
                                         @if (is_null($item->tanggal_tiba))
                                             <form action="{{ route('pesanan-lab.mark-as-arrived', $item->id) }}" method="POST"
-                                                onsubmit="return confirm('Konfirmasi bahwa gigi pesanan {{ $item->pemesanan->no_pemesanan ?? '' }} telah tiba di klinik hari ini?')">
+                                                onsubmit="return confirm('Konfirmasi bahwa gigi pesanan {{ $item->pemesanan?->no_pemesanan }} telah tiba di klinik hari ini?')">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit"

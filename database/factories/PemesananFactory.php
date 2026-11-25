@@ -17,16 +17,13 @@ class PemesananFactory extends Factory
     public function definition(): array
     {
         return [
-            'no_pemesanan'     => 'PSN-' . date('Ymd') . '-' . $this->faker->unique()->numerify('####'),
-            'id_pemeriksaan'   => Pemeriksaan::factory(),
-            'id_lab'           => Laboratorium::factory(),
-            'tanggal_dikirim'  => now()->toDateString(),
-            'estimasi_selesai' => now()->addDays(5)->toDateString(),
-            'biaya_lab'        => 150000,
-            'harga_pasien'     => 500000,
-            'status_bayar_lab' => 'belum_lunas',
-            'status_pemesanan' => 'dalam_proses',
-            'diskon'           => 0,
+            'no_pemesanan'        => 'PSN-' . date('Ymd') . '-' . $this->faker->unique()->numerify('####'),
+            'id_pemeriksaan'      => Pemeriksaan::factory(),
+            'harga_pasien'        => 500000,
+            'diskon'              => 0,
+            'biaya_pemasangan'    => 50000,
+            'status_bayar_pasien' => 'belum_lunas',
+            'status_booking'      => 'proses_lab',
         ];
     }
 }
